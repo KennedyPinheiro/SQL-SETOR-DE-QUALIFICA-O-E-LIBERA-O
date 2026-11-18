@@ -1,0 +1,10 @@
+/* global.css — reset, variáveis, fundo geral e botões base (compartilhado) */
+*{box-sizing:border-box}
+:root{--bg:#101418;--panel:#191f24;--panel2:#20282e;--line:#354149;--text:#e7ecef;--muted:#89969d;--green:#9fc7a9;--green2:#315d43;--amber:#d7a85c;--red:#c7655e;--mono:"IBM Plex Mono",monospace;--display:"Roboto Condensed",sans-serif}
+body{margin:0;background:radial-gradient(ellipse at 50% -20%,#273139 0,#101418 58%);color:var(--text);font-family:var(--display);min-height:100vh;font-size:16px}
+button,textarea{font:inherit}
+.button{border:0;padding:11px 14px;font:600 12px var(--mono);letter-spacing:.4px;cursor:pointer;transition:.18s}
+.button:hover{filter:brightness(1.13);transform:translateY(-1px)}
+.button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.button-green{background:#426f4d;color:#f0f7ed}
+.button-amber{background:#8c6734;color:#fff1d6}

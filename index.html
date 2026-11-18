@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#11151a">
+    <title>S.Q.L. — Início</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Roboto+Condensed:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="icon" href="./favicon.ico?v=2" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/alasql@4/dist/alasql.min.js"></script>
+</head>
+
+<body>
+    <div id="start-screen" class="start-screen">
+        <header class="start-top">
+            <div class="start-brand">
+                <img src="Emblema SQL_ Setor de Liberação.png" alt="SQL">
+            </div>
+            <div class="start-org"><strong>SETOR DE QUALIFICAÇÃO E LIBERAÇÃO</strong><small>SEGURANÇA DE QUARTEL //
+                    CONTROLE DE ACESSO</small></div>
+            <div class="start-online"><span class="live-dot"></span>SISTEMA ONLINE</div>
+        </header>
+
+        <main class="start-content">
+            <h1>ESSE NÃO É<br><em>DOS NOSSOS.</em></h1>
+            <p class="start-description">Confira as identidades, investigue os registros do quartel com SQL e decida
+                quem pode cruzar o portão.</p>
+            <div class="start-divider"></div>
+            <h2>SELECIONE O NÍVEL DE ALERTA</h2>
+            <div class="mode-options">
+                <button type="button" aria-pressed="false" class="mode-card" data-mode="facil"><span
+                        class="mode-tag">PROTOCOLO 01</span><strong>FÁCIL</strong><span class="mode-lives">♥ ♥ ♥ ♥
+                        ♥</span><small>5 vidas · 5 consultas por solicitante<br>1 consulta válida para
+                        decidir</small></button>
+                <button type="button" aria-pressed="true" class="mode-card selected" data-mode="normal"><span
+                        class="mode-tag">PROTOCOLO 02</span><strong>NORMAL</strong><span class="mode-lives">♥ ♥
+                        ♥</span><small>3 vidas · 4 consultas por solicitante<br>2 consultas válidas para
+                        decidir</small></button>
+                <button type="button" aria-pressed="false" class="mode-card" data-mode="dificil"><span
+                        class="mode-tag">PROTOCOLO 03</span><strong>DIFÍCIL</strong><span
+                        class="mode-lives">♥</span><small>1 vida · 4 consultas por solicitante<br>3 consultas válidas
+                        para decidir</small></button>
+            </div>
+            <div class="start-actions"><button type="button" class="button button-green start-button"
+                    id="start-game">INICIAR TURNO →</button><span>O terminal SQL é sua principal ferramenta de
+                    investigação.</span></div>
+        </main>
+
+        <footer class="start-footer"><span>S.Q.L. TERMINAL // BUILD 0.9.0</span><span>ACESSO RESTRITO</span></footer>
+    </div>
+
+    <script src="js/home.js"></script>
+</body>
+
+</html>
