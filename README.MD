@@ -1,5 +1,9 @@
 # S.Q.L. — Setor de Qualificação e Liberação — versão 0.9.0
 
+<p align="center">
+  <img src="Emblema SQL_ Setor de Liberação.png" alt="S.Q.L. — Setor de Qualificação e Liberação" width="600">
+</p>
+
 Jogo de investigação inspirado em *That's Not My Neighbor*, em clima militar. O jogador é o sentinela do portão de um quartel e usa consultas SQL para verificar identidades, registros e autorizações antes de decidir quem pode entrar.
 
 ## Estrutura
