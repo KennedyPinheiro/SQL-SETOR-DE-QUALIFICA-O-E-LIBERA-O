@@ -23,3 +23,28 @@ const initialMode = new URLSearchParams(window.location.search).get("mode");
 selectMode(modes[initialMode] ? initialMode : "normal");
 
 document.getElementById("start-game").addEventListener("click", startGame);
+
+function openHomeHelpModal() {
+    const modal = document.getElementById('home-help-modal');
+
+    if (!modal) return;
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeHomeHelpModal() {
+    const modal = document.getElementById('home-help-modal');
+
+    if (!modal) return;
+
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+}
+
+// Fechar ao clicar fora do conteúdo
+document.getElementById('home-help-modal')?.addEventListener('click', (event) => {
+    if (event.target.id === 'home-help-modal') {
+        closeHomeHelpModal();
+    }
+});

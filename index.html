@@ -26,9 +26,19 @@
             <div class="start-org"><strong>SETOR DE QUALIFICAÇÃO E LIBERAÇÃO</strong><small>SEGURANÇA DE QUARTEL //
                     CONTROLE DE ACESSO</small></div>
             <div class="start-header-actions">
-                <div class="start-online"><span class="live-dot"></span>SISTEMA ONLINE</div>
+                <div class="start-online">
+                    <span class="live-dot"></span>SISTEMA ONLINE
+                </div>
+
+                <button type="button" class="settings-trigger help-trigger" onclick="openHomeHelpModal()"
+                    aria-haspopup="dialog" aria-controls="home-help-modal" aria-label="Abrir ajuda" title="Ajuda">
+                    ?
+                </button>
+
                 <button type="button" class="settings-trigger" onclick="openSettingsModal()" aria-haspopup="dialog"
-                    aria-controls="settings-modal" aria-label="Abrir configurações" title="Configurações">⚙</button>
+                    aria-controls="settings-modal" aria-label="Abrir configurações" title="Configurações">
+                    ⚙
+                </button>
             </div>
         </header>
 
@@ -59,7 +69,87 @@
 
         <footer class="start-footer"><span>S.Q.L. TERMINAL // BUILD 0.9.0</span><span>ACESSO RESTRITO</span></footer>
     </div>
+    <div id="home-help-modal" class="modal-backdrop" aria-hidden="true">
+        <section class="modal home-help-modal" role="dialog" aria-modal="true" aria-labelledby="home-help-title">
 
+            <header class="modal-header">
+                <div>
+                    <small>MANUAL DO OPERADOR / S.Q.L. TERMINAL</small>
+                    <h2 id="home-help-title">COMO O JOGO FUNCIONA</h2>
+                </div>
+
+                <button type="button" class="modal-close" onclick="closeHomeHelpModal()" aria-label="Fechar ajuda">
+                    ×
+                </button>
+            </header>
+
+            <div class="home-help-body">
+                <p class="rules-intro">
+                    Você é o sentinela do portão do quartel. Sua missão é identificar
+                    militares legítimos e impedir a entrada de possíveis infiltrados.
+                </p>
+
+                <ol class="rules-list">
+                    <li>
+                        <strong>Observe o solicitante</strong>
+                        <span>
+                            Analise o retrato, ouça sua declaração e confira
+                            a identidade apresentada.
+                        </span>
+                    </li>
+
+                    <li>
+                        <strong>Investigue com SQL</strong>
+                        <span>
+                            Utilize o terminal para consultar as tabelas
+                            <code>militares</code>, <code>lista_hoje</code>
+                            e <code>logs_portao</code>.
+                        </span>
+                    </li>
+
+                    <li>
+                        <strong>Procure divergências</strong>
+                        <span>
+                            Compare os dados da identidade com os registros oficiais.
+                            Fique atento a nomes, documentos, alojamentos e características físicas.
+                        </span>
+                    </li>
+
+                    <li>
+                        <strong>Utilize os recursos do quartel</strong>
+                        <span>
+                            Use o rádio para confirmar informações com os alojamentos
+                            e consulte o arquivo do efetivo para verificar os registros.
+                        </span>
+                    </li>
+
+                    <li>
+                        <strong>Tome sua decisão</strong>
+                        <span>
+                            Autorize a entrada de militares legítimos e negue o acesso
+                            aos infiltrados. Uma decisão incorreta custa uma vida.
+                        </span>
+                    </li>
+                </ol>
+
+                <div class="home-help-tip">
+                    <strong>ATENÇÃO, OPERADOR</strong>
+                    <span>
+                        As consultas SQL válidas e distintas são obrigatórias.
+                        Você precisa atingir o mínimo exigido pelo nível de alerta
+                        antes de tomar uma decisão.
+                    </span>
+                </div>
+            </div>
+
+            <footer class="modal-footer">
+                <span>O TERMINAL ACEITA APENAS CONSULTAS SELECT</span>
+                <button type="button" class="button button-green" onclick="closeHomeHelpModal()">
+                    ENTENDI
+                </button>
+            </footer>
+        </section>
+    </div>
 
     <div id="settings-modal" class="modal-backdrop" aria-hidden="true">
         <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
