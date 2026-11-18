@@ -6,7 +6,8 @@
     const SOUND_PATHS = {
         click: 'audio/interface/mixkit-single-classic-click-1116.wav',
         select: 'audio/interface/mixkit-interface-device-click-2577.wav',
-        modal: 'audio/interface/mixkit-interface-hint-notification-911.wav'
+        modal: 'audio/interface/mixkit-interface-hint-notification-911.wav',
+        hover: 'audio/interface/hover.wav'
     };
 
     const sounds = {};
@@ -22,14 +23,11 @@
 
     // Consulta as configurações de áudio
     function getAudioSettings() {
-        const soundToggle = document.getElementById('setting-sound');
-        const volumeControl = document.getElementById('setting-volume');
+        const settings = window.getSqlSettings?.();
 
         return {
-            enabled: soundToggle ? soundToggle.checked : true,
-            volume: volumeControl
-                ? Number(volumeControl.value)
-                : 50
+            enabled: settings?.sound ?? true,
+            volume: settings?.volume ?? 50
         };
     }
 
@@ -84,7 +82,28 @@
             playSound('click');
         }
     });
+    // Detecta passagem do mouse sobre elementos
+    let lastHoveredElement = null;
 
+    document.addEventListener('mouseover', (event) => {
+        const element = event.target.closest('[data-hover-sound]');
+
+        if (!element || element === lastHoveredElement) return;
+
+        lastHoveredElement = element;
+
+        playSound(element.dataset.hoverSound);
+    });
+
+    document.addEventListener('mouseout', (event) => {
+        const element = event.target.closest('[data-hover-sound]');
+
+        if (!element) return;
+
+        if (!element.contains(event.relatedTarget)) {
+            lastHoveredElement = null;
+        }
+    });
     // Detecta abertura de modais
     const observedModals = new WeakMap();
 
