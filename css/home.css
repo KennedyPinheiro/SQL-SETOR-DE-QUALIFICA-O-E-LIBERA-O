@@ -121,3 +121,8 @@
 @media (max-width: 600px) {
   .mode-card small { font-size: 13px; }
 }
+
+.start-header-actions{display:flex;align-items:center;gap:14px;margin-left:auto;}
+.settings-trigger{width:39px;height:39px;display:grid;place-items:center;border:1px solid #526359;background:#1b2921;color:#d2dfd4;font-size:20px;cursor:pointer;transition:background .18s,border-color .18s,transform .18s;}
+.settings-trigger:hover,.settings-trigger:focus-visible{background:#2d3b30;border-color:var(--amber);transform:translateY(-1px);outline:none;}
+@media(max-width:700px){.start-header-actions{gap:8px}.settings-trigger{width:35px;height:35px}.start-online{display:none}}

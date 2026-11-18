@@ -25,7 +25,11 @@
             </div>
             <div class="start-org"><strong>SETOR DE QUALIFICAÇÃO E LIBERAÇÃO</strong><small>SEGURANÇA DE QUARTEL //
                     CONTROLE DE ACESSO</small></div>
-            <div class="start-online"><span class="live-dot"></span>SISTEMA ONLINE</div>
+            <div class="start-header-actions">
+                <div class="start-online"><span class="live-dot"></span>SISTEMA ONLINE</div>
+                <button type="button" class="settings-trigger" onclick="openSettingsModal()" aria-haspopup="dialog"
+                    aria-controls="settings-modal" aria-label="Abrir configurações" title="Configurações">⚙</button>
+            </div>
         </header>
 
         <main class="start-content">
@@ -56,6 +60,46 @@
         <footer class="start-footer"><span>S.Q.L. TERMINAL // BUILD 0.9.0</span><span>ACESSO RESTRITO</span></footer>
     </div>
 
+
+    <div id="settings-modal" class="modal-backdrop" aria-hidden="true">
+        <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+            <header class="modal-header">
+                <div><small>TERMINAL DE CONTROLE DE ACESSO</small>
+                    <h2 id="settings-title">CONFIGURAÇÕES</h2>
+                </div>
+                <button type="button" class="modal-close" data-settings-close
+                    aria-label="Fechar configurações">×</button>
+            </header>
+            <div class="settings-body">
+                <section class="settings-group" aria-labelledby="settings-audio-title">
+                    <h3 id="settings-audio-title">ÁUDIO</h3>
+                    <label class="settings-row"><span><strong>Efeitos sonoros</strong><small>Ativar sons de interação e
+                                eventos.</small></span><input id="setting-sound" type="checkbox"
+                            class="settings-switch"></label>
+                    <label class="settings-row settings-volume"><span><strong>Volume dos efeitos</strong><small><output
+                                    id="setting-volume-value" for="setting-volume">70%</output></small></span><input
+                            id="setting-volume" type="range" min="0" max="100" step="5" value="70"></label>
+                    <label class="settings-row"><span><strong>Música ambiente</strong><small>Preferência para quando a
+                                trilha estiver disponível.</small></span><input id="setting-music" type="checkbox"
+                            class="settings-switch"></label>
+                </section>
+                <section class="settings-group" aria-labelledby="settings-interface-title">
+                    <h3 id="settings-interface-title">INTERFACE</h3>
+                    <label class="settings-row"><span><strong>Animações da interface</strong><small>Transições e
+                                movimentos visuais.</small></span><input id="setting-animations" type="checkbox"
+                            class="settings-switch"></label>
+                    <label class="settings-row"><span><strong>Folhas na tela inicial</strong><small>Efeito visual da
+                                Home, quando disponível.</small></span><input id="setting-leaves" type="checkbox"
+                            class="settings-switch"></label>
+                </section>
+            </div>
+            <footer class="modal-footer settings-footer"><button type="button" id="settings-reset"
+                    class="button button-quiet">RESTAURAR PADRÕES</button><button type="button"
+                    class="button button-green" data-settings-close>CONCLUÍDO</button></footer>
+        </section>
+    </div>
+
+    <script src="js/settings.js"></script>
     <script src="js/home.js"></script>
 </body>
 
