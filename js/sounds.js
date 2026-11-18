@@ -1,0 +1,122 @@
+/* ========================================
+   SISTEMA DE ÁUDIO — S.Q.L.
+======================================== */
+
+(() => {
+    const SOUND_PATHS = {
+        click: 'audio/interface/mixkit-single-classic-click-1116.wav',
+        select: 'audio/interface/mixkit-interface-device-click-2577.wav',
+        modal: 'audio/interface/mixkit-interface-hint-notification-911.wav'
+    };
+
+    const sounds = {};
+
+    // Carrega os efeitos
+    Object.entries(SOUND_PATHS).forEach(([name, path]) => {
+        const audio = new Audio(path);
+
+        audio.preload = 'auto';
+
+        sounds[name] = audio;
+    });
+
+    // Consulta as configurações de áudio
+    function getAudioSettings() {
+        const soundToggle = document.getElementById('setting-sound');
+        const volumeControl = document.getElementById('setting-volume');
+
+        return {
+            enabled: soundToggle ? soundToggle.checked : true,
+            volume: volumeControl
+                ? Number(volumeControl.value)
+                : 50
+        };
+    }
+
+    // Reproduz um efeito sonoro
+    function playSound(name) {
+        const sound = sounds[name];
+
+        if (!sound) return;
+
+        const settings = getAudioSettings();
+
+        if (!settings.enabled) return;
+
+        const volume = Math.max(
+            0,
+            Math.min(1, settings.volume / 100)
+        );
+
+        if (volume === 0) return;
+
+        // Clona o áudio para permitir sons sobrepostos
+        const audio = sound.cloneNode();
+
+        audio.volume = volume;
+
+        audio.play().catch(() => {
+            // Ignora bloqueios de reprodução do navegador
+        });
+    }
+
+    // Disponibiliza a função globalmente
+    window.playSound = playSound;
+
+    // Clique e seleção de elementos
+    document.addEventListener('click', (event) => {
+        const element = event.target.closest(
+            'button, [data-sound]'
+        );
+
+        if (!element) return;
+
+        const soundType = element.dataset.sound;
+
+        if (soundType === 'none') return;
+
+        if (soundType) {
+            playSound(soundType);
+            return;
+        }
+
+        if (element.tagName === 'BUTTON') {
+            playSound('click');
+        }
+    });
+
+    // Detecta abertura de modais
+    const observedModals = new WeakMap();
+
+    function checkModals() {
+        const modals = document.querySelectorAll(
+            '.modal-backdrop, [role="dialog"]'
+        );
+
+        modals.forEach((modal) => {
+            const isOpen =
+                modal.classList.contains('open') ||
+                modal.getAttribute('aria-hidden') === 'false';
+
+            const wasOpen = observedModals.get(modal) || false;
+
+            if (isOpen && !wasOpen) {
+                playSound('modal');
+            }
+
+            observedModals.set(modal, isOpen);
+        });
+    }
+
+    const modalObserver = new MutationObserver(checkModals);
+
+    modalObserver.observe(document.body, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: ['class', 'aria-hidden']
+    });
+
+    checkModals();
+
+})();
