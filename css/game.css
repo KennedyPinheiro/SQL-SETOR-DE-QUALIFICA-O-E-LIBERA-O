@@ -1,8 +1,10 @@
 /* game.css — interface da partida (topbar, inspeção, terminal, modais, crise) */
 .app-shell {
-  max-width: 1440px;
-  margin: auto;
-  padding-top: 14px
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 14px clamp(12px, 2vw, 32px) 0;
+    box-sizing: border-box;
 }
 
 .topbar {
