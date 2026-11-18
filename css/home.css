@@ -304,6 +304,32 @@
   font-size: 20px;
   cursor: pointer;
   transition: background .18s, border-color .18s, transform .18s;
+
+  position: relative;
+}
+
+.settings-trigger::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  padding: 6px 10px;
+  background: #0c1210;
+  border: 1px solid var(--amber);
+  color: #f1e3c4;
+  font: 600 11px var(--mono);
+  letter-spacing: 1px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity .15s ease, transform .15s ease;
+  z-index: 15;
+}
+
+.settings-trigger:hover::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .settings-trigger:hover, .settings-trigger:focus-visible {

@@ -1,6 +1,6 @@
 (() => {
   const STORAGE_KEY = "sql-settings";
-  const DEFAULTS = Object.freeze({ sound: true, volume: 70, music: false, animations: true, leaves: true });
+  const DEFAULTS = Object.freeze({ sound: true, volume: 50, music: true, animations: true, leaves: true });
   let returnFocus = null;
   let returnToMenu = false;
 
