@@ -32,3 +32,103 @@ button,textarea{font:inherit}
 .settings-footer .button{padding:10px 12px;}
 body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
 @media(max-width:520px){.settings-body{padding-inline:15px}.settings-row{gap:10px}.settings-row strong{font-size:12px}.settings-row small{font-size:12px}.settings-footer{padding:12px 15px}.settings-footer .button{font-size:10px}}
+
+
+/* ========================================
+   MODAL BASE — COMPARTILHADO
+======================================== */
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(5px);
+}
+
+.modal-backdrop.open {
+    display: flex;
+}
+
+.modal {
+    width: min(560px, 100%);
+    max-height: min(85vh, 760px);
+    overflow-y: auto;
+    background: #191f24;
+    border: 1px solid #46534b;
+    box-shadow: 0 20px 70px #000b;
+    color: var(--text);
+    animation: settingsModalIn .2s ease-out;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px;
+    border-bottom: 1px solid #354149;
+}
+
+.modal-header small {
+    color: var(--muted);
+    font: 10px var(--mono);
+    letter-spacing: 1px;
+}
+
+.modal-header h2 {
+    margin: 6px 0 0;
+    color: var(--green);
+    font: 700 22px var(--display);
+    letter-spacing: 1px;
+}
+
+.modal-close {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #46534b;
+    background: #20282e;
+    color: var(--text);
+    font-size: 23px;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    border-color: var(--amber);
+    color: var(--amber);
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-top: 1px solid #354149;
+    background: #151b1f;
+}
+
+.settings-modal {
+    width: min(560px, 100%);
+}
+
+@keyframes settingsModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .modal {
+        animation: none;
+    }
+}
