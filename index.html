@@ -31,13 +31,15 @@
                     <span class="live-dot"></span>SISTEMA ONLINE
                 </div>
 
-                <button type="button" class="settings-trigger help-trigger" onclick="openHomeHelpModal()"
-                    aria-haspopup="dialog" aria-controls="home-help-modal" aria-label="Abrir ajuda" title="Ajuda">
+                <button type="button" class="settings-trigger help-trigger" data-hover-sound="hover"
+                    onclick="openHomeHelpModal()" aria-haspopup="dialog" aria-controls="home-help-modal"
+                    aria-label="Abrir ajuda" title="Ajuda">
                     ?
                 </button>
 
-                <button type="button" class="settings-trigger" onclick="openSettingsModal()" aria-haspopup="dialog"
-                    aria-controls="settings-modal" aria-label="Abrir configurações" title="Configurações">
+                <button type="button" class="settings-trigger" data-hover-sound="hover" onclick="openSettingsModal()"
+                    aria-haspopup="dialog" aria-controls="settings-modal" aria-label="Abrir configurações"
+                    title="Configurações">
                     ⚙
                 </button>
             </div>
@@ -50,17 +52,20 @@
             <div class="start-divider"></div>
             <h2>SELECIONE O NÍVEL DE ALERTA</h2>
             <div class="mode-options">
-                <button type="button" aria-pressed="false" class="mode-card" data-mode="facil" data-sound="select"><span
-                        class="mode-tag">PROTOCOLO 01</span><strong>FÁCIL</strong><span class="mode-lives">♥ ♥ ♥ ♥
+                <button type="button" aria-pressed="false" class="mode-card" data-mode="facil" data-hover-sound="hover"
+                    data-sound="select"><span class="mode-tag">PROTOCOLO 01</span><strong>FÁCIL</strong><span
+                        class="mode-lives">♥ ♥ ♥ ♥
                         ♥</span><small>5 vidas · 5 consultas por solicitante<br>1 consulta válida para
                         decidir</small></button>
-                <button type="button" aria-pressed="true" class="mode-card selected" data-mode="normal" data-sound="select"><span
-                        class="mode-tag">PROTOCOLO 02</span><strong>NORMAL</strong><span class="mode-lives">♥ ♥
+                <button type="button" aria-pressed="true" class="mode-card selected" data-mode="normal"
+                    data-hover-sound="hover" data-sound="select"><span class="mode-tag">PROTOCOLO
+                        02</span><strong>NORMAL</strong><span class="mode-lives">♥ ♥
                         ♥</span><small>3 vidas · 4 consultas por solicitante<br>2 consultas válidas para
                         decidir</small></button>
-                <button type="button" aria-pressed="false" class="mode-card" data-mode="dificil" data-sound="select"><span
-                        class="mode-tag">PROTOCOLO 03</span><strong>DIFÍCIL</strong><span
-                        class="mode-lives">♥</span><small>1 vida · 4 consultas por solicitante<br>3 consultas válidas
+                <button type="button" aria-pressed="false" class="mode-card" data-mode="dificil"
+                    data-hover-sound="hover" data-sound="select"><span class="mode-tag">PROTOCOLO
+                        03</span><strong>DIFÍCIL</strong><span class="mode-lives">♥</span><small>1 vida · 4 consultas
+                        por solicitante<br>3 consultas válidas
                         para decidir</small></button>
             </div>
             <div class="start-actions"><button type="button" class="button button-green start-button"
@@ -191,6 +196,7 @@
     </div>
     <script src="js/settings.js"></script>
     <script src="js/sounds.js"></script>
+    <script src="js/ambient.js"></script>
     <script src="js/leaves.js"></script>
     <script src="js/home.js"></script>
 </body>
