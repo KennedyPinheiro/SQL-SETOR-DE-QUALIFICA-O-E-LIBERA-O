@@ -1,8 +1,8 @@
 const gameState = {
   mode: "normal",
   modeConfig: {
-    facil:   { lives: 5, queries: 5, required: 1, impostorChance: 0.28, label: "FÁCIL" },
-    normal:  { lives: 3, queries: 4, required: 2, impostorChance: 0.45, label: "NORMAL" },
+    facil: { lives: 5, queries: 5, required: 1, impostorChance: 0.28, label: "FÁCIL" },
+    normal: { lives: 3, queries: 4, required: 2, impostorChance: 0.45, label: "NORMAL" },
     dificil: { lives: 1, queries: 4, required: 3, impostorChance: 0.62, label: "DIFÍCIL" }
   },
   score: 0, lives: 3, maxLives: 3, turn: 1, queriesRemaining: 4, successfulQueries: 0, requiredQueries: 2, usedQueries: new Set(),
@@ -70,19 +70,38 @@ function triggerExplosion() {
 }
 
 const seedResidents = [
-  {id_doc:"8841-FM",nome:"Francis Mosses",alojamento:"101",patente:"Soldado",quepe:"Sim",oculos:"Nao",pele:"Normal"},
-  {id_doc:"3920-AR",nome:"Ana Rudboys",alojamento:"204",patente:"Cabo",quepe:"Nao",oculos:"Sim",pele:"Normal"},
-  {id_doc:"7719-WA",nome:"W. Afton",alojamento:"302",patente:"Capitão",quepe:"Sim",oculos:"Sim",pele:"Normal"},
-  {id_doc:"5510-ML",nome:"Mia Lin",alojamento:"105",patente:"Tenente",quepe:"Nao",oculos:"Nao",pele:"Normal"},
-  {id_doc:"6102-CR",nome:"Carlos Rocha",alojamento:"401",patente:"Sargento",quepe:"Sim",oculos:"Nao",pele:"Normal"},
-  {id_doc:"9034-EB",nome:"Elena Vance",alojamento:"202",patente:"Major",quepe:"Nao",oculos:"Sim",pele:"Normal"},
-  {id_doc:"2280-JS",nome:"Jonas Silva",alojamento:"303",patente:"Soldado",quepe:"Nao",oculos:"Nao",pele:"Normal"},
-  {id_doc:"4491-PT",nome:"Paula Torres",alojamento:"104",patente:"Cabo",quepe:"Sim",oculos:"Sim",pele:"Normal"},
-  {id_doc:"7355-RK",nome:"Ravi Kumar",alojamento:"203",patente:"Subtenente",quepe:"Nao",oculos:"Sim",pele:"Normal"},
-  {id_doc:"1802-LM",nome:"Lia Martins",alojamento:"301",patente:"Tenente",quepe:"Nao",oculos:"Nao",pele:"Normal"}
+  { id_doc: "8841-FM", nome: "Francis Mosses", alojamento: "101", patente: "Soldado", quepe: "Sim", oculos: "Nao", pele: "Normal" },
+  { id_doc: "3920-AR", nome: "Ana Rudboys", alojamento: "204", patente: "Cabo", quepe: "Nao", oculos: "Sim", pele: "Normal" },
+  { id_doc: "7719-WA", nome: "W. Afton", alojamento: "302", patente: "Capitão", quepe: "Sim", oculos: "Sim", pele: "Normal" },
+  { id_doc: "5510-ML", nome: "Mia Lin", alojamento: "105", patente: "Tenente", quepe: "Nao", oculos: "Nao", pele: "Normal" },
+  { id_doc: "6102-CR", nome: "Carlos Rocha", alojamento: "401", patente: "Sargento", quepe: "Sim", oculos: "Nao", pele: "Normal" },
+  { id_doc: "9034-EB", nome: "Elena Vance", alojamento: "202", patente: "Major", quepe: "Nao", oculos: "Sim", pele: "Normal" },
+  { id_doc: "2280-JS", nome: "Jonas Silva", alojamento: "303", patente: "Soldado", quepe: "Nao", oculos: "Nao", pele: "Normal" },
+  { id_doc: "4491-PT", nome: "Paula Torres", alojamento: "104", patente: "Cabo", quepe: "Sim", oculos: "Sim", pele: "Normal" },
+  { id_doc: "7355-RK", nome: "Ravi Kumar", alojamento: "203", patente: "Subtenente", quepe: "Nao", oculos: "Sim", pele: "Normal" },
+  { id_doc: "1802-LM", nome: "Lia Martins", alojamento: "301", patente: "Tenente", quepe: "Nao", oculos: "Nao", pele: "Normal" }
 ];
 
 let pendingTimers = new Set();
+function animationsEnabled() {
+  if (document.body.classList.contains("reduce-motion")) return false;
+
+  const settings = typeof getSqlSettings === "function"
+    ? getSqlSettings()
+    : null;
+
+  return settings ? settings.animations !== false : true;
+}
+
+function animateElement(element, className, duration = 600) {
+  if (!element || !animationsEnabled()) return;
+  element.classList.remove(className);
+  void element.offsetWidth;
+  element.classList.add(className);
+  setTimeout(() => {
+    element.classList.remove(className);
+  }, duration);
+}
 function later(fn, ms) {
   const id = setTimeout(() => { pendingTimers.delete(id); fn(); }, ms);
   pendingTimers.add(id);
@@ -93,14 +112,14 @@ function clearPendingTimers() {
 }
 
 function setupDatabase() {
-  ["militares","lista_hoje","logs_portao"].forEach(t => alasql(`DROP TABLE IF EXISTS ${t}`));
+  ["militares", "lista_hoje", "logs_portao"].forEach(t => alasql(`DROP TABLE IF EXISTS ${t}`));
   alasql(`CREATE TABLE militares (id_doc STRING, nome STRING, alojamento STRING, patente STRING, quepe STRING, oculos STRING, pele STRING)`);
   alasql(`CREATE TABLE lista_hoje (id_doc STRING, autorizado STRING)`);
   alasql(`CREATE TABLE logs_portao (id_doc STRING, status_atual STRING)`);
-  seedResidents.forEach((r,i) => {
-    alasql("INSERT INTO militares VALUES (?,?,?,?,?,?,?)",[r.id_doc,r.nome,r.alojamento,r.patente,r.quepe,r.oculos,r.pele]);
-    alasql("INSERT INTO lista_hoje VALUES (?,?)",[r.id_doc, i === 4 ? "Nao" : "Sim"]);
-    alasql("INSERT INTO logs_portao VALUES (?,?)",[r.id_doc, i === 5 ? "Dentro do quartel" : "Fora do quartel"]);
+  seedResidents.forEach((r, i) => {
+    alasql("INSERT INTO militares VALUES (?,?,?,?,?,?,?)", [r.id_doc, r.nome, r.alojamento, r.patente, r.quepe, r.oculos, r.pele]);
+    alasql("INSERT INTO lista_hoje VALUES (?,?)", [r.id_doc, i === 4 ? "Nao" : "Sim"]);
+    alasql("INSERT INTO logs_portao VALUES (?,?)", [r.id_doc, i === 5 ? "Dentro do quartel" : "Fora do quartel"]);
   });
 }
 
@@ -124,11 +143,11 @@ function nextTurn() {
 
   const residents = alasql("SELECT * FROM militares");
   const base = residents[Math.floor(Math.random() * residents.length)];
-  const auth = alasql("SELECT autorizado FROM lista_hoje WHERE id_doc = ?",[base.id_doc])[0];
-  const log = alasql("SELECT status_atual FROM logs_portao WHERE id_doc = ?",[base.id_doc])[0];
+  const auth = alasql("SELECT autorizado FROM lista_hoje WHERE id_doc = ?", [base.id_doc])[0];
+  const log = alasql("SELECT status_atual FROM logs_portao WHERE id_doc = ?", [base.id_doc])[0];
 
-  gameState.realNeighbor = {...base};
-  gameState.currentVisitor = {...base};
+  gameState.realNeighbor = { ...base };
+  gameState.currentVisitor = { ...base };
   gameState.isImpostor = false;
   gameState.impostorReason = "";
   gameState.neighborAlreadyInside = log.status_atual === "Dentro do quartel";
@@ -148,7 +167,7 @@ function nextTurn() {
       () => { gameState.currentVisitor.quepe = base.quepe === "Sim" ? "Nao" : "Sim"; gameState.impostorReason = "Aparência divergente: uso de quepe."; },
       () => { gameState.currentVisitor.oculos = base.oculos === "Sim" ? "Nao" : "Sim"; gameState.impostorReason = "Aparência divergente: uso de óculos."; }
     ];
-    flaws[Math.floor(Math.random()*flaws.length)]();
+    flaws[Math.floor(Math.random() * flaws.length)]();
   }
 
   renderVisitorUI();
@@ -170,7 +189,7 @@ function renderVisitorUI() {
     "Soldado, esqueci meu crachá. Pode abrir o portão para mim?",
     "Sirvo aqui há anos. Está tudo certo com meu cadastro?",
     "Está frio aqui fora. Podemos agilizar a entrada?"
-  ][Math.floor(Math.random()*4)];
+  ][Math.floor(Math.random() * 4)];
   document.getElementById("intercom-destination").textContent = `ALOJ. ${v.alojamento}`;
 }
 
@@ -184,6 +203,17 @@ function renderPortrait(v) {
     green: v.pele === "Esverdeada"
   });
 }
+animateElement(
+  document.querySelector(".visitor-panel"),
+  "is-changing",
+  650
+);
+
+animateElement(
+  document.querySelector(".identity-card"),
+  "is-revealing",
+  500
+);
 
 let rulesReturnFocus = null;
 let rulesFromMenu = false;
@@ -249,11 +279,23 @@ function exitToHome() {
 function runPlayerQuery() {
   if (gameState.gameOver || gameState.decisionLocked) return;
   const area = document.getElementById("sql-result-area");
+  animateElement(
+    document.querySelector(".terminal-card"),
+    "is-ready",
+    550
+  );
   if (gameState.queriesRemaining <= 0) {
     showSqlMessage("Limite de consultas atingido para este solicitante.", "warning");
     return;
   }
-  const query = document.getElementById("sql-input").value.trim();
+  const rawQuery = document.getElementById("sql-input").value.trim();
+  if (!rawQuery) return;
+
+  const query = rawQuery
+    .replace(/--.*$/gm, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .trim();
+
   if (!query) return;
 
   if (!/^SELECT\b/i.test(query) || /;[\s\S]*\S/.test(query.replace(/;\s*$/, ""))) {
@@ -282,6 +324,7 @@ function runPlayerQuery() {
 
     if (!Array.isArray(data) || data.length === 0) {
       area.innerHTML = '<div class="sql-message">Consulta executada. Nenhum registro encontrado. Ela não conta para o objetivo da investigação.</div>';
+      animateElement(area, "is-updating", 400);
       return;
     }
 
@@ -309,6 +352,7 @@ function runPlayerQuery() {
     });
     table.appendChild(tbody);
     area.replaceChildren(table);
+    animateElement(area, "is-updating", 400);
   } catch (error) {
     document.getElementById("result-status").textContent = "ERRO NA CONSULTA";
     showSqlMessage(`Erro SQL: ${error.message}`, "error");
@@ -316,32 +360,32 @@ function runPlayerQuery() {
 }
 
 function showSqlMessage(message, type) {
-  const area=document.getElementById("sql-result-area");
-  area.innerHTML="";
-  const box=document.createElement("div");
-  box.className="sql-message";
-  box.style.borderLeftColor=type==="error" ? "#c7655e" : "#d7a85c";
-  box.textContent=message;
+  const area = document.getElementById("sql-result-area");
+  area.innerHTML = "";
+  const box = document.createElement("div");
+  box.className = "sql-message";
+  box.style.borderLeftColor = type === "error" ? "#c7655e" : "#d7a85c";
+  box.textContent = message;
   area.appendChild(box);
-  document.getElementById("result-status").textContent=type==="error" ? "ERRO" : "AVISO";
+  document.getElementById("result-status").textContent = type === "error" ? "ERRO" : "AVISO";
 }
 
 function callApartment() {
   if (gameState.gameOver || gameState.decisionLocked) return;
-  const alojamento=gameState.currentVisitor.alojamento;
-  const result=document.getElementById("intercom-result");
-  result.textContent=`Chamando alojamento ${alojamento}...`;
-  document.getElementById("btn-call").disabled=true;
-  later(()=>{
+  const alojamento = gameState.currentVisitor.alojamento;
+  const result = document.getElementById("intercom-result");
+  result.textContent = `Chamando alojamento ${alojamento}...`;
+  document.getElementById("btn-call").disabled = true;
+  later(() => {
     if (gameState.neighborAlreadyInside) {
-      result.innerHTML='<strong class="status-bad">"Eu já estou dentro do quartel! Quem está aí no portão?!"</strong>';
+      result.innerHTML = '<strong class="status-bad">"Eu já estou dentro do quartel! Quem está aí no portão?!"</strong>';
     } else if (gameState.isImpostor && gameState.impostorReason.includes("Alojamento")) {
-      result.innerHTML='<strong class="status-bad">Quem atendeu o rádio afirma que não conhece o solicitante.</strong>';
+      result.innerHTML = '<strong class="status-bad">Quem atendeu o rádio afirma que não conhece o solicitante.</strong>';
     } else {
-      result.textContent="Ninguém atendeu. Não foi possível confirmar a identidade.";
+      result.textContent = "Ninguém atendeu. Não foi possível confirmar a identidade.";
     }
-    document.getElementById("btn-call").disabled=false;
-  },650);
+    document.getElementById("btn-call").disabled = false;
+  }, 650);
 }
 
 function insertTemplate(type) {
@@ -357,113 +401,145 @@ function insertTemplate(type) {
 
 function makeDecision(approved) {
   if (gameState.gameOver || gameState.decisionLocked) return;
-  if (gameState.successfulQueries < gameState.requiredQueries) {
-    toastMessage(`INVESTIGAÇÃO INCOMPLETA: execute mais ${gameState.requiredQueries-gameState.successfulQueries} consulta(s) SQL válida(s) antes de decidir.`,false);
-    return;
-  }
-  gameState.decisionLocked=true;
+
+  gameState.decisionLocked = true;
   stopDecisionTimer();
-  const toast=document.getElementById("toast-message");
+  const toast = document.getElementById("toast-message");
   if (approved && !gameState.isImpostor) {
-    gameState.score+=100;
-    toastMessage("MILITAR LEGÍTIMO AUTORIZADO. +100 PONTOS",true);
-    alasql("UPDATE logs_portao SET status_atual = 'Dentro do quartel' WHERE id_doc = ?",[gameState.realNeighbor.id_doc]);
+    gameState.score += 100;
+    toastMessage("MILITAR LEGÍTIMO AUTORIZADO. +100 PONTOS", true);
+    alasql("UPDATE logs_portao SET status_atual = 'Dentro do quartel' WHERE id_doc = ?", [gameState.realNeighbor.id_doc]);
   } else if (!approved && gameState.isImpostor) {
-    gameState.score+=150;
-    toastMessage(`INFILTRADO IDENTIFICADO. ${gameState.impostorReason} +150 PONTOS`,true);
+    gameState.score += 150;
+    toastMessage(`INFILTRADO IDENTIFICADO. ${gameState.impostorReason} +150 PONTOS`, true);
   } else {
     gameState.lives--;
-    toastMessage(approved ? `FALHA: UM INFILTRADO ENTROU. ${gameState.impostorReason}` : "ERRO: VOCÊ NEGOU A ENTRADA DE UM MILITAR LEGÍTIMO.",false);
+    toastMessage(approved ? `FALHA: UM INFILTRADO ENTROU. ${gameState.impostorReason}` : "ERRO: VOCÊ NEGOU A ENTRADA DE UM MILITAR LEGÍTIMO.", false);
   }
   gameState.turn++;
+  if (gameState.successfulQueries < gameState.requiredQueries) {
+    toast.textContent += " | INVESTIGAÇÃO INCOMPLETA: mínimo de consultas válidas não atingido.";
+  }
   updateHUD();
-  document.getElementById("btn-approve").disabled=true;
-  document.getElementById("btn-deny").disabled=true;
-  if (gameState.lives<=0) {
-    gameState.gameOver=true;
-    later(showGameOver,1400);
+  animateElement(
+    document.getElementById("hud-score"),
+    "is-updating",
+    450
+  );
+
+  if (gameState.lives < gameState.maxLives) {
+    animateElement(
+      document.getElementById("hud-lives"),
+      "is-damaged",
+      500
+    );
+  }
+
+  animateElement(
+    document.querySelector(".decision-panel"),
+    "is-feedback",
+    450
+  );
+  document.getElementById("btn-approve").disabled = true;
+  document.getElementById("btn-deny").disabled = true;
+  if (gameState.lives <= 0) {
+    gameState.gameOver = true;
+    later(showGameOver, 1400);
   } else {
-    later(()=>{toast.classList.remove("show");nextTurn();},2300);
+    later(() => { toast.classList.remove("show"); nextTurn(); }, 2300);
   }
 }
 
-function toastMessage(message,success) {
-  const toast=document.getElementById("toast-message");
-  toast.textContent=message;
-  toast.style.borderColor=success ? "#658d70" : "#c7655e";
-  toast.style.color=success ? "#d7ead9" : "#f0b0a8";
+function toastMessage(message, success) {
+  const toast = document.getElementById("toast-message");
+  toast.textContent = message;
+  toast.style.borderColor = success ? "#658d70" : "#c7655e";
+  toast.style.color = success ? "#d7ead9" : "#f0b0a8";
   toast.classList.add("show");
 }
 function updateHUD() {
-  document.getElementById("hud-day").textContent=`TURNO ${String(gameState.turn).padStart(2,"0")}`;
-  document.getElementById("hud-score").textContent=String(gameState.score).padStart(4,"0");
-  document.getElementById("hud-lives").textContent=Array.from({length:gameState.maxLives},(_,i)=>i<gameState.lives?"♥":"♡").join(" ");
+  document.getElementById("hud-day").textContent = `TURNO ${String(gameState.turn).padStart(2, "0")}`;
+  document.getElementById("hud-score").textContent = String(gameState.score).padStart(4, "0");
+  document.getElementById("hud-lives").textContent = Array.from({ length: gameState.maxLives }, (_, i) => i < gameState.lives ? "♥" : "♡").join(" ");
 }
 function updateQueriesHUD() {
-  document.getElementById("queries-left").textContent=`${gameState.queriesRemaining} CONSULTAS RESTANTES`;
-}
+  document.getElementById("queries-left").textContent =
+    `${gameState.queriesRemaining} CONSULTAS RESTANTES`;
 
+  const executeButton = document.getElementById("btn-exec-sql");
+
+  if (executeButton) {
+    executeButton.disabled =
+      gameState.queriesRemaining <= 0 ||
+      gameState.decisionLocked ||
+      gameState.gameOver;
+  }
+}
 function openBuildingModal() {
   renderBuilding();
-  const modal=document.getElementById("building-modal");
-  modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
+  const modal = document.getElementById("building-modal");
+  modal.classList.add("open"); modal.setAttribute("aria-hidden", "false");
 }
 function closeBuildingModal() {
-  const modal=document.getElementById("building-modal");
-  modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
+  const modal = document.getElementById("building-modal");
+  modal.classList.remove("open"); modal.setAttribute("aria-hidden", "true");
 }
 function renderBuilding() {
-  const grid=document.getElementById("building-grid");
-  grid.innerHTML="";
-  for(let floor=4;floor>=1;floor--) {
-    const label=document.createElement("div");
-    label.className="floor-name";
-    label.textContent=`PAV. ${floor}`;
+  const grid = document.getElementById("building-grid");
+  grid.innerHTML = "";
+  for (let floor = 4; floor >= 1; floor--) {
+    const label = document.createElement("div");
+    label.className = "floor-name";
+    label.textContent = `PAV. ${floor}`;
     grid.appendChild(label);
-    const units=document.createElement("div");
-    units.className="floor-units";
-    for(let number=1;number<=4;number++) {
-      const alojamento=`${floor}0${number}`;
-      const resident=alasql("SELECT * FROM militares WHERE alojamento = ?",[alojamento])[0];
-      const button=document.createElement("button");
-      button.className="apt-unit"+(resident?"":" vacant")+(gameState.selectedApartment===alojamento?" selected":"");
-      button.innerHTML=`<strong>${alojamento}</strong><small>${resident?"CADASTRADO":"SEM REGISTRO"}</small>`;
-      button.onclick=()=>selectApartment(alojamento);
+    const units = document.createElement("div");
+    units.className = "floor-units";
+    for (let number = 1; number <= 4; number++) {
+      const alojamento = `${floor}0${number}`;
+      const resident = alasql("SELECT * FROM militares WHERE alojamento = ?", [alojamento])[0];
+      const button = document.createElement("button");
+      button.className = "apt-unit" + (resident ? "" : " vacant") + (gameState.selectedApartment === alojamento ? " selected" : "");
+      button.innerHTML = `<strong>${alojamento}</strong><small>${resident ? "CADASTRADO" : "SEM REGISTRO"}</small>`;
+      button.onclick = () => selectApartment(alojamento);
       units.appendChild(button);
     }
     grid.appendChild(units);
   }
-  if(gameState.selectedApartment) selectApartment(gameState.selectedApartment,false);
+  if (gameState.selectedApartment) selectApartment(gameState.selectedApartment, false);
 }
-function selectApartment(alojamento,rerender=true) {
-  gameState.selectedApartment=alojamento;
-  if(rerender) renderBuilding();
-  const resident=alasql("SELECT * FROM militares WHERE alojamento = ?",[alojamento])[0];
-  const details=document.getElementById("apartment-details");
-  if(!resident) {
-    details.innerHTML=`<div class="details-placeholder"><span>!</span><strong>ALOJAMENTO ${alojamento} SEM CADASTRO</strong><small>Não há militar registrado neste alojamento.</small></div>`;
+function selectApartment(alojamento, rerender = true) {
+  gameState.selectedApartment = alojamento;
+  if (rerender) renderBuilding();
+  const resident = alasql("SELECT * FROM militares WHERE alojamento = ?", [alojamento])[0];
+  const details = document.getElementById("apartment-details");
+  if (!resident) {
+    details.innerHTML = `<div class="details-placeholder"><span>!</span><strong>ALOJAMENTO ${alojamento} SEM CADASTRO</strong><small>Não há militar registrado neste alojamento.</small></div>`;
     return;
   }
-  const auth=alasql("SELECT autorizado FROM lista_hoje WHERE id_doc = ?",[resident.id_doc])[0];
-  const log=alasql("SELECT status_atual FROM logs_portao WHERE id_doc = ?",[resident.id_doc])[0];
-  details.innerHTML=`
+  const auth = alasql("SELECT autorizado FROM lista_hoje WHERE id_doc = ?", [resident.id_doc])[0];
+  const log = alasql("SELECT status_atual FROM logs_portao WHERE id_doc = ?", [resident.id_doc])[0];
+  details.innerHTML = `
     <div class="resident-detail">
       <h3>▰ ${escapeHTML(resident.nome)} <span style="color:#82938a;font-weight:400">/ ALOJ. ${alojamento}</span></h3>
       <div>DOCUMENTO: <b>${escapeHTML(resident.id_doc)}</b></div>
       <div>PATENTE: <b>${escapeHTML(resident.patente)}</b></div>
       <div>QUEPE: <b>${resident.quepe}</b> · ÓCULOS: <b>${resident.oculos}</b></div>
-      <div>AUTORIZAÇÃO: <b class="${auth.autorizado==="Sim"?"status-good":"status-bad"}">${auth.autorizado==="Sim"?"AUTORIZADO":"NÃO AUTORIZADO"}</b></div>
-      <div>PORTÃO: <b>${log.status_atual==="Dentro do quartel"?"DENTRO DO QUARTEL":"FORA DO QUARTEL"}</b></div>
+      <div>AUTORIZAÇÃO: <b class="${auth.autorizado === "Sim" ? "status-good" : "status-bad"}">${auth.autorizado === "Sim" ? "AUTORIZADO" : "NÃO AUTORIZADO"}</b></div>
+      <div>PORTÃO: <b>${log.status_atual === "Dentro do quartel" ? "DENTRO DO QUARTEL" : "FORA DO QUARTEL"}</b></div>
     </div>`;
 }
 function selectMode(mode) {
   if (gameState.modeConfig[mode]) gameState.mode = mode;
 }
 function startGame() {
-  const config=gameState.modeConfig[gameState.mode];
-  gameState.lives=config.lives; gameState.maxLives=config.lives; gameState.queriesRemaining=config.queries; gameState.requiredQueries=config.required;
-  gameState.turn=1; gameState.score=0; gameState.successfulQueries=0; gameState.gameOver=false; gameState.decisionLocked=false;
-  setupDatabase();
+  const config = gameState.modeConfig[gameState.mode];
+  gameState.lives = config.lives; gameState.maxLives = config.lives; gameState.queriesRemaining = config.queries; gameState.requiredQueries = config.required;
+  gameState.successfulQueries = 0;
+  gameState.usedQueries = new Set();
+  gameState.decisionLocked = false;
+  stopDecisionTimer();
+
+  updateSqlProgress(); setupDatabase();
   updateHUD(); nextTurn();
 }
 function updateSqlProgress() {
@@ -482,9 +558,13 @@ function updateSqlProgress() {
 
 function showGameOver(message) {
   document.getElementById("gameover-message").textContent = message || "O comando dispensou você do posto após sucessivas falhas de identificação.";
-  document.getElementById("final-score").textContent=`PONTUAÇÃO FINAL: ${gameState.score}`;
+  document.getElementById("final-score").textContent = `PONTUAÇÃO FINAL: ${gameState.score}`;
   document.getElementById("gameover-modal").classList.add("open");
-  document.getElementById("gameover-modal").setAttribute("aria-hidden","false");
+  const modal = document.getElementById("gameover-modal");
+
+  modal.classList.add("open");
+  modal.classList.add("defeat");
+  modal.setAttribute("aria-hidden", "false");
 }
 function restartGame() {
   clearPendingTimers();
@@ -493,9 +573,11 @@ function restartGame() {
   document.body.classList.remove("exploding");
   const overlay = document.getElementById("explosion-overlay");
   if (overlay) overlay.classList.remove("boom");
-  ["gameover-modal","menu-modal","rules-modal","building-modal"].forEach(id => {
+  ["gameover-modal", "menu-modal", "rules-modal", "building-modal"].forEach(id => {
     const m = document.getElementById(id);
+
     m.classList.remove("open");
+    m.classList.remove("defeat");
     m.setAttribute("aria-hidden", "true");
   });
   rulesFromMenu = false; rulesReturnFocus = null; menuReturnFocus = null;
@@ -505,17 +587,17 @@ function restartGame() {
   document.getElementById("btn-menu").focus();
 }
 function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  return String(value).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-document.getElementById("sql-input").addEventListener("keydown",e=>{if(e.ctrlKey&&e.key==="Enter"){e.preventDefault();runPlayerQuery();}});
-document.getElementById("building-modal").addEventListener("click",e=>{if(e.target.id==="building-modal")closeBuildingModal();});
-document.getElementById("rules-modal").addEventListener("click",e=>{if(e.target.id==="rules-modal")closeRulesModal();});
-document.getElementById("menu-modal").addEventListener("click",e=>{if(e.target.id==="menu-modal")closeMenuModal();});
-document.addEventListener("keydown",e=>{
-  if(e.key!=="Escape") return;
-  if(document.getElementById("rules-modal").classList.contains("open")) closeRulesModal();
-  else if(document.getElementById("menu-modal").classList.contains("open")) closeMenuModal();
+document.getElementById("sql-input").addEventListener("keydown", e => { if (e.ctrlKey && e.key === "Enter") { e.preventDefault(); runPlayerQuery(); } });
+document.getElementById("building-modal").addEventListener("click", e => { if (e.target.id === "building-modal") closeBuildingModal(); });
+document.getElementById("rules-modal").addEventListener("click", e => { if (e.target.id === "rules-modal") closeRulesModal(); });
+document.getElementById("menu-modal").addEventListener("click", e => { if (e.target.id === "menu-modal") closeMenuModal(); });
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (document.getElementById("rules-modal").classList.contains("open")) closeRulesModal();
+  else if (document.getElementById("menu-modal").classList.contains("open")) closeMenuModal();
   else closeBuildingModal();
 });
 
@@ -523,4 +605,13 @@ const params = new URLSearchParams(window.location.search);
 const requestedMode = params.get("mode");
 selectMode(gameState.modeConfig[requestedMode] ? requestedMode : "normal");
 startGame();
+
+if (animationsEnabled()) {
+  document.body.classList.add("game-boot");
+
+  setTimeout(() => {
+    document.body.classList.remove("game-boot");
+  }, 1200);
+}
+
 openRulesModal(true);

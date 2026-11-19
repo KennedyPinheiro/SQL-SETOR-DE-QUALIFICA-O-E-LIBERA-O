@@ -1634,3 +1634,433 @@ body.exploding .topbar {
     font-size: 16px
   }
 }
+/* =========================================
+   ANIMAÇÕES DA INTERFACE — S.Q.L.
+========================================= */
+
+/* Entrada da interface */
+@keyframes game-boot {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+        filter: brightness(.4);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: brightness(1);
+    }
+}
+
+@keyframes panel-enter {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes mark-enter {
+    from {
+        opacity: 0;
+        transform: scale(.8) rotate(-8deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+}
+
+/* Inicialização */
+body.game-boot .topbar {
+    animation: game-boot .65s ease both;
+}
+
+body.game-boot .left-column > *,
+body.game-boot .right-column > * {
+    animation: panel-enter .55s ease both;
+}
+
+body.game-boot .left-column > *:nth-child(2) {
+    animation-delay: .12s;
+}
+
+body.game-boot .left-column > *:nth-child(3) {
+    animation-delay: .22s;
+}
+
+body.game-boot .left-column > *:nth-child(4) {
+    animation-delay: .32s;
+}
+
+body.game-boot .right-column > *:nth-child(1) {
+    animation-delay: .15s;
+}
+
+body.game-boot .right-column > *:nth-child(2) {
+    animation-delay: .25s;
+}
+
+body.game-boot .right-column > *:nth-child(3) {
+    animation-delay: .35s;
+}
+
+/* Retrato e janela de inspeção */
+@keyframes visitor-arrive {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.97);
+        filter: brightness(.5);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: brightness(1);
+    }
+}
+
+.visitor-panel.is-changing .portrait {
+    animation: visitor-arrive .45s ease both;
+}
+
+.visitor-panel.is-changing .visitor-dialogue {
+    animation: panel-enter .4s ease both;
+    animation-delay: .12s;
+}
+
+/* Documento de identidade */
+@keyframes document-reveal {
+    from {
+        opacity: 0;
+        transform: translateX(12px);
+        filter: brightness(.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+        filter: brightness(1);
+    }
+}
+
+.identity-card.is-revealing {
+    animation: document-reveal .45s ease both;
+}
+
+/* Terminal */
+@keyframes terminal-active {
+    0% {
+        box-shadow: 0 12px 30px #0002;
+    }
+
+    50% {
+        box-shadow: 0 0 0 1px #658d7060, 0 12px 30px #0004;
+    }
+
+    100% {
+        box-shadow: 0 12px 30px #0002;
+    }
+}
+
+.terminal-card.is-ready {
+    animation: terminal-active .5s ease;
+}
+
+/* Resultados SQL */
+@keyframes result-appear {
+    from {
+        opacity: 0;
+        transform: translateY(7px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sql-result.is-updating > * {
+    animation: result-appear .3s ease both;
+}
+
+/* Feedback de pontuação */
+@keyframes hud-update {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    45% {
+        transform: scale(1.18);
+        filter: brightness(1.7);
+    }
+
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+.hud strong.is-updating {
+    animation: hud-update .4s ease;
+}
+
+.life-value.is-damaged {
+    animation: life-damage .45s ease;
+}
+
+@keyframes life-damage {
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    20%, 60% {
+        transform: translateX(-3px);
+    }
+
+    40%, 80% {
+        transform: translateX(3px);
+    }
+}
+
+/* Feedback das decisões */
+@keyframes decision-feedback {
+    0% {
+        transform: scale(1);
+    }
+
+    45% {
+        transform: scale(1.025);
+        filter: brightness(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.decision-panel.is-feedback {
+    animation: decision-feedback .4s ease;
+}
+
+/* Toast */
+.toast.show {
+    animation: toast-enter .25s ease both;
+}
+
+@keyframes toast-enter {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+/* =========================================
+   DERROTA — ESTADO DE EMERGÊNCIA
+========================================= */
+
+#gameover-modal.defeat {
+    background: radial-gradient(
+        ellipse at center,
+        #321b20e8 0%,
+        #100e11f2 65%,
+        #080a0bf5 100%
+    );
+    backdrop-filter: blur(5px);
+}
+
+#gameover-modal.defeat .gameover-modal {
+    position: relative;
+    border: 1px solid #a84c49;
+    background: linear-gradient(
+        145deg,
+        #292124,
+        #171719 65%,
+        #211719
+    );
+    box-shadow:
+        0 0 0 1px #c7655e22,
+        0 0 45px #c7655e30,
+        0 25px 80px #000b;
+    animation: defeat-enter .65s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes defeat-enter {
+    0% {
+        opacity: 0;
+        transform: translateY(25px) scale(.94);
+        filter: brightness(2);
+    }
+
+    60% {
+        opacity: 1;
+        transform: translateY(-3px) scale(1.01);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: brightness(1);
+    }
+}
+
+/* Faixa de emergência */
+#gameover-modal.defeat .gameover-modal::before {
+    content: "⚠  ALERTA DE SEGURANÇA — POSTO COMPROMETIDO  ⚠";
+    display: block;
+    padding: 9px 12px;
+    text-align: center;
+    background: #702f32;
+    border-bottom: 1px solid #c7655e;
+    color: #ffe1dc;
+    font: 700 10px var(--mono);
+    letter-spacing: 1.5px;
+    animation: emergency-blink 1.5s ease-in-out infinite;
+}
+
+@keyframes emergency-blink {
+    50% {
+        background: #492427;
+        color: #d99a93;
+    }
+}
+
+/* Cabeçalho */
+#gameover-modal.defeat .modal-header {
+    border-bottom-color: #663638;
+    background: #21191c;
+}
+
+#gameover-modal.defeat .modal-header small {
+    color: #d17a70;
+    letter-spacing: 1.5px;
+}
+
+#gameover-modal.defeat .modal-header h2 {
+    color: #f0b0a8;
+    text-shadow: 0 0 18px #c7655e55;
+}
+
+/* Selo central */
+#gameover-modal.defeat .gameover-mark {
+    width: 88px;
+    height: 88px;
+    border: 2px solid #bd5b56;
+    background: radial-gradient(circle, #592c30, #24191c);
+    color: #ffe0da;
+    font-size: 17px;
+    box-shadow:
+        0 0 0 7px #c7655e12,
+        0 0 35px #c7655e55;
+    animation: defeat-mark .8s ease .25s both;
+}
+
+@keyframes defeat-mark {
+    from {
+        opacity: 0;
+        transform: scale(.5) rotate(-15deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+}
+
+/* Mensagem */
+#gameover-modal.defeat .gameover-body {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+#gameover-modal.defeat .gameover-body p {
+    max-width: 360px;
+    margin: 0 auto;
+    color: #c3b5b5;
+    line-height: 1.7;
+}
+
+/* Pontuação */
+#gameover-modal.defeat .gameover-body > strong {
+    margin-top: 22px;
+    padding: 13px 22px;
+    border-color: #a65b48;
+    background: linear-gradient(135deg, #38271f, #2b1c1d);
+    color: #ffdf9e;
+    font-size: 16px;
+    box-shadow: 0 0 22px #d7a85c18;
+}
+
+/* Rodapé */
+#gameover-modal.defeat .modal-footer {
+    border-top-color: #663638;
+    background: #171719;
+}
+
+#gameover-modal.defeat .modal-footer > span {
+    color: #d17a70;
+    letter-spacing: 1px;
+}
+
+#gameover-modal.defeat .button-green {
+    background: #713b3b;
+    border-color: #a65b55;
+}
+
+#gameover-modal.defeat .button-green:hover {
+    background: #914c49;
+}
+
+/* Redução de movimento */
+body.reduce-motion .game-boot *,
+body.reduce-motion .game-boot *::before,
+body.reduce-motion .game-boot *::after {
+    animation: none !important;
+}
+
+body.reduce-motion .visitor-panel.is-changing *,
+body.reduce-motion .identity-card.is-revealing,
+body.reduce-motion .terminal-card.is-ready,
+body.reduce-motion .sql-result.is-updating > *,
+body.reduce-motion .hud strong.is-updating,
+body.reduce-motion .life-value.is-damaged,
+body.reduce-motion .decision-panel.is-feedback {
+    animation: none !important;
+}
+
+body.reduce-motion #gameover-modal.defeat .gameover-modal,
+body.reduce-motion #gameover-modal.defeat .gameover-mark {
+    animation: none !important;
+}
+
+body.reduce-motion #gameover-modal.defeat .gameover-modal::before {
+    animation: none !important;
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+    body:not(.reduce-motion) .game-boot *,
+    body:not(.reduce-motion) .visitor-panel.is-changing *,
+    body:not(.reduce-motion) .identity-card.is-revealing,
+    body:not(.reduce-motion) .terminal-card.is-ready,
+    body:not(.reduce-motion) .sql-result.is-updating > *,
+    body:not(.reduce-motion) .hud strong.is-updating,
+    body:not(.reduce-motion) .life-value.is-damaged,
+    body:not(.reduce-motion) .decision-panel.is-feedback,
+    body:not(.reduce-motion) #gameover-modal.defeat .gameover-modal,
+    body:not(.reduce-motion) #gameover-modal.defeat .gameover-mark {
+        animation: none !important;
+    }
+}
