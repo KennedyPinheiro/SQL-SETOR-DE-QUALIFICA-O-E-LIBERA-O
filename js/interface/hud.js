@@ -37,22 +37,15 @@ function updateHUD() {
 ======================================== */
 
 function updateQueriesHUD() {
-  const queriesLeft = document.getElementById("queries-left");
+  const queriesLeft =
+    document.getElementById("queries-left");
 
   if (queriesLeft) {
     queriesLeft.textContent =
       `${gameState.queriesRemaining} CONSULTAS RESTANTES`;
   }
 
-  const executeButton =
-    document.getElementById("btn-exec-sql");
-
-  if (executeButton) {
-    executeButton.disabled =
-      gameState.queriesRemaining <= 0 ||
-      gameState.decisionLocked ||
-      gameState.gameOver;
-  }
+  updateSqlButton();
 }
 
 
@@ -61,7 +54,8 @@ function updateQueriesHUD() {
 ======================================== */
 
 function updateSqlProgress() {
-  const progress = document.getElementById("sql-progress");
+  const progress =
+    document.getElementById("sql-progress");
 
   if (progress) {
     progress.textContent =
@@ -79,22 +73,22 @@ function updateSqlProgress() {
   }
 
   /* ========================================
-     VERIFICAÇÃO DE LIBERAÇÃO DA DECISÃO
+     LIBERAÇÃO DA DECISÃO
   ======================================== */
 
   const ready =
     gameState.queriesRemaining <= 0 ||
     gameState.successfulQueries >= gameState.requiredQueries;
 
+  const locked =
+    gameState.decisionLocked ||
+    gameState.gameOver;
+
   const approve =
     document.getElementById("btn-approve");
 
   const deny =
     document.getElementById("btn-deny");
-
-  const locked =
-    gameState.decisionLocked ||
-    gameState.gameOver;
 
   if (approve) {
     approve.disabled = !ready || locked;
@@ -104,15 +98,22 @@ function updateSqlProgress() {
     deny.disabled = !ready || locked;
   }
 
-  /* ========================================
-     ATUALIZAÇÃO DO BOTÃO SQL
-  ======================================== */
+  updateSqlButton();
+}
 
+
+/* ========================================
+   CONTROLE DO BOTÃO SQL
+======================================== */
+
+function updateSqlButton() {
   const executeButton =
     document.getElementById("btn-exec-sql");
 
-  if (executeButton) {
-    executeButton.disabled =
-      gameState.queriesRemaining <= 0 || locked;
-  }
+  if (!executeButton) return;
+
+  executeButton.disabled =
+    gameState.queriesRemaining <= 0 ||
+    gameState.decisionLocked ||
+    gameState.gameOver;
 }

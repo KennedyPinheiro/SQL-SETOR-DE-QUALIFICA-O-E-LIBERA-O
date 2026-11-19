@@ -12,6 +12,10 @@ function renderVisitorUI() {
 
   if (!v) return;
 
+  /* ========================================
+     IDENTIFICAÇÃO DO VISITANTE
+  ======================================== */
+
   const presentedId = document.getElementById("presented-id");
 
   if (presentedId) {
@@ -38,6 +42,7 @@ function renderVisitorUI() {
     `;
   }
 
+
   /* ========================================
      CAMPO DE CONSULTA SQL
   ======================================== */
@@ -52,11 +57,13 @@ function renderVisitorUI() {
       "-- Exemplo: SELECT * FROM militares;";
   }
 
+
   /* ========================================
      RETRATO
   ======================================== */
 
   renderPortrait(v);
+
 
   /* ========================================
      FALA DO VISITANTE
@@ -73,14 +80,18 @@ function renderVisitorUI() {
 
   if (speech) {
     speech.textContent =
-      speechLines[Math.floor(Math.random() * speechLines.length)];
+      speechLines[
+        Math.floor(Math.random() * speechLines.length)
+      ];
   }
+
 
   /* ========================================
      DESTINO DO INTERFONE
   ======================================== */
 
-  const destination = document.getElementById("intercom-destination");
+  const destination =
+    document.getElementById("intercom-destination");
 
   if (destination) {
     destination.textContent = `ALOJ. ${v.alojamento}`;
@@ -99,10 +110,10 @@ function renderPortrait(v) {
 
   if (!avatar) return;
 
-  /* 
-     Mantém a aparência base do militar verdadeiro.
-     As características visuais do visitante são
-     aplicadas sobre esse retrato.
+  /*
+    Mantém a aparência base do militar verdadeiro.
+    As características visuais do visitante são
+    aplicadas sobre esse retrato.
   */
 
   const base = gameState.realNeighbor || v;
