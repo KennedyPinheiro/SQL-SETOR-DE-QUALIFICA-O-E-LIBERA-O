@@ -2,6 +2,7 @@
    SISTEMA DE VISITANTES — S.Q.L.
 ======================================== */
 
+
 /* ========================================
    GERAÇÃO DE VISITANTE
 ======================================== */
@@ -23,6 +24,10 @@ function generateVisitor() {
     [base.id_doc]
   )[0];
 
+  /* ========================================
+     ESTADO INICIAL DO VISITANTE
+  ======================================== */
+
   gameState.realNeighbor = { ...base };
   gameState.currentVisitor = { ...base };
 
@@ -33,9 +38,12 @@ function generateVisitor() {
   gameState.neighborAlreadyInside =
     log.status_atual === "Dentro do quartel";
 
+
   /* ========================================
      CASOS PRIORITÁRIOS
   ======================================== */
+
+  // Residente que já está dentro do quartel
 
   if (gameState.neighborAlreadyInside) {
     gameState.isImpostor = true;
@@ -47,6 +55,8 @@ function generateVisitor() {
     return;
   }
 
+  // Residente sem autorização
+
   if (auth.autorizado === "Nao") {
     gameState.isImpostor = true;
     gameState.visitorCase = "unauthorized";
@@ -56,6 +66,7 @@ function generateVisitor() {
 
     return;
   }
+
 
   /* ========================================
      CHANCE DE IMPOSTOR
@@ -80,54 +91,65 @@ function generateVisitor() {
 
     gameState.visitorCase = flaw;
 
+
     /* ========================================
        APLICA IRREGULARIDADE
     ======================================== */
 
     switch (flaw) {
+
       case "forged_document":
+
         gameState.currentVisitor.id_doc = "9999-XX";
 
         gameState.impostorReason =
-          "Documento falsificado.";
+          "Número de identificação falsificado.";
 
         break;
 
+
       case "wrong_apartment":
+
         gameState.currentVisitor.alojamento = "404";
 
         gameState.impostorReason =
-          "Alojamento incompatível com o registro.";
+          "Alojamento divergente do cadastro oficial.";
 
         break;
 
+
       case "physical_anomaly":
+
         gameState.currentVisitor.pele = "Esverdeada";
 
         gameState.impostorReason =
-          "Anomalia física detectada.";
+          "Anomalia física: coloração da pele divergente.";
 
         break;
 
+
       case "hat_mismatch":
+
         gameState.currentVisitor.quepe =
           gameState.currentVisitor.quepe === "Sim"
             ? "Nao"
             : "Sim";
 
         gameState.impostorReason =
-          "Inconsistência no uso do quepe.";
+          "Aparência divergente: uso de quepe.";
 
         break;
 
+
       case "glasses_mismatch":
+
         gameState.currentVisitor.oculos =
           gameState.currentVisitor.oculos === "Sim"
             ? "Nao"
             : "Sim";
 
         gameState.impostorReason =
-          "Inconsistência na característica dos óculos.";
+          "Aparência divergente: uso de óculos.";
 
         break;
     }

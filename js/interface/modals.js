@@ -6,6 +6,7 @@ let rulesReturnFocus = null;
 let rulesFromMenu = false;
 let menuReturnFocus = null;
 
+
 /* ========================================
    MODAL DE REGRAS
 ======================================== */
@@ -16,46 +17,72 @@ function openRulesModal(isIntro = false, fromMenu = false) {
   const plural = (n, one, many) =>
     `${n} ${n === 1 ? one : many}`;
 
-  document.getElementById("rules-mode").innerHTML = `
-    <span class="rules-mode-name">MODO ${cfg.label}</span>
-    <span><b>${plural(cfg.lives, "vida", "vidas")}</b></span>
-    <span><b>${plural(cfg.queries, "consulta", "consultas")}</b> por solicitante</span>
-    <span><b>${plural(cfg.required, "consulta válida", "consultas válidas")}</b> para decidir</span>`;
+  const rulesMode = document.getElementById("rules-mode");
+
+  if (rulesMode) {
+    rulesMode.innerHTML = `
+      <span class="rules-mode-name">MODO ${cfg.label}</span>
+      <span><b>${plural(cfg.lives, "vida", "vidas")}</b></span>
+      <span><b>${plural(cfg.queries, "consulta", "consultas")}</b> por solicitante</span>
+      <span><b>${plural(cfg.required, "consulta válida", "consultas válidas")}</b> para decidir</span>
+    `;
+  }
 
   rulesFromMenu = fromMenu === true;
 
-  document.getElementById("btn-rules-close").textContent =
-    isIntro === true
-      ? "COMEÇAR TURNO"
-      : rulesFromMenu
-        ? "VOLTAR AO MENU"
-        : "VOLTAR AO JOGO";
+  const closeButton = document.getElementById("btn-rules-close");
 
-  rulesReturnFocus = rulesFromMenu ? null : document.activeElement;
+  if (closeButton) {
+    closeButton.textContent =
+      isIntro
+        ? "COMEÇAR TURNO"
+        : rulesFromMenu
+          ? "VOLTAR AO MENU"
+          : "VOLTAR AO JOGO";
+  }
+
+  rulesReturnFocus = rulesFromMenu
+    ? null
+    : document.activeElement;
 
   const modal = document.getElementById("rules-modal");
+
+  if (!modal) return;
 
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
 
-  modal.querySelector(".rules-body").scrollTop = 0;
+  const rulesBody = modal.querySelector(".rules-body");
 
-  document.getElementById("btn-rules-close").focus();
+  if (rulesBody) {
+    rulesBody.scrollTop = 0;
+  }
+
+  if (closeButton) {
+    closeButton.focus();
+  }
 }
+
 
 function closeRulesModal() {
   const modal = document.getElementById("rules-modal");
 
-  if (!modal.classList.contains("open")) return;
+  if (!modal || !modal.classList.contains("open")) return;
 
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
 
+  /* Retorno ao menu */
+
   if (rulesFromMenu) {
     rulesFromMenu = false;
+
     openMenuModal(true);
+
     return;
   }
+
+  /* Retorno ao elemento anterior */
 
   if (rulesReturnFocus && rulesReturnFocus.focus) {
     rulesReturnFocus.focus();
@@ -63,6 +90,7 @@ function closeRulesModal() {
 
   rulesReturnFocus = null;
 }
+
 
 /* ========================================
    MODAL DO MENU
@@ -75,21 +103,30 @@ function openMenuModal(keepFocusOrigin = false) {
 
   const modal = document.getElementById("menu-modal");
 
+  if (!modal) return;
+
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
 
-  document.getElementById("btn-menu-resume").focus();
+  const resumeButton = document.getElementById("btn-menu-resume");
+
+  if (resumeButton) {
+    resumeButton.focus();
+  }
 }
+
 
 function closeMenuModal() {
   const modal = document.getElementById("menu-modal");
 
-  if (!modal.classList.contains("open")) return;
+  if (!modal || !modal.classList.contains("open")) return;
 
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
 
-  const target = menuReturnFocus || document.getElementById("btn-menu");
+  const target =
+    menuReturnFocus ||
+    document.getElementById("btn-menu");
 
   if (target && target.focus) {
     target.focus();
@@ -98,6 +135,7 @@ function closeMenuModal() {
   menuReturnFocus = null;
 }
 
+
 /* ========================================
    NAVEGAÇÃO MENU / REGRAS
 ======================================== */
@@ -105,39 +143,60 @@ function closeMenuModal() {
 function openRulesFromMenu() {
   const menu = document.getElementById("menu-modal");
 
-  menu.classList.remove("open");
-  menu.setAttribute("aria-hidden", "true");
+  if (menu) {
+    menu.classList.remove("open");
+    menu.setAttribute("aria-hidden", "true");
+  }
 
   openRulesModal(false, true);
 }
 
+
 function exitToHome() {
   window.location.href = "index.html";
 }
+
 
 /* ========================================
    GAME OVER
 ======================================== */
 
 function showGameOver(message) {
-  document.getElementById("gameover-message").textContent =
-    message || "O comando dispensou você do posto após sucessivas falhas de identificação.";
+  const messageElement =
+    document.getElementById("gameover-message");
 
-  document.getElementById("final-score").textContent =
-    `PONTUAÇÃO FINAL: ${gameState.score}`;
+  const scoreElement =
+    document.getElementById("final-score");
 
-  const modal = document.getElementById("gameover-modal");
+  const modal =
+    document.getElementById("gameover-modal");
+
+  if (!modal) return;
+
+  if (messageElement) {
+    messageElement.textContent =
+      message ||
+      "O comando dispensou você do posto após sucessivas falhas de identificação.";
+  }
+
+  if (scoreElement) {
+    scoreElement.textContent =
+      `PONTUAÇÃO FINAL: ${gameState.score}`;
+  }
 
   modal.classList.add("open");
   modal.classList.add("defeat");
   modal.setAttribute("aria-hidden", "false");
 }
 
+
 /* ========================================
    REINICIALIZAÇÃO DA PARTIDA
 ======================================== */
 
 function restartGame() {
+  /* Limpa temporizadores */
+
   clearPendingTimers();
   stopDecisionTimer();
 
@@ -146,36 +205,63 @@ function restartGame() {
     explosionTimeoutId = null;
   }
 
+  /* Remove efeitos de explosão */
+
   document.body.classList.remove("exploding");
 
-  const overlay = document.getElementById("explosion-overlay");
+  const overlay =
+    document.getElementById("explosion-overlay");
 
   if (overlay) {
     overlay.classList.remove("boom");
   }
 
-  [
+  /* Fecha todos os modais */
+
+  const modalIds = [
     "gameover-modal",
     "menu-modal",
     "rules-modal",
     "building-modal"
-  ].forEach(id => {
+  ];
+
+  modalIds.forEach(id => {
     const modal = document.getElementById(id);
+
+    if (!modal) return;
 
     modal.classList.remove("open");
     modal.classList.remove("defeat");
     modal.setAttribute("aria-hidden", "true");
   });
 
+  /* Reseta controles de foco */
+
   rulesFromMenu = false;
   rulesReturnFocus = null;
   menuReturnFocus = null;
 
-  document.getElementById("toast-message").classList.remove("show");
+  /* Limpa notificações */
+
+  const toast = document.getElementById("toast-message");
+
+  if (toast) {
+    toast.classList.remove("show");
+  }
+
+  /* Reseta seleção de alojamento */
 
   gameState.selectedApartment = null;
 
+  /* Reinicia o jogo */
+
   startGame();
 
-  document.getElementById("btn-menu").focus();
+  /* Recupera o foco */
+
+  const menuButton = document.getElementById("btn-menu");
+
+  if (menuButton) {
+    menuButton.focus();
+  }
 }

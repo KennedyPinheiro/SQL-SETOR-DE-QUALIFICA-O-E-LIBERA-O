@@ -2,72 +2,51 @@
    SISTEMA DE DECISÃO — S.Q.L.
 ======================================== */
 
-/* ========================================
-   NOTIFICAÇÕES
-======================================== */
-
-function toastMessage(message, success) {
-  const toast = document.getElementById("toast");
-
-  if (!toast) return;
-
-  toast.textContent = message;
-
-  toast.className = "toast " + (success ? "success" : "error");
-
-  toast.classList.add("show");
-
-  later(() => {
-    toast.classList.remove("show");
-  }, 2500);
-}
 
 /* ========================================
    TOMADA DE DECISÃO
 ======================================== */
 
 function makeDecision(approved) {
-  if (
-    gameState.gameOver ||
-    gameState.decisionLocked ||
-    !gameState.currentVisitor
-  ) return;
+  if (gameState.gameOver || gameState.decisionLocked) return;
 
   gameState.decisionLocked = true;
 
   stopDecisionTimer();
 
-  const correct = gameState.isImpostor
-    ? !approved
-    : approved;
+  const toast = document.getElementById("toast-message");
 
   /* ========================================
-     DECISÃO CORRETA
+     MILITAR LEGÍTIMO AUTORIZADO
   ======================================== */
 
-  if (correct) {
-    if (gameState.isImpostor) {
-      gameState.score += 150;
+  if (approved && !gameState.isImpostor) {
+    gameState.score += 100;
 
-      toastMessage(
-        "IMPOSTOR IDENTIFICADO! +150 PONTOS",
-        true
-      );
-    } else {
-      gameState.score += 100;
+    toastMessage(
+      "MILITAR LEGÍTIMO AUTORIZADO. +100 PONTOS",
+      true
+    );
 
-      toastMessage(
-        "ENTRADA AUTORIZADA! +100 PONTOS",
-        true
-      );
+    alasql(
+      "UPDATE logs_portao SET status_atual = 'Dentro do quartel' WHERE id_doc = ?",
+      [gameState.realNeighbor.id_doc]
+    );
+  }
 
-      if (approved) {
-        alasql(
-          "UPDATE logs_portao SET status_atual = 'Dentro do quartel' WHERE id_doc = ?",
-          [gameState.currentVisitor.id_doc]
-        );
-      }
-    }
+  /* ========================================
+     INFILTRADO IDENTIFICADO
+  ======================================== */
+
+  else if (!approved && gameState.isImpostor) {
+    gameState.score += 150;
+
+    toastMessage(
+      "INFILTRADO IDENTIFICADO. " +
+      gameState.impostorReason +
+      " +150 PONTOS",
+      true
+    );
   }
 
   /* ========================================
@@ -77,58 +56,78 @@ function makeDecision(approved) {
   else {
     gameState.lives--;
 
-    if (gameState.isImpostor && approved) {
-      toastMessage(
-        "IMPOSTOR LIBERADO! FALHA DE SEGURANÇA.",
-        false
-      );
-    } else {
-      toastMessage(
-        "RESIDENTE LEGÍTIMO NEGADO! ERRO DE IDENTIFICAÇÃO.",
-        false
-      );
-    }
-
-    animateElement(
-      document.querySelector(".visitor-panel"),
-      "is-shaking",
-      500
-    );
-  }
-
-  /* ========================================
-     INVESTIGAÇÃO INCOMPLETA
-  ======================================== */
-
-  if (
-    gameState.successfulQueries <
-    gameState.requiredQueries
-  ) {
     toastMessage(
-      "INVESTIGAÇÃO INCOMPLETA! DECISÃO PRECIPITADA.",
+      approved
+        ? `FALHA: UM INFILTRADO ENTROU. ${gameState.impostorReason}`
+        : "ERRO: VOCÊ NEGOU A ENTRADA DE UM MILITAR LEGÍTIMO.",
       false
     );
   }
 
   /* ========================================
-     ATUALIZA INTERFACE
+     AVANÇO DO TURNO
+  ======================================== */
+
+  gameState.turn++;
+
+  /* ========================================
+     INVESTIGAÇÃO INCOMPLETA
+  ======================================== */
+
+  if (gameState.successfulQueries < gameState.requiredQueries) {
+    toast.textContent +=
+      " | INVESTIGAÇÃO INCOMPLETA: mínimo de consultas válidas não atingido.";
+  }
+
+  /* ========================================
+     ATUALIZA HUD
   ======================================== */
 
   updateHUD();
+
+  /* ========================================
+     ANIMAÇÕES
+  ======================================== */
+
+  animateElement(
+    document.getElementById("hud-score"),
+    "is-updating",
+    450
+  );
+
+  if (gameState.lives < gameState.maxLives) {
+    animateElement(
+      document.getElementById("hud-lives"),
+      "is-damaged",
+      500
+    );
+  }
+
+  animateElement(
+    document.querySelector(".decision-panel"),
+    "is-feedback",
+    450
+  );
+
+  /* ========================================
+     BLOQUEIO DOS BOTÕES
+  ======================================== */
 
   document.getElementById("btn-approve").disabled = true;
   document.getElementById("btn-deny").disabled = true;
 
   /* ========================================
-     FIM DE JOGO
+     GAME OVER
   ======================================== */
 
   if (gameState.lives <= 0) {
+    gameState.gameOver = true;
+
     later(() => {
       showGameOver(
         "Você perdeu todas as vidas. O setor de segurança foi comprometido."
       );
-    }, 1200);
+    }, 1400);
 
     return;
   }
@@ -138,6 +137,30 @@ function makeDecision(approved) {
   ======================================== */
 
   later(() => {
+    toast.classList.remove("show");
     nextTurn();
   }, 2300);
+}
+
+
+/* ========================================
+   SISTEMA DE NOTIFICAÇÕES
+======================================== */
+
+function toastMessage(message, success) {
+  const toast = document.getElementById("toast-message");
+
+  if (!toast) return;
+
+  toast.textContent = message;
+
+  toast.style.borderColor = success
+    ? "#4caf50"
+    : "#c7655e";
+
+  toast.style.color = success
+    ? "#4caf50"
+    : "#c7655e";
+
+  toast.classList.add("show");
 }

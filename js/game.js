@@ -2,6 +2,7 @@
    CONTROLE PRINCIPAL — S.Q.L.
 ======================================== */
 
+
 /* ========================================
    FLUXO DE TURNOS
 ======================================== */
@@ -9,42 +10,71 @@
 function nextTurn() {
   if (gameState.gameOver) return;
 
-  gameState.queriesRemaining =
-    gameState.modeConfig[gameState.mode].queries;
+  const config = gameState.modeConfig[gameState.mode];
 
-  gameState.requiredQueries =
-    gameState.modeConfig[gameState.mode].required;
+  /* Reinicia os dados da investigação */
 
+  gameState.queriesRemaining = config.queries;
+  gameState.requiredQueries = config.required;
   gameState.successfulQueries = 0;
   gameState.usedQueries = new Set();
   gameState.decisionLocked = false;
 
-  updateSqlProgress();
+  /* Reinicia cronômetro */
+
   stopDecisionTimer();
 
-  document.getElementById("btn-call").disabled = false;
+  /* Atualiza controles */
+
+  const callButton = document.getElementById("btn-call");
+  const intercomResult = document.getElementById("intercom-result");
+  const destination = document.getElementById("intercom-destination");
+  const resultArea = document.getElementById("sql-result-area");
+  const resultStatus = document.getElementById("result-status");
+  const approveButton = document.getElementById("btn-approve");
+  const denyButton = document.getElementById("btn-deny");
+
+  if (callButton) callButton.disabled = false;
+
+  if (intercomResult) {
+    intercomResult.textContent =
+      "Canal disponível. Nenhuma chamada realizada.";
+  }
+
+  if (destination) {
+    destination.textContent = "ALOJ. ---";
+  }
+
+  if (resultArea) {
+    resultArea.innerHTML = `
+      <p class="empty-result">
+        Nenhuma consulta executada nesta inspeção.
+      </p>
+    `;
+  }
+
+  if (resultStatus) {
+    resultStatus.textContent = "AGUARDANDO COMANDO";
+  }
+
+  if (approveButton) approveButton.disabled = true;
+  if (denyButton) denyButton.disabled = true;
+
+  /* Atualiza HUD */
 
   updateQueriesHUD();
+  updateSqlProgress();
 
-  document.getElementById("intercom-result").textContent =
-    "Canal disponível. Nenhuma chamada realizada.";
-
-  document.getElementById("intercom-destination").textContent =
-    "ALOJ. ---";
-
-  document.getElementById("sql-result-area").innerHTML =
-    '<p class="empty-result">Nenhuma consulta executada nesta inspeção.</p>';
-
-  document.getElementById("result-status").textContent =
-    "AGUARDANDO COMANDO";
-
-  document.getElementById("btn-approve").disabled = true;
-  document.getElementById("btn-deny").disabled = true;
+  /* Gera visitante */
 
   generateVisitor();
 
+  /* Atualiza interface */
+
   renderVisitorUI();
   updateHUD();
+
+  /* Animações de entrada */
 
   animateElement(
     document.querySelector(".visitor-panel"),
@@ -59,6 +89,7 @@ function nextTurn() {
   );
 }
 
+
 /* ========================================
    SELEÇÃO DE DIFICULDADE
 ======================================== */
@@ -69,6 +100,7 @@ function selectMode(mode) {
   }
 }
 
+
 /* ========================================
    INICIALIZAÇÃO DA PARTIDA
 ======================================== */
@@ -76,78 +108,135 @@ function selectMode(mode) {
 function startGame() {
   const config = gameState.modeConfig[gameState.mode];
 
+  /* Reinicia estado geral */
+
+  gameState.score = 0;
   gameState.lives = config.lives;
   gameState.maxLives = config.lives;
+  gameState.turn = 1;
+
   gameState.queriesRemaining = config.queries;
   gameState.requiredQueries = config.required;
 
   gameState.successfulQueries = 0;
   gameState.usedQueries = new Set();
+
+  gameState.currentVisitor = null;
+  gameState.realNeighbor = null;
+  gameState.isImpostor = false;
+  gameState.visitorCase = null;
+  gameState.impostorReason = "";
+  gameState.neighborAlreadyInside = false;
+
+  gameState.gameOver = false;
   gameState.decisionLocked = false;
+  gameState.selectedApartment = null;
+
+  /* Limpa cronômetro */
 
   stopDecisionTimer();
 
-  updateSqlProgress();
+  /* Prepara banco de dados */
 
   setupDatabase();
 
+  /* Atualiza interface */
+
   updateHUD();
+  updateQueriesHUD();
+  updateSqlProgress();
+
+  /* Inicia primeiro turno */
 
   nextTurn();
 }
+
 
 /* ========================================
    EVENTOS DO JOGO
 ======================================== */
 
-/* Executar consulta com Ctrl + Enter */
 
-document.getElementById("sql-input").addEventListener("keydown", e => {
-  if (e.ctrlKey && e.key === "Enter") {
-    e.preventDefault();
-    runPlayerQuery();
+/* ========================================
+   EXECUTAR SQL COM CTRL + ENTER
+======================================== */
+
+const sqlInput = document.getElementById("sql-input");
+
+if (sqlInput) {
+  sqlInput.addEventListener("keydown", event => {
+    if (event.ctrlKey && event.key === "Enter") {
+      event.preventDefault();
+      runPlayerQuery();
+    }
+  });
+}
+
+
+/* ========================================
+   FECHAMENTO DE MODAIS
+======================================== */
+
+function registerModalOutsideClick(modalId, closeFunction) {
+  const modal = document.getElementById(modalId);
+
+  if (!modal) return;
+
+  modal.addEventListener("click", event => {
+    if (event.target === modal) {
+      closeFunction();
+    }
+  });
+}
+
+registerModalOutsideClick(
+  "building-modal",
+  closeBuildingModal
+);
+
+registerModalOutsideClick(
+  "rules-modal",
+  closeRulesModal
+);
+
+registerModalOutsideClick(
+  "menu-modal",
+  closeMenuModal
+);
+
+
+/* ========================================
+   TECLA ESCAPE
+======================================== */
+
+document.addEventListener("keydown", event => {
+  if (event.key !== "Escape") return;
+
+  const rulesModal = document.getElementById("rules-modal");
+  const menuModal = document.getElementById("menu-modal");
+  const buildingModal = document.getElementById("building-modal");
+
+  /* Prioridade: regras */
+
+  if (rulesModal?.classList.contains("open")) {
+    closeRulesModal();
+    return;
   }
-});
 
-/* Fechar modal de edifício ao clicar fora */
+  /* Menu */
 
-document.getElementById("building-modal").addEventListener("click", e => {
-  if (e.target.id === "building-modal") {
+  if (menuModal?.classList.contains("open")) {
+    closeMenuModal();
+    return;
+  }
+
+  /* Prédio */
+
+  if (buildingModal?.classList.contains("open")) {
     closeBuildingModal();
   }
 });
 
-/* Fechar modal de regras ao clicar fora */
-
-document.getElementById("rules-modal").addEventListener("click", e => {
-  if (e.target.id === "rules-modal") {
-    closeRulesModal();
-  }
-});
-
-/* Fechar modal de menu ao clicar fora */
-
-document.getElementById("menu-modal").addEventListener("click", e => {
-  if (e.target.id === "menu-modal") {
-    closeMenuModal();
-  }
-});
-
-/* Tecla ESC */
-
-document.addEventListener("keydown", e => {
-  if (e.key !== "Escape") return;
-
-  if (document.getElementById("rules-modal").classList.contains("open")) {
-    closeRulesModal();
-  } else if (
-    document.getElementById("menu-modal").classList.contains("open")
-  ) {
-    closeMenuModal();
-  } else {
-    closeBuildingModal();
-  }
-});
 
 /* ========================================
    BOOT DO JOGO
@@ -162,7 +251,10 @@ selectMode(
     : "normal"
 );
 
+/* Inicializa partida */
+
 startGame();
+
 
 /* ========================================
    ANIMAÇÃO INICIAL
@@ -175,6 +267,7 @@ if (animationsEnabled()) {
     document.body.classList.remove("game-boot");
   }, 1200);
 }
+
 
 /* ========================================
    ABERTURA DAS REGRAS
