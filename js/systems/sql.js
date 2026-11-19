@@ -35,6 +35,15 @@ function showSqlMessage(message, type = "error") {
 function runPlayerQuery() {
   if (gameState.gameOver || gameState.decisionLocked) return;
 
+  if (gameState.activeEvent === "system_failure") {
+    showSqlMessage(
+      "SISTEMA FORA DO AR: consultas temporariamente indisponíveis.",
+      "error"
+    );
+
+    return;
+  }
+
   if (gameState.queriesRemaining <= 0) {
     showSqlMessage(
       "Limite de consultas atingido. Tome uma decisão.",

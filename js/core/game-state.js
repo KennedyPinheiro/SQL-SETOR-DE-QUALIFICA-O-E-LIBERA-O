@@ -66,6 +66,16 @@ const gameState = {
     visitorFlaws: [],
     neighborAlreadyInside: false,
 
+    // Eventos aleatórios
+    activeEvent: null,
+    eventData: null, eventHistory: [],
+    eventEffects: {
+        extraVerification: false,
+        priorityVisitor: false,
+        restrictedQueries: false,
+        alteredAuthorization: false
+    },
+
     /* Controle da partida */
 
     gameOver: false,

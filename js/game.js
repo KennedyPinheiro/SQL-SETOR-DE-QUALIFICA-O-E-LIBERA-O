@@ -73,6 +73,9 @@ function nextTurn() {
 
   generateVisitor();
 
+  /* Sorteia evento aleatório */
+
+  triggerRandomEvent();
   /* Atualiza interface */
 
   renderVisitorUI();

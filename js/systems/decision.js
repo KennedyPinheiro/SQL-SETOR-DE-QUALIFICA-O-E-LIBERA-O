@@ -65,7 +65,24 @@ function makeDecision(approved) {
       investigationBonus = 25;
     }
 
-    const totalPoints = basePoints + investigationBonus;
+    const flaws = gameState.visitorFlaws?.length
+      ? gameState.visitorFlaws
+      : [gameState.visitorCase];
+
+    const discoveredCount = flaws.filter(
+      flaw => gameState.discoveredEvidence.has(flaw)
+    ).length;
+
+    const completeInvestigationBonus =
+      flaws.length > 0 && discoveredCount === flaws.length
+        ? 100
+        : 0;
+
+    const totalPoints =
+      basePoints +
+      investigationBonus +
+      completeInvestigationBonus;
+
     gameState.score += totalPoints;
 
     /* Feedback */
@@ -76,6 +93,9 @@ function makeDecision(approved) {
       ` +${basePoints} PONTOS` +
       (investigationBonus > 0
         ? ` +${investigationBonus} BÔNUS DE INVESTIGAÇÃO`
+        : "") +
+      (completeInvestigationBonus > 0
+        ? ` +${completeInvestigationBonus} BÔNUS POR INVESTIGAÇÃO COMPLETA`
         : ""),
       true
     );
@@ -107,8 +127,10 @@ function makeDecision(approved) {
   ======================================== */
 
   if (gameState.successfulQueries < gameState.requiredQueries) {
+    gameState.score = Math.max(0, gameState.score - 50);
+
     toast.textContent +=
-      " | INVESTIGAÇÃO INCOMPLETA: mínimo de consultas válidas não atingido.";
+      " | INVESTIGAÇÃO INCOMPLETA: -50 PONTOS.";
   }
 
   /* ========================================
