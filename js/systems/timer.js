@@ -7,109 +7,119 @@
 ======================================== */
 
 function startDecisionTimer() {
-  if (
-    gameState.gameOver ||
-    gameState.decisionLocked ||
-    decisionTimerRunning
-  ) return;
+    if (
+        gameState.gameOver ||
+        gameState.decisionLocked ||
+        decisionTimerRunning
+    ) return;
 
-  decisionTimerRunning = true;
-  decisionTimerRemaining = DECISION_TIME;
-
-  updateDecisionTimerUI();
-
-  const tick = () => {
-    if (!decisionTimerRunning) return;
-
-    decisionTimerRemaining--;
-
-    if (decisionTimerRemaining <= 0) {
-      triggerExplosion();
-      return;
-    }
+    decisionTimerRunning = true;
+    decisionTimerRemaining = DECISION_TIME;
 
     updateDecisionTimerUI();
 
-    later(tick, 1000);
-  };
+    const tick = () => {
+        if (!decisionTimerRunning) return;
 
-  later(tick, 1000);
+        decisionTimerRemaining--;
+
+        if (decisionTimerRemaining <= 0) {
+            triggerExplosion();
+            return;
+        }
+
+        updateDecisionTimerUI();
+
+        later(tick, 1000);
+    };
+
+    later(tick, 1000);
 }
+
 
 /* ========================================
    PARAR CRONÔMETRO
 ======================================== */
 
 function stopDecisionTimer() {
-  decisionTimerRunning = false;
+    decisionTimerRunning = false;
 
-  const el = document.getElementById("decision-timer");
+    const el = document.getElementById("decision-timer");
 
-  if (el) {
-    el.hidden = true;
-    el.classList.remove("urgent");
-  }
+    if (el) {
+        el.hidden = true;
+        el.classList.remove("urgent");
+    }
 }
 
+
 /* ========================================
-   ATUALIZA INTERFACE DO CRONÔMETRO
+   ATUALIZAR INTERFACE DO CRONÔMETRO
 ======================================== */
 
 function updateDecisionTimerUI() {
-  const el = document.getElementById("decision-timer");
+    const el = document.getElementById("decision-timer");
 
-  if (!el) return;
+    if (!el) return;
 
-  el.hidden = false;
+    el.hidden = false;
 
-  el.textContent = `⏱ ${decisionTimerRemaining}s PARA DECIDIR`;
+    el.textContent = `⏱ ${decisionTimerRemaining}s PARA DECIDIR`;
 
-  el.classList.toggle(
-    "urgent",
-    decisionTimerRemaining <= 3
-  );
+    el.classList.toggle(
+        "urgent",
+        decisionTimerRemaining <= 3
+    );
 }
+
 
 /* ========================================
    EXPLOSÃO — TEMPO ESGOTADO
 ======================================== */
 
 function triggerExplosion() {
-  if (gameState.gameOver || gameState.decisionLocked) return;
+    if (gameState.gameOver || gameState.decisionLocked) return;
 
-  decisionTimerRunning = false;
-  gameState.decisionLocked = true;
+    decisionTimerRunning = false;
+    gameState.decisionLocked = true;
 
-  document.getElementById("btn-approve").disabled = true;
-  document.getElementById("btn-deny").disabled = true;
+    const approveButton = document.getElementById("btn-approve");
+    const denyButton = document.getElementById("btn-deny");
 
-  const overlay = document.getElementById("explosion-overlay");
+    if (approveButton) approveButton.disabled = true;
+    if (denyButton) denyButton.disabled = true;
 
-  if (overlay) {
-    const flash = document.createElement("div");
+    const overlay = document.getElementById("explosion-overlay");
 
-    flash.className = "flash-white";
+    if (overlay) {
+        const flash = document.createElement("div");
 
-    document.body.appendChild(flash);
+        flash.className = "flash-white";
 
-    setTimeout(() => flash.remove(), 400);
+        document.body.appendChild(flash);
 
-    overlay.classList.add("boom");
+        later(() => flash.remove(), 400);
 
-    setTimeout(() => overlay.classList.remove("boom"), 1100);
-  }
+        overlay.classList.add("boom");
 
-  document.body.classList.add("exploding");
+        later(() => {
+            overlay.classList.remove("boom");
+        }, 1100);
+    }
 
-  if (explosionTimeoutId) {
-    clearTimeout(explosionTimeoutId);
-  }
+    document.body.classList.add("exploding");
 
-  explosionTimeoutId = setTimeout(() => {
-    document.body.classList.remove("exploding");
+    if (explosionTimeoutId) {
+        clearTimeout(explosionTimeoutId);
+    }
 
-    showGameOver(
-      "A pressão do portão explodiu: você não tomou uma decisão a tempo."
-    );
-  }, 950);
+    explosionTimeoutId = later(() => {
+        document.body.classList.remove("exploding");
+
+        explosionTimeoutId = null;
+
+        showGameOver(
+            "A pressão do portão explodiu: você não tomou uma decisão a tempo."
+        );
+    }, 950);
 }
