@@ -1,6 +1,6 @@
 /* ========================================
-   MÚSICA AMBIENTE — S.Q.L.
-======================================== */
+ *  MÚSICA AMBIENTE — S.Q.L.
+ * ======================================== */
 
 (() => {
     const TRACKS = {
@@ -16,10 +16,10 @@
 
     audio.loop = true;
     audio.preload = 'auto';
+    audio.volume = 0.1;
 
     let userInteracted = false;
 
-    // Consulta as configurações
     function getMusicSettings() {
         const settings = window.getSqlSettings?.();
 
@@ -29,20 +29,18 @@
         };
     }
 
-    // Atualiza o volume
     function updateVolume() {
-        const settings = getMusicSettings();
+        const { volume } = getMusicSettings();
 
-        audio.volume = (settings.volume / 100) * 0.20;
+        audio.volume = Math.max(0, Math.min(1, volume / 100)) * 0.20;
     }
 
-    // Sincroniza a reprodução com as configurações
     async function syncAmbient() {
-        const settings = getMusicSettings();
+        const { enabled } = getMusicSettings();
 
         updateVolume();
 
-        if (!settings.enabled) {
+        if (!enabled) {
             audio.pause();
             return;
         }
@@ -53,43 +51,29 @@
             try {
                 await audio.play();
             } catch (error) {
-                console.warn(
-                    'Não foi possível iniciar a música ambiente:',
-                    error
-                );
+                console.warn('[S.Q.L.] Falha ao iniciar música:', error);
             }
         }
     }
 
-    // Aguarda uma interação real do usuário
     function handleUserInteraction() {
-        userInteracted = true;
+        if (!userInteracted) {
+            userInteracted = true;
+        }
+
         syncAmbient();
     }
 
-    document.addEventListener(
-        'pointerdown',
-        handleUserInteraction
-    );
+    document.addEventListener('pointerdown', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
 
-    document.addEventListener(
-        'keydown',
-        handleUserInteraction
-    );
+    window.addEventListener('sql-settings-changed', syncAmbient);
 
-    // Detecta alterações nas configurações
-    window.addEventListener(
-        'sql-settings-changed',
-        syncAmbient
-    );
-
-    // Diagnóstico de carregamento
     audio.addEventListener('error', () => {
-        console.error(
-            'Erro ao carregar música ambiente:',
-            audio.currentSrc,
-            audio.error
-        );
+        console.error('[S.Q.L.] Erro ao carregar música:', {
+            arquivo: TRACKS[currentPage],
+            erro: audio.error
+        });
     });
 
     updateVolume();
