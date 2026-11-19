@@ -1,28 +1,93 @@
+/* ========================================
+ *  HOME — S.Q.L.
+ * ======================================== */
+
 const modes = {
-  facil: { label: "FÁCIL" },
-  normal: { label: "NORMAL" },
-  dificil: { label: "DIFÍCIL" }
+    facil: { label: "FÁCIL" },
+    normal: { label: "NORMAL" },
+    dificil: { label: "DIFÍCIL" }
 };
+
 let selectedMode = "normal";
+let startingGame = false;
+
+const startScreen = document.getElementById("start-screen");
+const startButton = document.getElementById("start-game");
+
+function getHomeSettings() {
+    return window.getSqlSettings?.() ?? {
+        animations: true
+    };
+}
+
+function animationsEnabled() {
+    return getHomeSettings().animations !== false &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/* Inicialização da interface */
+if (startScreen && animationsEnabled()) {
+    startScreen.classList.add("home-boot");
+}
+
+/* Seleção de dificuldade */
 function selectMode(mode) {
-  if (!modes[mode]) return;
-  selectedMode = mode;
-  document.querySelectorAll(".mode-card").forEach(card => {
-    const active = card.dataset.mode === mode;
-    card.classList.toggle("selected", active);
-    card.setAttribute("aria-pressed", String(active));
-  });
+    if (!modes[mode]) return;
+
+    selectedMode = mode;
+
+    document.querySelectorAll(".mode-card").forEach(card => {
+        const active = card.dataset.mode === mode;
+
+        card.classList.toggle("selected", active);
+        card.setAttribute("aria-pressed", String(active));
+    });
 }
+
+/* Inicialização da partida */
 function startGame() {
-  window.location.href = `game.html?mode=${selectedMode}`;
+    if (startingGame) return;
+
+    startingGame = true;
+
+    if (startButton) {
+        startButton.disabled = true;
+    }
+
+    const destination = `game.html?mode=${selectedMode}`;
+
+    if (!startScreen || !animationsEnabled()) {
+        window.location.href = destination;
+        return;
+    }
+
+    startScreen.classList.add("is-shutting-down");
+
+    setTimeout(() => {
+        window.location.href = destination;
+    }, 650);
 }
+
+/* Eventos dos cartões */
 document.querySelectorAll(".mode-card").forEach(card => {
-  card.addEventListener("click", () => selectMode(card.dataset.mode));
+    card.addEventListener("click", () => {
+        selectMode(card.dataset.mode);
+    });
 });
-const initialMode = new URLSearchParams(window.location.search).get("mode");
+
+/* Recupera dificuldade da URL */
+const initialMode = new URLSearchParams(
+    window.location.search
+).get("mode");
+
 selectMode(modes[initialMode] ? initialMode : "normal");
 
-document.getElementById("start-game").addEventListener("click", startGame);
+/* Botão de iniciar */
+startButton?.addEventListener("click", startGame);
+
+/* ========================================
+ *  MODAL DE AJUDA
+ * ======================================== */
 
 function openHomeHelpModal() {
     const modal = document.getElementById('home-help-modal');
@@ -42,7 +107,7 @@ function closeHomeHelpModal() {
     modal.setAttribute('aria-hidden', 'true');
 }
 
-// Fechar ao clicar fora do conteúdo
+/* Fechar ao clicar fora do conteúdo */
 document.getElementById('home-help-modal')?.addEventListener('click', (event) => {
     if (event.target.id === 'home-help-modal') {
         closeHomeHelpModal();

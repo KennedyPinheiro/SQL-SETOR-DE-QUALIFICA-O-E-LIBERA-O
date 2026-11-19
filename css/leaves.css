@@ -2,7 +2,6 @@
    ANIMAÇÃO DE FOLHAS — S.Q.L.
 ======================================== */
 
-/* Camada independente da estrutura da Home */
 .leaf-layer {
     position: fixed;
     inset: 0;
@@ -11,14 +10,12 @@
     z-index: 0;
 }
 
-/* Conteúdo acima das folhas */
 .start-top,
 .start-content {
     position: relative;
     z-index: 1;
 }
 
-/* Folhas */
 .leaf {
     position: absolute;
     top: -50px;
@@ -38,11 +35,12 @@
 
     border-radius: 2px 85% 2px 85%;
 
-    animation: leaf-fall var(--duration) var(--delay) linear infinite;
+    animation:
+        leaf-fall var(--duration) var(--delay) linear infinite;
+
     will-change: transform, opacity;
 }
 
-/* Nervura central */
 .leaf::after {
     content: "";
 
@@ -57,7 +55,6 @@
     transform: rotate(-8deg);
 }
 
-/* Movimento de queda */
 @keyframes leaf-fall {
     0% {
         opacity: 0;
@@ -68,8 +65,28 @@
         opacity: var(--opacity);
     }
 
+    25% {
+        transform: translate3d(
+            var(--drift-quarter),
+            25vh,
+            0
+        ) rotate(100deg);
+    }
+
     50% {
-        transform: translate3d(var(--drift-half), 50vh, 0) rotate(180deg);
+        transform: translate3d(
+            var(--drift-half),
+            50vh,
+            0
+        ) rotate(220deg);
+    }
+
+    75% {
+        transform: translate3d(
+            var(--drift-three-quarter),
+            75vh,
+            0
+        ) rotate(310deg);
     }
 
     90% {
@@ -78,12 +95,14 @@
 
     100% {
         opacity: 0;
-        transform: translate3d(var(--drift), 110vh, 0)
-            rotate(var(--rotation));
+        transform: translate3d(
+            var(--drift),
+            110vh,
+            0
+        ) rotate(var(--rotation));
     }
 }
 
-/* Movimento reduzido */
 @media (prefers-reduced-motion: reduce) {
     .leaf {
         display: none;

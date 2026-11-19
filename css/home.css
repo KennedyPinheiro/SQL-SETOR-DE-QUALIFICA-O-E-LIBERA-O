@@ -410,3 +410,274 @@
         padding: 15px;
     }
 }
+/* ========================================
+   EFEITOS CINEMATOGRÁFICOS — HOME
+======================================== */
+
+/* Camada de scanlines CRT */
+.start-screen::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 3px,
+            rgba(0, 0, 0, 0.13) 4px
+        ),
+        radial-gradient(
+            ellipse at center,
+            transparent 45%,
+            rgba(0, 0, 0, 0.28) 100%
+        );
+
+    opacity: 0.55;
+}
+
+/* Efeito de inicialização do monitor */
+.start-screen::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background: #050805;
+
+    animation: terminal-power-on 1.15s ease-out forwards;
+}
+
+/* Entrada gradual dos elementos */
+.start-screen.home-boot .start-top,
+.start-screen.home-boot .start-content,
+.start-screen.home-boot .start-footer {
+    opacity: 0;
+    animation: interface-enter 0.75s ease-out forwards;
+}
+
+.start-screen.home-boot .start-top {
+    animation-delay: 0.35s;
+}
+
+.start-screen.home-boot .start-content {
+    animation-delay: 0.75s;
+}
+
+.start-screen.home-boot .start-footer {
+    animation-delay: 1.1s;
+}
+
+/* Emblema */
+.start-screen.home-boot .start-brand {
+    animation: emblem-enter 0.8s ease-out 0.45s both;
+}
+
+/* Organização do conteúdo */
+.start-screen.home-boot .start-content h1 {
+    animation: interface-enter 0.7s ease-out 0.85s both;
+}
+
+.start-screen.home-boot .start-description {
+    animation: interface-enter 0.7s ease-out 1s both;
+}
+
+.start-screen.home-boot .start-divider {
+    animation: divider-enter 0.8s ease-out 1.1s both;
+}
+
+.start-screen.home-boot .start-content h2 {
+    animation: interface-enter 0.7s ease-out 1.2s both;
+}
+
+.start-screen.home-boot .mode-card {
+    animation: card-enter 0.65s ease-out both;
+}
+
+.start-screen.home-boot .mode-card:nth-child(1) {
+    animation-delay: 1.3s;
+}
+
+.start-screen.home-boot .mode-card:nth-child(2) {
+    animation-delay: 1.45s;
+}
+
+.start-screen.home-boot .mode-card:nth-child(3) {
+    animation-delay: 1.6s;
+}
+
+.start-screen.home-boot .start-actions {
+    animation: interface-enter 0.7s ease-out 1.75s both;
+}
+
+/* Animações */
+@keyframes terminal-power-on {
+    0% {
+        opacity: 1;
+    }
+
+    35% {
+        opacity: 0.92;
+    }
+
+    65% {
+        opacity: 0.35;
+    }
+
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+@keyframes interface-enter {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes emblem-enter {
+    0% {
+        opacity: 0;
+        transform: scale(0.75);
+        filter: brightness(2);
+    }
+
+    60% {
+        opacity: 1;
+        filter: brightness(1.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+@keyframes divider-enter {
+    from {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleX(1);
+    }
+}
+
+@keyframes card-enter {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botões */
+.mode-card,
+.settings-trigger,
+.start-button {
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        background-color 0.22s ease,
+        box-shadow 0.22s ease,
+        filter 0.22s ease;
+}
+
+.settings-trigger:hover,
+.start-button:hover {
+    filter: brightness(1.2);
+}
+
+.start-button:active,
+.settings-trigger:active,
+.mode-card:active {
+    transform: scale(0.97);
+}
+
+.start-button:focus-visible,
+.settings-trigger:focus-visible,
+.mode-card:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 4px;
+}
+
+/* Transição ao iniciar a partida */
+.start-screen.is-shutting-down {
+    pointer-events: none;
+}
+
+.start-screen.is-shutting-down::after {
+    visibility: visible;
+    opacity: 0;
+    background: #050805;
+    animation: terminal-power-off 0.65s ease-in forwards;
+}
+
+@keyframes terminal-power-off {
+    0% {
+        opacity: 0;
+    }
+
+    35% {
+        opacity: 0.35;
+    }
+
+    75% {
+        opacity: 0.9;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+    .start-screen.home-boot .start-top,
+    .start-screen.home-boot .start-content,
+    .start-screen.home-boot .start-footer,
+    .start-screen.home-boot .start-brand,
+    .start-screen.home-boot .start-content h1,
+    .start-screen.home-boot .start-description,
+    .start-screen.home-boot .start-divider,
+    .start-screen.home-boot .start-content h2,
+    .start-screen.home-boot .mode-card,
+    .start-screen.home-boot .start-actions {
+        animation: none;
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+
+    .start-screen::before,
+    .start-screen::after {
+        display: none;
+    }
+
+    .mode-card,
+    .settings-trigger,
+    .start-button {
+        transition: none;
+    }
+}
+body.reduce-motion .mode-card,
+body.reduce-motion .settings-trigger,
+body.reduce-motion .start-button {
+    animation: none !important;
+}

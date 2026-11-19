@@ -133,3 +133,21 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{sc
     }
 }
 
+
+/* Remove completamente o efeito hover quando animações estão desativadas */
+body.reduce-motion .mode-card:hover,
+body.reduce-motion .settings-trigger:hover,
+body.reduce-motion .start-button:hover,
+body.reduce-motion .button:hover {
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+    border-color: initial !important;
+    outline: none !important;
+}
+
+/* Remove o tooltip dos botões de configuração */
+body.reduce-motion .settings-trigger:hover::after {
+    opacity: 0 !important;
+    transform: none !important;
+}
