@@ -32,7 +32,7 @@
     function updateVolume() {
         const { volume } = getMusicSettings();
 
-        audio.volume = Math.max(0, Math.min(1, volume / 100)) * 0.20;
+        audio.volume = Math.max(0, Math.min(1, volume / 100)) * 0.40;
     }
 
     async function syncAmbient() {
