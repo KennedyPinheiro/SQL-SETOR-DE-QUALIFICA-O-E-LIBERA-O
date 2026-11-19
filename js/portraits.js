@@ -4,67 +4,98 @@
 
 const PORTRAIT_LOOKS = {
   "8841-FM": { // Francis Mosses — leiteiro
-    bg: "#e8654a", skin: "#f1b394", shade: "#dc967b", hair: "#4a2f22", style: "crop",
+    bg: "#e8654a", skin: "#f1b394", shade: "#dc967b",
+    hair: "#4a2f22", style: "crop", face: "round",
     jacket: "#4b5a35", hat: "#556b3a", facial: "mustache"
   },
+
   "3920-AR": { // Ana Rudboys — professora
-    bg: "#7c6bd1", skin: "#c98f6b", shade: "#b57655", hair: "#1c1a2b", style: "bob",
+    bg: "#7c6bd1", skin: "#c98f6b", shade: "#b57655",
+    hair: "#1c1a2b", style: "bob", face: "oval",
     jacket: "#3d4f3a", hat: "#3c4a2e"
   },
+
   "7719-WA": { // Dr. W. Afton — médico
-    bg: "#2fa39a", skin: "#efc2a4", shade: "#d9a688", hair: "#b9bdc4", style: "receding",
+    bg: "#2fa39a", skin: "#efc2a4", shade: "#d9a688",
+    hair: "#b9bdc4", style: "receding", face: "long",
     jacket: "#5a4e36", hat: "#6b5a3a"
   },
+
   "5510-ML": { // Mia Lin — engenheira
-    bg: "#f2a93b", skin: "#f6cdb0", shade: "#e0ad90", hair: "#15182e", style: "bun",
+    bg: "#f2a93b", skin: "#f6cdb0", shade: "#e0ad90",
+    hair: "#15182e", style: "bun", face: "soft",
     jacket: "#2f4458", hat: "#2f3b4f"
   },
+
   "6102-CR": { // Carlos Rocha — padeiro
-    bg: "#4a8fd4", skin: "#d49a73", shade: "#bb7f5a", hair: "#2b1a14", style: "crop",
+    bg: "#4a8fd4", skin: "#d49a73", shade: "#bb7f5a",
+    hair: "#2b1a14", style: "crop", face: "square",
     jacket: "#4f5a40", hat: "#4a5a36", facial: "beard"
   },
+
   "9034-EB": { // Elena Vance — advogada
-    bg: "#d9577f", skin: "#8d5a3b", shade: "#744630", hair: "#150f10", style: "curly",
+    bg: "#d9577f", skin: "#8d5a3b", shade: "#744630",
+    hair: "#150f10", style: "curly", face: "oval",
     jacket: "#2c3b30", hat: "#3a3f44"
   },
+
   "2280-JS": { // Jonas Silva — eletricista
-    bg: "#58b36a", skin: "#6e4430", shade: "#5a3524", hair: "#0f0d0e", style: "buzz",
+    bg: "#58b36a", skin: "#6e4430", shade: "#5a3524",
+    hair: "#0f0d0e", style: "buzz", face: "wide",
     jacket: "#6a5a3c", hat: "#5c6b40"
   },
+
   "4491-PT": { // Paula Torres — enfermeira
-    bg: "#5fb7d9", skin: "#f3c2a2", shade: "#dca486", hair: "#c68a3a", style: "long",
+    bg: "#5fb7d9", skin: "#f3c2a2", shade: "#dca486",
+    hair: "#c68a3a", style: "long", face: "round",
     jacket: "#3f5246", hat: "#46563a"
   },
+
   "7355-RK": { // Ravi Kumar — contador
-    bg: "#e8654a", skin: "#c58a64", shade: "#ad7250", hair: "#14204a", style: "fringe",
+    bg: "#e8654a", skin: "#c58a64", shade: "#ad7250",
+    hair: "#14204a", style: "fringe", face: "narrow",
     jacket: "#2f3a2e", hat: "#394634"
   },
+
   "1802-LM": { // Lia Martins — bibliotecária
-    bg: "#8bb35a", skin: "#f0bf9d", shade: "#d9a283", hair: "#8e3b25", style: "long",
+    bg: "#8bb35a", skin: "#f0bf9d", shade: "#d9a283",
+    hair: "#8e3b25", style: "long", face: "soft",
     jacket: "#505a4a", hat: "#6b5f3e"
   },
+
   "5502-BN": { // Bruno Nakamura — mecânico
-    bg: "#b4654a", skin: "#eec4a5", shade: "#d6a687", hair: "#22201e", style: "crop",
+    bg: "#b4654a", skin: "#eec4a5", shade: "#d6a687",
+    hair: "#22201e", style: "crop", face: "square",
     jacket: "#4a4438", hat: "#4d4738", facial: "beard"
   },
+
   "3388-DS": { // Débora Sales — médica
-    bg: "#4fd0b8", skin: "#e8b48e", shade: "#cf9a75", hair: "#3d1f14", style: "curly",
+    bg: "#4fd0b8", skin: "#e8b48e", shade: "#cf9a75",
+    hair: "#3d1f14", style: "curly", face: "round",
     jacket: "#37505c", hat: "#3b4750"
   },
+
   "4771-OT": { // Otávio Tavares — cozinheiro
-    bg: "#c99040", skin: "#a06a45", shade: "#87553a", hair: "#171310", style: "receding",
+    bg: "#c99040", skin: "#a06a45", shade: "#87553a",
+    hair: "#171310", style: "receding", face: "wide",
     jacket: "#55503a", hat: "#5f5a3e", facial: "mustache"
   },
+
   "6620-NF": { // Natália Freire — operadora de rádio
-    bg: "#6a7fd4", skin: "#c78f66", shade: "#af7550", hair: "#26150f", style: "bob",
+    bg: "#6a7fd4", skin: "#c78f66", shade: "#af7550",
+    hair: "#26150f", style: "bob", face: "oval",
     jacket: "#3c4a52", hat: "#39454c"
   },
+
   "9125-IC": { // Igor Chernov — sargento de abastecimento
-    bg: "#7f5ab0", skin: "#eec3a2", shade: "#d6a683", hair: "#8f939b", style: "buzz",
+    bg: "#7f5ab0", skin: "#eec3a2", shade: "#d6a683",
+    hair: "#8f939b", style: "buzz", face: "long",
     jacket: "#42503f", hat: "#4a5742"
   },
+
   "2874-LC": { // Lucy Chen — armeira
-    bg: "#d45a9a", skin: "#f4c9a6", shade: "#dcaa88", hair: "#12141f", style: "bun",
+    bg: "#d45a9a", skin: "#f4c9a6", shade: "#dcaa88",
+    hair: "#12141f", style: "bun", face: "narrow",
     jacket: "#2e4052", hat: "#33424f"
   }
 };
@@ -149,6 +180,67 @@ function portraitFacial(kind, c) {
   }
   return "";
 }
+function portraitFaceShape(shape, skin) {
+  const shapes = {
+    round: `
+      <path d="M68 96 C68 62 92 50 120 50
+        C148 50 172 62 172 96
+        L172 126 C172 171 149 201 120 205
+        C91 201 68 171 68 126 Z"
+        fill="${skin}"/>
+    `,
+
+    oval: `
+      <path d="M72 96 C72 62 94 50 120 50
+        C146 50 168 62 168 96
+        L168 128 C168 171 148 201 120 205
+        C92 201 72 171 72 128 Z"
+        fill="${skin}"/>
+    `,
+
+    long: `
+      <path d="M70 96 C70 62 94 48 120 48
+        C146 48 170 62 170 96
+        L170 135 C170 178 148 208 120 211
+        C92 208 70 178 70 135 Z"
+        fill="${skin}"/>
+    `,
+
+    soft: `
+      <path d="M68 96 C68 62 92 50 120 50
+        C148 50 172 62 172 96
+        L172 130 C172 168 151 198 120 201
+        C89 198 68 168 68 130 Z"
+        fill="${skin}"/>
+    `,
+
+    square: `
+      <path d="M68 96 C68 62 92 50 120 50
+        C148 50 172 62 172 96
+        L172 142 C172 171 150 199 120 203
+        C90 199 68 171 68 142 Z"
+        fill="${skin}"/>
+    `,
+
+    wide: `
+      <path d="M64 96 C64 62 90 50 120 50
+        C150 50 176 62 176 96
+        L176 126 C176 168 152 199 120 203
+        C88 199 64 168 64 126 Z"
+        fill="${skin}"/>
+    `,
+
+    narrow: `
+      <path d="M76 96 C76 62 96 50 120 50
+        C144 50 164 62 164 96
+        L164 130 C164 171 145 201 120 205
+        C95 201 76 171 76 130 Z"
+        fill="${skin}"/>
+    `
+  };
+
+  return shapes[shape] || shapes.round;
+}
 
 function buildPortrait(opts) {
   const look = Object.assign({}, PORTRAIT_FALLBACK, opts.look || {});
@@ -186,8 +278,7 @@ function buildPortrait(opts) {
     <ellipse cx="62" cy="124" rx="11" ry="16" fill="${skin}"/>
     <ellipse cx="178" cy="124" rx="11" ry="16" fill="${skin}"/>
     <path d="M60 120 Q64 126 62 132 M180 120 Q176 126 178 132" stroke="${shade}" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M68 96 C68 62 92 50 120 50 C148 50 172 62 172 96 L172 124 C172 168 150 202 120 205 C90 202 68 168 68 124 Z" fill="${skin}"/>
-    ${portraitFacial(look.facial === "beard" ? "beard" : "", look.hair)}
+${portraitFaceShape(look.face, skin)}    ${portraitFacial(look.facial === "beard" ? "beard" : "", look.hair)}
     <ellipse cx="90" cy="144" rx="14" ry="8" fill="${blush}" opacity=".55"/>
     <ellipse cx="150" cy="144" rx="14" ry="8" fill="${blush}" opacity=".55"/>
     <path d="M124 118 L117 140 Q122 147 129 142" stroke="${portraitShade(look.skin, -0.28)}" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
