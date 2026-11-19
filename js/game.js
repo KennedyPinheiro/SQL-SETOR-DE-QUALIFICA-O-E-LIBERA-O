@@ -12,6 +12,10 @@ function nextTurn() {
 
   const config = gameState.modeConfig[gameState.mode];
 
+  /* Cancela chamada pendente do interfone */
+
+  cancelIntercomCall();
+
   /* Reinicia os dados da investigação */
 
   gameState.queriesRemaining = config.queries;
@@ -108,6 +112,12 @@ function selectMode(mode) {
 function startGame() {
   const config = gameState.modeConfig[gameState.mode];
 
+  /* Limpa temporizadores pendentes */
+
+  clearPendingTimers();
+  cancelIntercomCall();
+  stopDecisionTimer();
+
   /* Reinicia estado geral */
 
   gameState.score = 0;
@@ -131,10 +141,6 @@ function startGame() {
   gameState.gameOver = false;
   gameState.decisionLocked = false;
   gameState.selectedApartment = null;
-
-  /* Limpa cronômetro */
-
-  stopDecisionTimer();
 
   /* Prepara banco de dados */
 
@@ -188,6 +194,7 @@ function registerModalOutsideClick(modalId, closeFunction) {
     }
   });
 }
+
 
 registerModalOutsideClick(
   "building-modal",

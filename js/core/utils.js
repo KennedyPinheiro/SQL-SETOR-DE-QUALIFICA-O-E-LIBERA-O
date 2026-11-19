@@ -9,19 +9,19 @@
 let pendingTimers = new Set();
 
 function later(fn, ms) {
-    const id = setTimeout(() => {
-        pendingTimers.delete(id);
-        fn();
-    }, ms);
+  const id = setTimeout(() => {
+    pendingTimers.delete(id);
+    fn();
+  }, ms);
 
-    pendingTimers.add(id);
+  pendingTimers.add(id);
 
-    return id;
+  return id;
 }
 
 function clearPendingTimers() {
-    pendingTimers.forEach(clearTimeout);
-    pendingTimers.clear();
+  pendingTimers.forEach(clearTimeout);
+  pendingTimers.clear();
 }
 
 
@@ -30,15 +30,15 @@ function clearPendingTimers() {
 ======================================== */
 
 function animationsEnabled() {
-    if (document.body.classList.contains("reduce-motion")) {
-        return false;
-    }
+  if (document.body.classList.contains("reduce-motion")) {
+    return false;
+  }
 
-    const settings = typeof getSqlSettings === "function"
-        ? getSqlSettings()
-        : null;
+  const settings = typeof getSqlSettings === "function"
+    ? getSqlSettings()
+    : null;
 
-    return settings ? settings.animations !== false : true;
+  return settings ? settings.animations !== false : true;
 }
 
 
@@ -47,17 +47,17 @@ function animationsEnabled() {
 ======================================== */
 
 function animateElement(element, className, duration = 600) {
-    if (!element || !animationsEnabled()) return;
+  if (!element || !animationsEnabled()) return;
 
+  element.classList.remove(className);
+
+  void element.offsetWidth;
+
+  element.classList.add(className);
+
+  later(() => {
     element.classList.remove(className);
-
-    void element.offsetWidth;
-
-    element.classList.add(className);
-
-    later(() => {
-        element.classList.remove(className);
-    }, duration);
+  }, duration);
 }
 
 
@@ -66,11 +66,11 @@ function animateElement(element, className, duration = 600) {
 ======================================== */
 
 function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, character => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    }[character]));
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[character]));
 }

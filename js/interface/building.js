@@ -7,12 +7,14 @@
    INTERFONE
 ======================================== */
 
+let intercomTimer = null;
+
 function callApartment() {
   if (gameState.gameOver || gameState.decisionLocked) return;
 
   const visitor = gameState.currentVisitor;
 
-  if (!visitor) return;
+  if (!visitor || intercomTimer !== null) return;
 
   const alojamento = visitor.alojamento;
 
@@ -25,7 +27,11 @@ function callApartment() {
 
   button.disabled = true;
 
-  later(() => {
+  intercomTimer = later(() => {
+    intercomTimer = null;
+
+    if (gameState.gameOver || gameState.decisionLocked) return;
+
     if (gameState.neighborAlreadyInside) {
       result.innerHTML = `
         <strong class="status-bad">
@@ -48,7 +54,23 @@ function callApartment() {
     button.disabled =
       gameState.gameOver ||
       gameState.decisionLocked;
+
   }, 650);
+}
+
+
+/* ========================================
+   CANCELAMENTO DO INTERFONE
+======================================== */
+
+function cancelIntercomCall() {
+  if (intercomTimer !== null) {
+    clearTimeout(intercomTimer);
+
+    pendingTimers.delete(intercomTimer);
+
+    intercomTimer = null;
+  }
 }
 
 
@@ -90,6 +112,7 @@ function renderBuilding() {
   grid.innerHTML = "";
 
   for (let floor = 4; floor >= 1; floor--) {
+
     /* Identificação do pavimento */
 
     const label = document.createElement("div");
@@ -98,6 +121,7 @@ function renderBuilding() {
     label.textContent = `PAV. ${floor}`;
 
     grid.appendChild(label);
+
 
     /* Unidades do pavimento */
 
@@ -123,9 +147,11 @@ function renderBuilding() {
           : "");
 
       const apartmentNumber = document.createElement("strong");
+
       apartmentNumber.textContent = alojamento;
 
       const apartmentStatus = document.createElement("small");
+
       apartmentStatus.textContent =
         resident ? "CADASTRADO" : "SEM REGISTRO";
 
@@ -139,6 +165,7 @@ function renderBuilding() {
 
     grid.appendChild(units);
   }
+
 
   /* Recupera detalhes do apartamento selecionado */
 
@@ -169,6 +196,7 @@ function selectApartment(alojamento, rerender = true) {
     [alojamento]
   )[0];
 
+
   /* ========================================
      ALOJAMENTO SEM CADASTRO
   ======================================== */
@@ -184,6 +212,7 @@ function selectApartment(alojamento, rerender = true) {
 
     return;
   }
+
 
   /* ========================================
      CONSULTA DOS REGISTROS
@@ -202,6 +231,7 @@ function selectApartment(alojamento, rerender = true) {
   const authorized = auth && auth.autorizado === "Sim";
 
   const inside = log && log.status_atual === "Dentro do quartel";
+
 
   /* ========================================
      DETALHES DO MORADOR
