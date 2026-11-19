@@ -6,8 +6,13 @@ const gameState = {
     dificil: { lives: 1, queries: 4, required: 3, impostorChance: 0.62, label: "DIFÍCIL" }
   },
   score: 0, lives: 3, maxLives: 3, turn: 1, queriesRemaining: 4, successfulQueries: 0, requiredQueries: 2, usedQueries: new Set(),
-  currentVisitor: null, realNeighbor: null, isImpostor: false,
-  impostorReason: "", neighborAlreadyInside: false, gameOver: false,
+  currentVisitor: null,
+  realNeighbor: null,
+  isImpostor: false,
+  visitorCase: null,
+  impostorReason: "",
+  neighborAlreadyInside: false,
+  gameOver: false,
   selectedApartment: null, decisionLocked: false
 };
 
@@ -129,8 +134,8 @@ function nextTurn() {
   gameState.requiredQueries = gameState.modeConfig[gameState.mode].required;
   gameState.successfulQueries = 0;
   gameState.usedQueries = new Set();
-  updateSqlProgress();
   gameState.decisionLocked = false;
+  updateSqlProgress();
   stopDecisionTimer();
   document.getElementById("btn-call").disabled = false;
   updateQueriesHUD();
@@ -143,33 +148,102 @@ function nextTurn() {
 
   const residents = alasql("SELECT * FROM militares");
   const base = residents[Math.floor(Math.random() * residents.length)];
-  const auth = alasql("SELECT autorizado FROM lista_hoje WHERE id_doc = ?", [base.id_doc])[0];
-  const log = alasql("SELECT status_atual FROM logs_portao WHERE id_doc = ?", [base.id_doc])[0];
+
+  const auth = alasql(
+    "SELECT autorizado FROM lista_hoje WHERE id_doc = ?",
+    [base.id_doc]
+  )[0];
+
+  const log = alasql(
+    "SELECT status_atual FROM logs_portao WHERE id_doc = ?",
+    [base.id_doc]
+  )[0];
 
   gameState.realNeighbor = { ...base };
   gameState.currentVisitor = { ...base };
+
   gameState.isImpostor = false;
   gameState.impostorReason = "";
-  gameState.neighborAlreadyInside = log.status_atual === "Dentro do quartel";
+  gameState.visitorCase = "legitimate";
+  gameState.neighborAlreadyInside =
+    log.status_atual === "Dentro do quartel";
 
+  // CASO 1 — O militar verdadeiro já está dentro do quartel.
   if (gameState.neighborAlreadyInside) {
     gameState.isImpostor = true;
-    gameState.impostorReason = "O registro do portão indica que o militar verdadeiro já está dentro do quartel.";
-  } else if (auth.autorizado === "Nao") {
-    gameState.isImpostor = true;
-    gameState.impostorReason = "O militar não consta como autorizado na lista de hoje.";
-  } else if (Math.random() < gameState.modeConfig[gameState.mode].impostorChance) {
-    gameState.isImpostor = true;
-    const flaws = [
-      () => { gameState.currentVisitor.id_doc = "9999-XX"; gameState.impostorReason = "Número de identificação falsificado."; },
-      () => { gameState.currentVisitor.alojamento = "404"; gameState.impostorReason = "Alojamento divergente do cadastro oficial."; },
-      () => { gameState.currentVisitor.pele = "Esverdeada"; gameState.impostorReason = "Anomalia física: coloração da pele divergente."; },
-      () => { gameState.currentVisitor.quepe = base.quepe === "Sim" ? "Nao" : "Sim"; gameState.impostorReason = "Aparência divergente: uso de quepe."; },
-      () => { gameState.currentVisitor.oculos = base.oculos === "Sim" ? "Nao" : "Sim"; gameState.impostorReason = "Aparência divergente: uso de óculos."; }
-    ];
-    flaws[Math.floor(Math.random() * flaws.length)]();
+    gameState.visitorCase = "duplicate_inside";
+
+    gameState.impostorReason =
+      "O registro do portão indica que o militar verdadeiro já está dentro do quartel.";
   }
 
+  // CASO 2 — Militar sem autorização para entrar.
+  else if (auth.autorizado === "Nao") {
+    gameState.isImpostor = true;
+    gameState.visitorCase = "unauthorized";
+
+    gameState.impostorReason =
+      "O militar não consta como autorizado na lista de hoje.";
+  }
+
+  // CASO 3 — Possível identidade falsificada.
+  else if (
+    Math.random() < gameState.modeConfig[gameState.mode].impostorChance
+  ) {
+    gameState.isImpostor = true;
+
+    const flaws = [
+      {
+        type: "forged_document",
+        apply: () => {
+          gameState.currentVisitor.id_doc = "9999-XX";
+          gameState.impostorReason =
+            "Número de identificação falsificado.";
+        }
+      },
+      {
+        type: "wrong_apartment",
+        apply: () => {
+          gameState.currentVisitor.alojamento = "404";
+          gameState.impostorReason =
+            "Alojamento divergente do cadastro oficial.";
+        }
+      },
+      {
+        type: "physical_anomaly",
+        apply: () => {
+          gameState.currentVisitor.pele = "Esverdeada";
+          gameState.impostorReason =
+            "Anomalia física: coloração da pele divergente.";
+        }
+      },
+      {
+        type: "hat_mismatch",
+        apply: () => {
+          gameState.currentVisitor.quepe =
+            base.quepe === "Sim" ? "Nao" : "Sim";
+
+          gameState.impostorReason =
+            "Aparência divergente: uso de quepe.";
+        }
+      },
+      {
+        type: "glasses_mismatch",
+        apply: () => {
+          gameState.currentVisitor.oculos =
+            base.oculos === "Sim" ? "Nao" : "Sim";
+
+          gameState.impostorReason =
+            "Aparência divergente: uso de óculos.";
+        }
+      }
+    ];
+
+    const flaw = flaws[Math.floor(Math.random() * flaws.length)];
+
+    flaw.apply();
+    gameState.visitorCase = flaw.type;
+  }
   renderVisitorUI();
   updateHUD();
 }
@@ -379,7 +453,7 @@ function callApartment() {
   later(() => {
     if (gameState.neighborAlreadyInside) {
       result.innerHTML = '<strong class="status-bad">"Eu já estou dentro do quartel! Quem está aí no portão?!"</strong>';
-    } else if (gameState.isImpostor && gameState.impostorReason.includes("Alojamento")) {
+   } else if (gameState.visitorCase === "wrong_apartment") {
       result.innerHTML = '<strong class="status-bad">Quem atendeu o rádio afirma que não conhece o solicitante.</strong>';
     } else {
       result.textContent = "Ninguém atendeu. Não foi possível confirmar a identidade.";

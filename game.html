@@ -49,8 +49,8 @@
                     <strong id="hud-lives" class="life-value">♥ ♥ ♥</strong>
                 </div>
 
-                <button type="button" id="btn-menu" class="menu-button"   data-hover-sound="hover" data-tooltip="MENU" aria-label="Abrir menu"
-                    aria-haspopup="dialog" aria-controls="menu-modal" onclick="openMenuModal()">
+                <button type="button" id="btn-menu" class="menu-button" data-hover-sound="hover" data-tooltip="MENU"
+                    aria-label="Abrir menu" aria-haspopup="dialog" aria-controls="menu-modal" onclick="openMenuModal()">
                     <i></i><i></i><i></i>
                 </button>
             </div>
@@ -323,11 +323,32 @@
         </section>
     </div>
 
-    <script src="js/portraits.js"></script>
+    <!-- Configurações e recursos -->
     <script src="js/settings.js"></script>
+    <script src="js/portraits.js"></script>
     <script src="js/sounds.js"></script>
     <script src="js/ambient.js"></script>
-    <script src="js/script.js"></script>
+
+
+    <!-- Core -->
+    <script src="js/core/game-state.js"></script>
+    <script src="js/core/database.js"></script>
+    <script src="js/core/utils.js"></script>
+
+    <!-- Sistemas -->
+    <script src="js/systems/timer.js"></script>
+    <script src="js/systems/visitor.js"></script>
+    <script src="js/systems/sql.js"></script>
+    <script src="js/systems/decision.js"></script>
+
+    <!-- Interface -->
+    <script src="js/interface/visitor-ui.js"></script>
+    <script src="js/interface/hud.js"></script>
+    <script src="js/interface/modals.js"></script>
+    <script src="js/interface/building.js"></script>
+
+    <!-- Controle principal -->
+    <script src="js/game.js"></script>
 </body>
 
 </html>
