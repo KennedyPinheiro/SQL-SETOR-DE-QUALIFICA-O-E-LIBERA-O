@@ -10,6 +10,11 @@
 function generateVisitor() {
   const residents = alasql("SELECT * FROM militares");
 
+  if (!residents.length) {
+    console.error("Nenhum residente encontrado no banco de dados.");
+    return;
+  }
+
   const base = residents[
     Math.floor(Math.random() * residents.length)
   ];
@@ -24,6 +29,7 @@ function generateVisitor() {
     [base.id_doc]
   )[0];
 
+
   /* ========================================
      ESTADO INICIAL DO VISITANTE
   ======================================== */
@@ -36,7 +42,7 @@ function generateVisitor() {
   gameState.visitorCase = "legitimate";
 
   gameState.neighborAlreadyInside =
-    log.status_atual === "Dentro do quartel";
+    log?.status_atual === "Dentro do quartel";
 
 
   /* ========================================
@@ -55,9 +61,10 @@ function generateVisitor() {
     return;
   }
 
+
   // Residente sem autorização
 
-  if (auth.autorizado === "Nao") {
+  if (!auth || auth.autorizado === "Nao") {
     gameState.isImpostor = true;
     gameState.visitorCase = "unauthorized";
 
@@ -73,6 +80,11 @@ function generateVisitor() {
   ======================================== */
 
   const config = gameState.modeConfig[gameState.mode];
+
+  if (!config) {
+    console.error("Configuração de dificuldade inválida.");
+    return;
+  }
 
   if (Math.random() < config.impostorChance) {
     gameState.isImpostor = true;
