@@ -47,7 +47,7 @@ const suspicionEvidence = {
 
 
 /* ========================================
-   REGISTRO DE EVIDÊNCIAS
+   DESCOBERTA DE EVIDÊNCIAS
 ======================================== */
 
 function discoverEvidence(evidenceKey) {
@@ -55,37 +55,66 @@ function discoverEvidence(evidenceKey) {
 
     if (!evidence) return false;
 
-    /* Evita contabilizar a mesma evidência duas vezes */
+    /* Evita contabilizar evidências duplicadas */
 
     if (gameState.discoveredEvidence.has(evidenceKey)) {
         return false;
     }
 
-    /* Registra a evidência descoberta */
+    /* Registra evidência */
 
     gameState.discoveredEvidence.add(evidenceKey);
+    // Efeito sonoro de nova evidência
+    if (typeof window.playSound === "function") {
+        window.playSound("select");
+    }
 
-    /* Atualiza a suspeita */
+    /* Atualiza pontuação */
 
     gameState.suspicion = Math.min(
         100,
         gameState.suspicion + evidence.points
     );
 
+    /* Atualiza interface */
+
+    if (typeof updateSuspicionUI === "function") {
+        updateSuspicionUI();
+    }
+
+    /* Anima atualização */
+
+    if (typeof animateSuspicion === "function") {
+        animateSuspicion();
+    }
+
     return true;
 }
 
-
 /* ========================================
-   REDEFINIÇÃO DA SUSPEITA
+   RESET DO SISTEMA DE SUSPEITA
 ======================================== */
 
 function resetSuspicion() {
+    /* Zera pontuação */
+
     gameState.suspicion = 0;
+
+    /* Limpa evidências */
+
     gameState.discoveredEvidence = new Set();
+
+    /* Atualiza interface */
+
+    /* Reinicia controle de alertas */
+
+    if (typeof lastSuspicionAlertLevel !== "undefined") {
+        lastSuspicionAlertLevel = "low";
+    }
+    if (typeof updateSuspicionUI === "function") {
+        updateSuspicionUI();
+    }
 }
-
-
 /* ========================================
    CLASSIFICAÇÃO DA SUSPEITA
 ======================================== */

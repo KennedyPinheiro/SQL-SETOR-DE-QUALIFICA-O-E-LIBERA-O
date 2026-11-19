@@ -130,9 +130,6 @@ function runPlayerQuery() {
     return;
   }
 
-  /* ========================================
-     ANÁLISE DE EVIDÊNCIAS
-  ======================================== */
 
   analyzeQueryEvidence(normalized, result);
 
@@ -156,14 +153,40 @@ function runPlayerQuery() {
     Array.isArray(result) &&
     result.length > 0;
 
-  /* Análise de evidências */
+  /* ========================================
+     CONTROLE DE CONSULTAS REPETIDAS
+  ======================================== */
 
-  analyzeQueryEvidence(normalized, result);
+  const isRepeatedQuery =
+    gameState.usedQueries.has(normalizedQuery);
 
   const isNewValidQuery =
-    hasResults &&
-    !gameState.usedQueries.has(normalizedQuery);
+    hasResults && !isRepeatedQuery;
 
+  /* Registra consulta válida inédita */
+
+  if (isNewValidQuery) {
+    gameState.successfulQueries++;
+    gameState.usedQueries.add(normalizedQuery);
+  }
+
+  /* Informa quando uma consulta foi repetida */
+
+  if (isRepeatedQuery) {
+    showSqlMessage(
+      "CONSULTA REPETIDA: você já executou essa pesquisa. Nenhum progresso adicional foi contabilizado.",
+      "notice"
+    );
+  }
+  /* ========================================
+     ANÁLISE DE EVIDÊNCIAS
+  ======================================== */
+
+  /* Somente consultas com resultados são analisadas */
+
+  if (hasResults) {
+    analyzeQueryEvidence(normalized, result);
+  }
   if (isNewValidQuery) {
     gameState.successfulQueries++;
 

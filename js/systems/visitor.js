@@ -8,6 +8,10 @@
 ======================================== */
 
 function generateVisitor() {
+
+
+  resetSuspicion();
+
   const residents = alasql("SELECT * FROM militares");
 
   if (!residents.length) {
@@ -28,6 +32,7 @@ function generateVisitor() {
     "SELECT status_atual FROM logs_portao WHERE id_doc = ?",
     [base.id_doc]
   )[0];
+
 
 
   /* ========================================

@@ -21,13 +21,26 @@ function makeDecision(approved) {
   ======================================== */
 
   if (approved && !gameState.isImpostor) {
-    gameState.score += 100;
+    const basePoints = 100;
+    let investigationBonus = 0;
+
+    if (gameState.suspicion === 0) {
+      investigationBonus = 50;
+    } else if (gameState.suspicion <= 20) {
+      investigationBonus = 25;
+    }
+    const totalPoints = basePoints + investigationBonus;
+
+    gameState.score += totalPoints;
 
     toastMessage(
-      "MILITAR LEGÍTIMO AUTORIZADO. +100 PONTOS",
+      "MILITAR LEGÍTIMO AUTORIZADO. " +
+      `+${basePoints} PONTOS` +
+      (investigationBonus > 0
+        ? ` +${investigationBonus} BÔNUS DE VERIFICAÇÃO`
+        : ""),
       true
     );
-
     alasql(
       "UPDATE logs_portao SET status_atual = 'Dentro do quartel' WHERE id_doc = ?",
       [gameState.realNeighbor.id_doc]
@@ -35,16 +48,35 @@ function makeDecision(approved) {
   }
 
   /* ========================================
-     INFILTRADO IDENTIFICADO
+    INFILTRADO IDENTIFICADO
   ======================================== */
 
   else if (!approved && gameState.isImpostor) {
-    gameState.score += 150;
+    const basePoints = 150;
+    let investigationBonus = 0;
+
+    if (gameState.suspicion >= 80) {
+      investigationBonus = 100;
+    } else if (gameState.suspicion >= 60) {
+      investigationBonus = 75;
+    } else if (gameState.suspicion >= 40) {
+      investigationBonus = 50;
+    } else if (gameState.suspicion >= 20) {
+      investigationBonus = 25;
+    }
+
+    const totalPoints = basePoints + investigationBonus;
+    gameState.score += totalPoints;
+
+    /* Feedback */
 
     toastMessage(
       "INFILTRADO IDENTIFICADO. " +
       gameState.impostorReason +
-      " +150 PONTOS",
+      ` +${basePoints} PONTOS` +
+      (investigationBonus > 0
+        ? ` +${investigationBonus} BÔNUS DE INVESTIGAÇÃO`
+        : ""),
       true
     );
   }

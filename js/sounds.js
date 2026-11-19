@@ -67,9 +67,92 @@
             console.warn(`Falha ao reproduzir ${name}:`, error);
         });
     }
+    /* ========================================
+       ALERTAS SONOROS DE SUSPEITA
+    ======================================== */
 
-    // Disponibiliza a função globalmente
+    let suspicionAudioContext = null;
+
+    function playSuspicionAlert(level) {
+        if (!audioUnlocked) return;
+
+        const settings = getAudioSettings();
+
+        if (!settings.enabled || settings.volume <= 0) return;
+
+        if (level !== "high" && level !== "critical") return;
+
+        const AudioContextClass =
+            window.AudioContext || window.webkitAudioContext;
+
+        if (!AudioContextClass) return;
+
+        if (!suspicionAudioContext) {
+            suspicionAudioContext = new AudioContextClass();
+        }
+
+        const context = suspicionAudioContext;
+
+        if (context.state === "suspended") {
+            context.resume();
+        }
+
+        const volume = Math.max(
+            0,
+            Math.min(1, settings.volume / 100)
+        );
+
+        /* Configuração dos alertas */
+
+        const patterns = {
+            high: [
+                { frequency: 620, duration: 0.13 }
+            ],
+
+            critical: [
+                { frequency: 850, duration: 0.12 },
+                { frequency: 650, duration: 0.12 },
+                { frequency: 850, duration: 0.18 }
+            ]
+        };
+
+        const pattern = patterns[level];
+
+        pattern.forEach((note, index) => {
+            const startTime = context.currentTime + index * 0.18;
+
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+
+            oscillator.type = "sine";
+            oscillator.frequency.value = note.frequency;
+
+            gain.gain.setValueAtTime(0, startTime);
+
+            gain.gain.linearRampToValueAtTime(
+                volume * 0.18,
+                startTime + 0.02
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                startTime + note.duration
+            );
+
+            oscillator.connect(gain);
+            gain.connect(context.destination);
+
+            oscillator.start(startTime);
+            oscillator.stop(startTime + note.duration);
+        });
+    }
+
+    /* ========================================
+       DISPONIBILIZA FUNÇÕES GLOBALMENTE
+    ======================================== */
+
     window.playSound = playSound;
+    window.playSuspicionAlert = playSuspicionAlert;
 
     // Clique e seleção de elementos
     document.addEventListener('click', (event) => {

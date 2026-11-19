@@ -74,7 +74,54 @@
                         </div>
                     </div>
                 </div>
+                <!-- ========================================
+     PAINEL DE SUSPEITA
+======================================== -->
 
+                <section id="suspicion-panel" class="suspicion-panel">
+
+                    <div class="suspicion-header">
+                        <div class="suspicion-title">
+                            <span>ANÁLISE DE SUSPEITA</span>
+                            <small>INTELIGÊNCIA E INVESTIGAÇÃO</small>
+                        </div>
+
+                        <div id="suspicion-level" class="suspicion-level low">
+                            BAIXO
+                        </div>
+                    </div>
+
+                    <div class="suspicion-score-container">
+
+                        <div class="suspicion-score-header">
+                            <span>ÍNDICE DE SUSPEITA</span>
+
+                            <span id="suspicion-score">
+                                0 / 100
+                            </span>
+                        </div>
+
+                        <div class="suspicion-bar-container">
+                            <div id="suspicion-bar" class="suspicion-bar"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="suspicion-evidence-container">
+
+                        <div class="suspicion-evidence-header">
+                            EVIDÊNCIAS IDENTIFICADAS
+                        </div>
+
+                        <div id="suspicion-evidence-list">
+                            <div class="suspicion-empty">
+                                Nenhuma evidência identificada.
+                            </div>
+                        </div>
+
+                    </div>
+
+                </section>
                 <div class="intercom-card">
                     <div class="card-title"><span>◉ RÁDIO</span><span class="muted">CANAL INTERNO</span></div>
                     <div class="intercom-controls">
@@ -345,6 +392,7 @@
     <!-- Interface -->
     <script src="js/interface/visitor-ui.js"></script>
     <script src="js/interface/hud.js"></script>
+    <script src="js/interface/suspicion-ui.js"></script>
     <script src="js/interface/modals.js"></script>
     <script src="js/interface/building.js"></script>
 
