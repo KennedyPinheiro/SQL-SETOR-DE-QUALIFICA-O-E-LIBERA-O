@@ -11,9 +11,12 @@ function showSqlMessage(message, type = "error") {
   const resultArea = document.getElementById("sql-result-area");
   const status = document.getElementById("result-status");
 
+  if (!resultArea) return;
+
   resultArea.innerHTML = "";
 
   const messageElement = document.createElement("div");
+
   messageElement.className = `sql-message ${type}`;
   messageElement.textContent = message;
 
@@ -45,12 +48,15 @@ function runPlayerQuery() {
   const resultArea = document.getElementById("sql-result-area");
   const status = document.getElementById("result-status");
 
+  if (!input || !resultArea) return;
+
   const query = input.value.trim();
 
   if (!query) {
     showSqlMessage("Digite uma consulta SQL.", "error");
     return;
   }
+
 
   /* ========================================
      ANIMAÇÃO DO TERMINAL
@@ -61,6 +67,7 @@ function runPlayerQuery() {
     "is-ready",
     550
   );
+
 
   /* ========================================
      LIMPEZA DA CONSULTA
@@ -75,6 +82,7 @@ function runPlayerQuery() {
     showSqlMessage("Digite uma consulta SQL válida.", "error");
     return;
   }
+
 
   /* ========================================
      VALIDAÇÃO SQL
@@ -93,12 +101,6 @@ function runPlayerQuery() {
     return;
   }
 
-  const allowedTables = [
-    "militares",
-    "lista_hoje",
-    "logs_portao"
-  ];
-
   const tableRegex = /\b(militares|lista_hoje|logs_portao)\b/i;
 
   if (!tableRegex.test(normalized)) {
@@ -109,6 +111,7 @@ function runPlayerQuery() {
 
     return;
   }
+
 
   /* ========================================
      EXECUÇÃO SQL
@@ -127,11 +130,13 @@ function runPlayerQuery() {
     return;
   }
 
+
   /* ========================================
      CONSUMO DE CONSULTAS
   ======================================== */
 
   gameState.queriesRemaining--;
+
 
   /* ========================================
      IDENTIFICAÇÃO DE CONSULTAS VÁLIDAS
@@ -156,12 +161,14 @@ function runPlayerQuery() {
     gameState.usedQueries.add(normalizedQuery);
   }
 
+
   /* ========================================
      ATUALIZA HUD E PROGRESSO
   ======================================== */
 
   updateQueriesHUD();
   updateSqlProgress();
+
 
   /* ========================================
      CRONÔMETRO DE DECISÃO
@@ -171,6 +178,7 @@ function runPlayerQuery() {
     startDecisionTimer();
   }
 
+
   /* ========================================
      STATUS DA CONSULTA
   ======================================== */
@@ -178,6 +186,7 @@ function runPlayerQuery() {
   if (status) {
     status.textContent = "CONSULTA CONCLUÍDA";
   }
+
 
   /* ========================================
      RESULTADOS
@@ -189,6 +198,7 @@ function runPlayerQuery() {
     const emptyMessage = document.createElement("p");
 
     emptyMessage.className = "empty-result";
+
     emptyMessage.textContent =
       "Consulta executada, mas nenhum registro foi encontrado.";
 
@@ -196,6 +206,7 @@ function runPlayerQuery() {
 
     return;
   }
+
 
   /* ========================================
      CONSTRUÇÃO DA TABELA
@@ -208,6 +219,7 @@ function runPlayerQuery() {
 
   const table = document.createElement("table");
   table.className = "sql-result-table";
+
 
   /* Cabeçalho */
 
@@ -223,6 +235,7 @@ function runPlayerQuery() {
   });
 
   thead.appendChild(headerRow);
+
 
   /* Corpo */
 
@@ -253,6 +266,7 @@ function runPlayerQuery() {
   wrapper.appendChild(table);
   resultArea.appendChild(wrapper);
 
+
   /* ========================================
      ANIMAÇÃO DOS RESULTADOS
   ======================================== */
@@ -271,6 +285,8 @@ function runPlayerQuery() {
 
 function insertTemplate(type) {
   const input = document.getElementById("sql-input");
+
+  if (!input) return;
 
   const templates = {
 
