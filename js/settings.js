@@ -18,10 +18,19 @@
   }
 
   let settings = readSettings();
-  function persist() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); } catch (error) { console.warn("Não foi possível salvar as configurações.", error); }
+ function persist() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    } catch (error) {
+        console.warn("Não foi possível salvar as configurações.", error);
+    }
+
     applySettings();
-  }
+
+    window.dispatchEvent(new CustomEvent("sql-settings-changed", {
+        detail: { ...settings }
+    }));
+}
   function applySettings() {
     document.body.classList.toggle("reduce-motion", !settings.animations);
     const sound = document.getElementById("setting-sound");

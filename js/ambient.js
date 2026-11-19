@@ -3,65 +3,95 @@
 ======================================== */
 
 (() => {
-    const tracks = {
+    const TRACKS = {
         home: 'audio/ambient/808988__looplicator__136-bpm-industrial-ambient-loop-13985-wav.wav',
-
         game: 'audio/ambient/822609__looplicator__33-bpm-industrial-ambient-loop-14727-wav.wav'
     };
 
-    // Identifica a página atual
     const currentPage = document.getElementById('start-screen')
         ? 'home'
         : 'game';
 
-    const audio = new Audio(tracks[currentPage]);
+    const audio = new Audio(TRACKS[currentPage]);
 
     audio.loop = true;
     audio.preload = 'auto';
 
-    // Atualiza o volume
-    function updateVolume() {
+    let userInteracted = false;
+
+    // Consulta as configurações
+    function getMusicSettings() {
         const settings = window.getSqlSettings?.();
 
-        const volume = settings?.volume ?? 70;
-
-        audio.volume = (volume / 100) * 0.20;
+        return {
+            enabled: settings?.music ?? true,
+            volume: settings?.volume ?? 50
+        };
     }
 
-    // Sincroniza com as configurações
-    function syncAmbient() {
-        const settings = window.getSqlSettings?.();
+    // Atualiza o volume
+    function updateVolume() {
+        const settings = getMusicSettings();
 
-        if (!settings || !settings.music) {
+        audio.volume = (settings.volume / 100) * 0.20;
+    }
+
+    // Sincroniza a reprodução com as configurações
+    async function syncAmbient() {
+        const settings = getMusicSettings();
+
+        updateVolume();
+
+        if (!settings.enabled) {
             audio.pause();
             return;
         }
 
-        updateVolume();
+        if (!userInteracted) return;
 
         if (audio.paused) {
-            audio.play().catch(() => {});
+            try {
+                await audio.play();
+            } catch (error) {
+                console.warn(
+                    'Não foi possível iniciar a música ambiente:',
+                    error
+                );
+            }
         }
     }
 
-    // Aguarda interação do jogador
-    function startAfterInteraction() {
+    // Aguarda uma interação real do usuário
+    function handleUserInteraction() {
+        userInteracted = true;
         syncAmbient();
-
-        if (!audio.paused) {
-            document.removeEventListener('pointerdown', startAfterInteraction);
-            document.removeEventListener('keydown', startAfterInteraction);
-        }
     }
 
-    document.addEventListener('pointerdown', startAfterInteraction);
-    document.addEventListener('keydown', startAfterInteraction);
+    document.addEventListener(
+        'pointerdown',
+        handleUserInteraction
+    );
 
-    // Escuta alterações nas configurações
-    window.addEventListener('sql-settings-changed', syncAmbient);
+    document.addEventListener(
+        'keydown',
+        handleUserInteraction
+    );
 
-    // Inicialização
+    // Detecta alterações nas configurações
+    window.addEventListener(
+        'sql-settings-changed',
+        syncAmbient
+    );
+
+    // Diagnóstico de carregamento
+    audio.addEventListener('error', () => {
+        console.error(
+            'Erro ao carregar música ambiente:',
+            audio.currentSrc,
+            audio.error
+        );
+    });
+
     updateVolume();
-    syncAmbient();
 
 })();

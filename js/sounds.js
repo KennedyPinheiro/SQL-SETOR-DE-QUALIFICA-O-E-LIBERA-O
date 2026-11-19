@@ -12,6 +12,21 @@
 
     const sounds = {};
 
+    let audioUnlocked = false;
+
+    // Libera o áudio após a primeira interação do usuário.
+    function unlockAudio() {
+        if (audioUnlocked) return;
+
+        audioUnlocked = true;
+
+        Object.values(sounds).forEach(audio => {
+            audio.load();
+        });
+    }
+
+    document.addEventListener('pointerdown', unlockAudio, { once: true });
+    document.addEventListener('keydown', unlockAudio, { once: true });
     // Carrega os efeitos
     Object.entries(SOUND_PATHS).forEach(([name, path]) => {
         const audio = new Audio(path);
@@ -27,7 +42,7 @@
 
         return {
             enabled: settings?.sound ?? true,
-            volume: settings?.volume ?? 50
+            volume: settings?.volume ?? 70
         };
     }
 
@@ -35,26 +50,21 @@
     function playSound(name) {
         const sound = sounds[name];
 
-        if (!sound) return;
+        if (!sound || !audioUnlocked) return;
 
         const settings = getAudioSettings();
 
         if (!settings.enabled) return;
 
-        const volume = Math.max(
-            0,
-            Math.min(1, settings.volume / 100)
-        );
+        const volume = Math.max(0, Math.min(1, settings.volume / 100));
 
         if (volume === 0) return;
 
-        // Clona o áudio para permitir sons sobrepostos
         const audio = sound.cloneNode();
-
         audio.volume = volume;
 
-        audio.play().catch(() => {
-            // Ignora bloqueios de reprodução do navegador
+        audio.play().catch(error => {
+            console.warn(`Falha ao reproduzir ${name}:`, error);
         });
     }
 
