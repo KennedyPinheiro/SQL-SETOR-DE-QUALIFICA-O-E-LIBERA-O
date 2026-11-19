@@ -51,6 +51,10 @@ const gameState = {
     requiredQueries: 2,
     usedQueries: new Set(),
 
+    /* Sistema de suspeita */
+
+    suspicion: 0,
+    discoveredEvidence: new Set(),
     /* Visitante atual */
 
     currentVisitor: null,

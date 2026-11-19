@@ -130,6 +130,11 @@ function runPlayerQuery() {
     return;
   }
 
+  /* ========================================
+     ANÁLISE DE EVIDÊNCIAS
+  ======================================== */
+
+  analyzeQueryEvidence(normalized, result);
 
   /* ========================================
      CONSUMO DE CONSULTAS
@@ -150,6 +155,10 @@ function runPlayerQuery() {
   const hasResults =
     Array.isArray(result) &&
     result.length > 0;
+
+  /* Análise de evidências */
+
+  analyzeQueryEvidence(normalized, result);
 
   const isNewValidQuery =
     hasResults &&
