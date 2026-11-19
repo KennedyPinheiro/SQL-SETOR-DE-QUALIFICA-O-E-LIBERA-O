@@ -19,10 +19,19 @@ function generateVisitor() {
     return;
   }
 
-  const base = residents[
-    Math.floor(Math.random() * residents.length)
+  const availableResidents = residents.filter(
+    resident => resident.id_doc !== gameState.lastVisitorId
+  );
+
+  const visitorPool = availableResidents.length
+    ? availableResidents
+    : residents;
+
+  const base = visitorPool[
+    Math.floor(Math.random() * visitorPool.length)
   ];
 
+  gameState.lastVisitorId = base.id_doc;
   const auth = alasql(
     "SELECT autorizado FROM lista_hoje WHERE id_doc = ?",
     [base.id_doc]
@@ -45,6 +54,7 @@ function generateVisitor() {
   gameState.isImpostor = false;
   gameState.impostorReason = "";
   gameState.visitorCase = "legitimate";
+  gameState.visitorFlaws = [];
 
   gameState.neighborAlreadyInside =
     log?.status_atual === "Dentro do quartel";
@@ -102,73 +112,106 @@ function generateVisitor() {
       "glasses_mismatch"
     ];
 
-    const flaw = flaws[
+    const selectedFlaws = [];
+
+    const firstFlaw = flaws[
       Math.floor(Math.random() * flaws.length)
     ];
 
-    gameState.visitorCase = flaw;
+    selectedFlaws.push(firstFlaw);
 
+    // 30% de chance de receber uma segunda irregularidade.
+    if (Math.random() < 0.35) {
+      const remainingFlaws = flaws.filter(
+        flaw => flaw !== firstFlaw
+      );
+
+      const secondFlaw = remainingFlaws[
+        Math.floor(Math.random() * remainingFlaws.length)
+      ];
+
+      selectedFlaws.push(secondFlaw);
+    }
+
+    gameState.visitorCase = selectedFlaws[0];
+    gameState.visitorFlaws = selectedFlaws;
 
     /* ========================================
        APLICA IRREGULARIDADE
     ======================================== */
 
-    switch (flaw) {
+    selectedFlaws.forEach(flaw => {
+      const previousReason = gameState.impostorReason;
 
-      case "forged_document":
+      switch (flaw) {
 
-        gameState.currentVisitor.id_doc = "9999-XX";
+        case "forged_document":
 
-        gameState.impostorReason =
-          "Número de identificação falsificado.";
+          gameState.currentVisitor.id_doc = "9999-XX";
 
-        break;
+          gameState.impostorReason =
+            "Número de identificação falsificado.";
 
-
-      case "wrong_apartment":
-
-        gameState.currentVisitor.alojamento = "404";
-
-        gameState.impostorReason =
-          "Alojamento divergente do cadastro oficial.";
-
-        break;
+          break;
 
 
-      case "physical_anomaly":
+        case "wrong_apartment":
 
-        gameState.currentVisitor.pele = "Esverdeada";
+          gameState.currentVisitor.alojamento = "404";
 
-        gameState.impostorReason =
-          "Anomalia física: coloração da pele divergente.";
+          gameState.impostorReason =
+            "Alojamento divergente do cadastro oficial.";
 
-        break;
-
-
-      case "hat_mismatch":
-
-        gameState.currentVisitor.quepe =
-          gameState.currentVisitor.quepe === "Sim"
-            ? "Nao"
-            : "Sim";
-
-        gameState.impostorReason =
-          "Aparência divergente: uso de quepe.";
-
-        break;
+          break;
 
 
-      case "glasses_mismatch":
+        case "physical_anomaly":
 
-        gameState.currentVisitor.oculos =
-          gameState.currentVisitor.oculos === "Sim"
-            ? "Nao"
-            : "Sim";
+          gameState.currentVisitor.pele = "Esverdeada";
 
-        gameState.impostorReason =
-          "Aparência divergente: uso de óculos.";
+          gameState.impostorReason =
+            "Anomalia física: coloração da pele divergente.";
 
-        break;
-    }
+          break;
+
+
+        case "hat_mismatch":
+
+          gameState.currentVisitor.quepe =
+            gameState.currentVisitor.quepe === "Sim"
+              ? "Nao"
+              : "Sim";
+
+          gameState.impostorReason =
+            "Aparência divergente: uso de quepe.";
+
+          break;
+
+
+        case "glasses_mismatch":
+
+          gameState.currentVisitor.oculos =
+            gameState.currentVisitor.oculos === "Sim"
+              ? "Nao"
+              : "Sim";
+
+          gameState.impostorReason =
+            "Aparência divergente: uso de óculos.";
+
+          break;
+
+      }
+
+      if (
+        gameState.impostorReason &&
+        gameState.impostorReason !== previousReason
+      ) {
+        gameState.impostorReason = [
+          previousReason,
+          gameState.impostorReason
+        ].filter(Boolean).join(" ");
+      }
+    });
   }
+
 }

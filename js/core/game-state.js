@@ -59,9 +59,11 @@ const gameState = {
 
     currentVisitor: null,
     realNeighbor: null,
+    lastVisitorId: null,
     isImpostor: false,
     visitorCase: null,
     impostorReason: "",
+    visitorFlaws: [],
     neighborAlreadyInside: false,
 
     /* Controle da partida */

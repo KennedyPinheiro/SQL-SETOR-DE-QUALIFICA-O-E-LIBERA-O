@@ -174,6 +174,7 @@ function resultContainsValue(result, column, expectedValue) {
    ANÁLISE DAS CONSULTAS SQL
 ======================================== */
 
+
 function analyzeQueryEvidence(query, result) {
     if (!gameState.currentVisitor || !Array.isArray(result)) {
         return;
@@ -186,12 +187,13 @@ function analyzeQueryEvidence(query, result) {
 
     const sql = query.toLowerCase();
 
-    /* ========================================
-     DOCUMENTO FALSIFICADO
-  ======================================== */
+    const flaws = gameState.visitorFlaws?.length
+        ? gameState.visitorFlaws
+        : [gameState.visitorCase];
 
+    // DOCUMENTO FALSIFICADO
     if (
-        gameState.visitorCase === "forged_document" &&
+        flaws.includes("forged_document") &&
         sql.includes("militares") &&
         sql.includes("id_doc") &&
         sql.includes(visitor.id_doc.toLowerCase()) &&
@@ -204,18 +206,12 @@ function analyzeQueryEvidence(query, result) {
             );
         }
     }
-    /* ========================================
-       ALOJAMENTO DIVERGENTE
-    ======================================== */
 
+    // ALOJAMENTO DIVERGENTE
     if (
-        gameState.visitorCase === "wrong_apartment" &&
+        flaws.includes("wrong_apartment") &&
         sql.includes("militares") &&
-        resultContainsValue(
-            result,
-            "alojamento",
-            real.alojamento
-        ) &&
+        resultContainsValue(result, "alojamento", real.alojamento) &&
         String(visitor.alojamento) !== String(real.alojamento)
     ) {
         if (discoverEvidence("wrong_apartment")) {
@@ -225,20 +221,13 @@ function analyzeQueryEvidence(query, result) {
             );
         }
     }
-    /* ========================================
-    ANOMALIA FÍSICA
- ======================================== */
 
+    // ANOMALIA FÍSICA
     if (
-        gameState.visitorCase === "physical_anomaly" &&
+        flaws.includes("physical_anomaly") &&
         sql.includes("militares") &&
-        resultContainsValue(
-            result,
-            "pele",
-            real.pele
-        ) &&
-        String(visitor.pele).toLowerCase() !==
-        String(real.pele).toLowerCase()
+        resultContainsValue(result, "pele", real.pele) &&
+        String(visitor.pele).toLowerCase() !== String(real.pele).toLowerCase()
     ) {
         if (discoverEvidence("physical_anomaly")) {
             showSqlMessage(
@@ -247,20 +236,13 @@ function analyzeQueryEvidence(query, result) {
             );
         }
     }
-    /* ========================================
-     QUEPE DIVERGENTE
-  ======================================== */
 
+    // QUEPE DIVERGENTE
     if (
-        gameState.visitorCase === "hat_mismatch" &&
+        flaws.includes("hat_mismatch") &&
         sql.includes("militares") &&
-        resultContainsValue(
-            result,
-            "quepe",
-            real.quepe
-        ) &&
-        String(visitor.quepe).toLowerCase() !==
-        String(real.quepe).toLowerCase()
+        resultContainsValue(result, "quepe", real.quepe) &&
+        String(visitor.quepe).toLowerCase() !== String(real.quepe).toLowerCase()
     ) {
         if (discoverEvidence("hat_mismatch")) {
             showSqlMessage(
@@ -270,20 +252,12 @@ function analyzeQueryEvidence(query, result) {
         }
     }
 
-    /* ========================================
-    ÓCULOS DIVERGENTES
- ======================================== */
-
+    // ÓCULOS DIVERGENTES
     if (
-        gameState.visitorCase === "glasses_mismatch" &&
+        flaws.includes("glasses_mismatch") &&
         sql.includes("militares") &&
-        resultContainsValue(
-            result,
-            "oculos",
-            real.oculos
-        ) &&
-        String(visitor.oculos).toLowerCase() !==
-        String(real.oculos).toLowerCase()
+        resultContainsValue(result, "oculos", real.oculos) &&
+        String(visitor.oculos).toLowerCase() !== String(real.oculos).toLowerCase()
     ) {
         if (discoverEvidence("glasses_mismatch")) {
             showSqlMessage(
@@ -293,17 +267,13 @@ function analyzeQueryEvidence(query, result) {
         }
     }
 
-    /* ========================================
-    MORADOR JÁ ESTÁ DENTRO
- ======================================== */
-
+    // MORADOR JÁ ESTÁ DENTRO
     if (
-        gameState.visitorCase === "duplicate_inside" &&
+        flaws.includes("duplicate_inside") &&
         sql.includes("logs_portao") &&
         result.some(row =>
             Object.values(row).some(value =>
-                String(value).trim().toLowerCase() ===
-                "dentro do quartel"
+                String(value).trim().toLowerCase() === "dentro do quartel"
             )
         )
     ) {
@@ -314,12 +284,10 @@ function analyzeQueryEvidence(query, result) {
             );
         }
     }
-    /* ========================================
-    SEM AUTORIZAÇÃO
- ======================================== */
 
+    // SEM AUTORIZAÇÃO
     if (
-        gameState.visitorCase === "unauthorized" &&
+        flaws.includes("unauthorized") &&
         sql.includes("lista_hoje") &&
         result.some(row =>
             Object.values(row).some(value =>
