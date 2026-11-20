@@ -68,7 +68,9 @@ const gameState = {
 
     // Eventos aleatórios
     activeEvent: null,
-    eventData: null, eventHistory: [],
+    eventData: null,
+    eventTurnsRemaining: 0,
+    eventHistory: [],
     eventEffects: {
         extraVerification: false,
         priorityVisitor: false,

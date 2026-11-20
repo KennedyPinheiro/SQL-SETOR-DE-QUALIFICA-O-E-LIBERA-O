@@ -4,7 +4,7 @@
 
 /* Chance de ocorrer um evento por turno */
 
-const EVENT_CHANCE = 1.5;
+const EVENT_CHANCE = 0.35;
 
 /* Catálogo de eventos */
 
@@ -38,14 +38,20 @@ const RANDOM_EVENTS = [
 /* ========================================
    SORTEIO DE EVENTOS
 ======================================== */
-
 function triggerRandomEvent() {
-    // Limpa o evento anterior
+    // Não substitui um evento que ainda está ativo
+    if (gameState.activeEvent) {
+        return;
+    }
+
+    // Limpa dados de eventos anteriores
     gameState.activeEvent = null;
     gameState.eventData = null;
+    gameState.eventTurnsRemaining = 0;
 
-    // Remove efeitos do evento anterior
+    // Remove efeitos visuais anteriores
     document.body.classList.remove("system-failure");
+
     // Restaura o terminal SQL
     const sqlInput = document.getElementById("sql-input");
 
@@ -54,36 +60,43 @@ function triggerRandomEvent() {
         sqlInput.placeholder = "Digite sua consulta SQL...";
     }
 
-    // Remove notificações anteriores
-    const previous = document.getElementById(
-        "event-notification"
-    );
+    // Remove notificação anterior
+    const previous = document.getElementById("event-notification");
 
     if (previous) previous.remove();
 
-    // Verifica a chance de ocorrência
+    // Chance de ocorrência
     if (Math.random() >= EVENT_CHANCE) {
         return;
     }
 
-    // Sorteia um evento
+    // Sorteia um evento aleatório
     const index = Math.floor(
         Math.random() * RANDOM_EVENTS.length
     );
 
     const selectedEvent = RANDOM_EVENTS[index];
 
+
+    if (!selectedEvent) return;
+
+    // Registra o evento
     gameState.activeEvent = selectedEvent.id;
     gameState.eventData = { ...selectedEvent };
-    // Ativa os efeitos específicos do evento
+
+    // Sorteia duração entre 2 e 4 turnos
+    gameState.eventTurnsRemaining = Math.floor(
+        Math.random() * 3
+    ) + 2;
+
+  
+
+    // Ativa os efeitos específicos
     if (selectedEvent.id === "system_failure") {
         activateSystemFailure();
+    } else {
+        showEventNotification(selectedEvent);
     }
-
-    // Exibe a notificação na tela
-    showEventNotification(selectedEvent);
-
-    console.log(`[EVENTO] ${selectedEvent.title}`);
 }
 
 /* ========================================
@@ -130,11 +143,56 @@ function activateSystemFailure() {
     const approveButton = document.getElementById("btn-approve");
     const denyButton = document.getElementById("btn-deny");
 
-    if (approveButton) approveButton.disabled = false;
-    if (denyButton) denyButton.disabled = false;
+    if (approveButton) {
+        approveButton.disabled = false;
+    }
+
+    if (denyButton) {
+        denyButton.disabled = false;
+    }
 
     showEventNotification({
         title: "FALHA NO SISTEMA",
         description: "Terminal temporariamente indisponível."
     });
+
+    console.log("[EVENTO] Efeitos da Falha no Sistema ativados.");
+}
+/* ========================================
+   CONTROLE DE DURAÇÃO DOS EVENTOS
+======================================== */
+function updateEventDuration() {
+    if (!gameState.activeEvent) return;
+
+    // Registra o turno que acabou de ser concluído
+    gameState.eventTurnsRemaining--;
+
+    console.log(
+        `[EVENTO] ${gameState.activeEvent} — ${gameState.eventTurnsRemaining} turnos restantes.`
+    );
+
+    // Mantém o evento ativo enquanto houver turnos
+    if (gameState.eventTurnsRemaining > 0) {
+        return;
+    }
+
+    // Encerra o evento
+    const finishedEvent = gameState.activeEvent;
+
+    gameState.activeEvent = null;
+    gameState.eventData = null;
+    gameState.eventTurnsRemaining = 0;
+
+    // Remove efeitos visuais
+    document.body.classList.remove("system-failure");
+
+    // Restaura o terminal SQL
+    const sqlInput = document.getElementById("sql-input");
+
+    if (sqlInput) {
+        sqlInput.disabled = false;
+        sqlInput.placeholder = "Digite sua consulta SQL...";
+    }
+
+    console.log(`[EVENTO] ${finishedEvent} encerrado.`);
 }

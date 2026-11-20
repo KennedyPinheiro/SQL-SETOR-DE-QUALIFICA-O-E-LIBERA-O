@@ -10,6 +10,8 @@
 function nextTurn() {
   if (gameState.gameOver) return;
 
+  updateEventDuration();
+
   const config = gameState.modeConfig[gameState.mode];
 
   /* Cancela chamada pendente do interfone */
@@ -61,9 +63,16 @@ function nextTurn() {
     resultStatus.textContent = "AGUARDANDO COMANDO";
   }
 
-  if (approveButton) approveButton.disabled = true;
-  if (denyButton) denyButton.disabled = true;
+  // Estado dos botões de decisão
+  // Estado dos botões de decisão
+  // Estado inicial dos botões de decisão
+  if (approveButton) {
+    approveButton.disabled = true;
+  }
 
+  if (denyButton) {
+    denyButton.disabled = true;
+  }
   /* Atualiza HUD */
 
   updateQueriesHUD();
@@ -76,6 +85,11 @@ function nextTurn() {
   /* Sorteia evento aleatório */
 
   triggerRandomEvent();
+  // Mantém os botões liberados durante a Falha no Sistema
+  if (gameState.activeEvent === "system_failure") {
+    if (approveButton) approveButton.disabled = false;
+    if (denyButton) denyButton.disabled = false;
+  }
   /* Atualiza interface */
 
   renderVisitorUI();

@@ -167,8 +167,14 @@ function makeDecision(approved) {
      BLOQUEIO DOS BOTÕES
   ======================================== */
 
-  document.getElementById("btn-approve").disabled = true;
-  document.getElementById("btn-deny").disabled = true;
+  const systemFailureActive =
+    gameState.activeEvent === "system_failure";
+
+  document.getElementById("btn-approve").disabled =
+    !systemFailureActive;
+
+  document.getElementById("btn-deny").disabled =
+    !systemFailureActive;
 
   /* ========================================
      GAME OVER
