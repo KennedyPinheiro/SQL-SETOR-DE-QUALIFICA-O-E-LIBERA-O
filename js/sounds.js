@@ -8,13 +8,14 @@
         select: 'audio/interface/mixkit-interface-device-click-2577.wav',
         modal: 'audio/interface/mixkit-interface-hint-notification-911.wav',
         hover: 'audio/interface/hover.wav',
-        priority: 'audio/interface/mixkit-interface-hint-notification-911.wav'
+        priority: 'audio/interface/alarme.wav'
     };
 
     const sounds = {};
 
     let audioUnlocked = false;
-
+    let priorityAudio = null;
+   
     // Libera o áudio após a primeira interação do usuário.
     function unlockAudio() {
         if (audioUnlocked) return;
@@ -47,7 +48,6 @@
         };
     }
 
-    // Reproduz um efeito sonoro
     function playSound(name) {
         const sound = sounds[name];
 
@@ -61,12 +61,39 @@
 
         if (volume === 0) return;
 
+        if (name === "priority") {
+            stopPrioritySound();
+
+            priorityAudio = sound.cloneNode();
+            priorityAudio.volume = volume;
+            priorityAudio.loop = true;
+
+            priorityAudio.play().catch(error => {
+                console.warn("Falha ao reproduzir alarme:", error);
+            });
+
+            return;
+        }
+
         const audio = sound.cloneNode();
         audio.volume = volume;
 
         audio.play().catch(error => {
             console.warn(`Falha ao reproduzir ${name}:`, error);
         });
+    }
+
+
+    /* ========================================
+       INTERROMPER ALARME PRIORITÁRIO
+    ======================================== */
+
+    function stopPrioritySound() {
+        if (!priorityAudio) return;
+
+        priorityAudio.pause();
+        priorityAudio.currentTime = 0;
+        priorityAudio = null;
     }
     /* ========================================
        ALERTAS SONOROS DE SUSPEITA
@@ -154,6 +181,7 @@
 
     window.playSound = playSound;
     window.playSuspicionAlert = playSuspicionAlert;
+    window.stopPrioritySound = stopPrioritySound;
 
     // Clique e seleção de elementos
     document.addEventListener('click', (event) => {

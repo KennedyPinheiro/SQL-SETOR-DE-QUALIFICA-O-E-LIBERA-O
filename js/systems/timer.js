@@ -201,7 +201,7 @@ function stopPriorityTimer() {
         clearInterval(gameState.priorityTimerId);
         gameState.priorityTimerId = null;
     }
-
+    window.stopPrioritySound?.();
     const timer = document.getElementById("priority-timer");
 
     if (timer) {
