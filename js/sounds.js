@@ -7,7 +7,8 @@
         click: 'audio/interface/mixkit-single-classic-click-1116.wav',
         select: 'audio/interface/mixkit-interface-device-click-2577.wav',
         modal: 'audio/interface/mixkit-interface-hint-notification-911.wav',
-        hover: 'audio/interface/hover.wav'
+        hover: 'audio/interface/hover.wav',
+        priority: 'audio/interface/mixkit-interface-hint-notification-911.wav'
     };
 
     const sounds = {};

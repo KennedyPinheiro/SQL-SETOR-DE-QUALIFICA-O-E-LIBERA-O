@@ -3186,7 +3186,13 @@ body.security-alert #suspicion-panel::after {
   color: #ff5252;
   border-color: #ff5252;
 
-  animation: priorityPulse 0.65s infinite alternate;
+  background: rgba(55, 8, 8, 0.96);
+
+  box-shadow:
+    0 0 12px rgba(255, 82, 82, 0.45),
+    0 0 25px rgba(255, 82, 82, 0.25);
+
+  animation: priorityPulse 0.45s infinite alternate;
 }
 
 .priority-timer[hidden] {

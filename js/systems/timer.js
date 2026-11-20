@@ -157,6 +157,12 @@ function startPriorityTimer() {
 
         updatePriorityTimerUI();
 
+        if (
+            gameState.priorityTimerRemaining === 5 ||
+            gameState.priorityTimerRemaining === 3
+        ) {
+            window.playSound?.("priority");
+        }
         if (gameState.priorityTimerRemaining <= 0) {
             stopPriorityTimer();
             triggerPriorityTimeout();
@@ -232,6 +238,7 @@ function triggerPriorityTimeout() {
 
     if (gameState.lives <= 0) {
         gameState.gameOver = true;
+        stopPriorityTimer();
 
         later(() => {
             showGameOver(
