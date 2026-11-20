@@ -139,7 +139,7 @@ function showEventNotification(event) {
         notification.classList.remove("visible");
 
         later(() => notification.remove(), 400);
-    }, 3000);
+    }, 4500);
 }/* ========================================
    EFEITO: FALHA NO SISTEMA
 ======================================== */
