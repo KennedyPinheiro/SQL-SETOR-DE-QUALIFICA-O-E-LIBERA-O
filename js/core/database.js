@@ -111,11 +111,28 @@ function resetVisitorAuthorization(visitorId) {
     ]
   );
 }
+
+function resetMovements() {
+  seedResidents.forEach((resident, i) => {
+    alasql(
+      `UPDATE movimentacoes
+             SET local = ?, horario = ?, atividade = ?
+             WHERE id_doc = ?`,
+      [
+        ["Comando", "Arsenal", "Portaria Central", "Enfermaria", "Alojamento"][i % 5],
+        `${String(8 + i).padStart(2, "0")}:${String((i * 13) % 60).padStart(2, "0")}`,
+        ["Reunião", "Inspeção", "Serviço", "Atendimento", "Descanso"][i % 5],
+        resident.id_doc
+      ]
+    );
+  });
+}
 /* ========================================
    APLICAR CASO INVESTIGATIVO
 ======================================== */
 
 function applyInvestigationCase(visitorId) {
+  resetMovements();
   resetVisitorAuthorization(visitorId);
   const investigation = drawInvestigationCase();
 
@@ -159,30 +176,39 @@ function applyInvestigationCase(visitorId) {
 
 
     case "cross_reference": {
-      const possibleResponsibles = alasql(`
-        SELECT
-            m.id_doc,
-            m.local,
-            m.horario
-        FROM movimentacoes m
-        WHERE m.local <> 'Portaria Central'
-    `).filter(
-        movement => movement.id_doc !== visitorId
+      // Selecionar um responsável diferente do visitante
+      const possibleResponsibles = seedResidents.filter(
+        resident => resident.id_doc !== visitorId
       );
-
-      if (!possibleResponsibles.length) break;
 
       const selectedResponsible = possibleResponsibles[
         Math.floor(Math.random() * possibleResponsibles.length)
       ];
 
+      // Obter o horário original da autorização
+      const authorizationTime = authorization.horario;
+
+      // Registrar o responsável em outro local no mesmo horário
+      alasql(
+        `UPDATE movimentacoes
+         SET local = ?, horario = ?, atividade = ?
+         WHERE id_doc = ?`,
+        [
+          "Arsenal",
+          authorizationTime,
+          "Inspeção",
+          selectedResponsible.id_doc
+        ]
+      );
+
+      // Atualizar a autorização
       alasql(
         `UPDATE autorizacoes
          SET responsavel = ?, horario = ?, setor = ?
          WHERE id_doc = ?`,
         [
           selectedResponsible.id_doc,
-          selectedResponsible.horario,
+          authorizationTime,
           "Portaria Central",
           visitorId
         ]
@@ -219,9 +245,15 @@ function applyInvestigationCase(visitorId) {
 ======================================== */
 
 function setupDatabase() {
-  ["militares", "lista_hoje", "logs_portao", "autorizacoes"].forEach(t =>
-    alasql(`DROP TABLE IF EXISTS ${t}`)
-  );
+  [
+    "militares",
+    "lista_hoje",
+    "logs_portao",
+    "autorizacoes",
+    "movimentacoes"
+  ].forEach(table => {
+    alasql(`DROP TABLE IF EXISTS ${table}`);
+  });
 
   alasql(`
       CREATE TABLE militares (

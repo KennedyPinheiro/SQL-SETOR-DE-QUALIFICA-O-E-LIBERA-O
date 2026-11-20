@@ -55,14 +55,11 @@ function generateVisitor() {
   gameState.impostorReason = "";
   gameState.visitorCase = "legitimate";
   gameState.visitorFlaws = [];
+  gameState.investigationCase = "legitimate";
+  gameState.investigationDescription = "";
   /* ========================================
    CASO INVESTIGATIVO DO VISITANTE
 ======================================== */
-
-  const investigation = applyInvestigationCase(base.id_doc);
-
-  gameState.investigationCase = investigation?.id ?? "legitimate";
-  gameState.investigationDescription = investigation?.description ?? "";
 
   gameState.neighborAlreadyInside =
     log?.status_atual === "Dentro do quartel";
@@ -96,6 +93,16 @@ function generateVisitor() {
 
     return;
   }
+  const investigation = applyInvestigationCase(base.id_doc);
+
+  gameState.investigationCase = investigation?.id ?? "legitimate";
+  gameState.investigationDescription = investigation?.description ?? "";
+
+  if (investigation && investigation.id !== "legitimate") {
+    gameState.isImpostor = true;
+    gameState.visitorCase = investigation.id;
+    gameState.impostorReason = investigation.description;
+  }
 
 
   /* ========================================
@@ -109,7 +116,7 @@ function generateVisitor() {
     return;
   }
 
-  if (Math.random() < config.impostorChance) {
+  if (!gameState.isImpostor && Math.random() < config.impostorChance) {
     gameState.isImpostor = true;
 
     const flaws = [
