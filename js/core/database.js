@@ -159,17 +159,33 @@ function applyInvestigationCase(visitorId) {
 
 
     case "cross_reference": {
-      const possibleResponsibles = seedResidents.filter(
-        resident => resident.id_doc !== visitorId
+      const possibleResponsibles = alasql(`
+        SELECT
+            m.id_doc,
+            m.local,
+            m.horario
+        FROM movimentacoes m
+        WHERE m.local <> 'Portaria Central'
+    `).filter(
+        movement => movement.id_doc !== visitorId
       );
+
+      if (!possibleResponsibles.length) break;
 
       const selectedResponsible = possibleResponsibles[
         Math.floor(Math.random() * possibleResponsibles.length)
       ];
 
       alasql(
-        "UPDATE autorizacoes SET responsavel = ? WHERE id_doc = ?",
-        [selectedResponsible.id_doc, visitorId]
+        `UPDATE autorizacoes
+         SET responsavel = ?, horario = ?, setor = ?
+         WHERE id_doc = ?`,
+        [
+          selectedResponsible.id_doc,
+          selectedResponsible.horario,
+          "Portaria Central",
+          visitorId
+        ]
       );
 
       break;
