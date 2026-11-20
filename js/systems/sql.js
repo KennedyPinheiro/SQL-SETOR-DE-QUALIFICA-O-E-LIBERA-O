@@ -138,10 +138,6 @@ function runPlayerQuery() {
 
     return;
   }
-
-
-  analyzeQueryEvidence(normalized, result);
-
   /* ========================================
      CONSUMO DE CONSULTAS
   ======================================== */
@@ -196,12 +192,6 @@ function runPlayerQuery() {
   if (hasResults) {
     analyzeQueryEvidence(normalized, result);
   }
-  if (isNewValidQuery) {
-    gameState.successfulQueries++;
-
-    gameState.usedQueries.add(normalizedQuery);
-  }
-
 
   /* ========================================
      ATUALIZA HUD E PROGRESSO
