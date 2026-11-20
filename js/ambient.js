@@ -25,14 +25,13 @@
 
         return {
             enabled: settings?.music ?? true,
-            volume: settings?.volume ?? 50
+            volume: settings?.musicVolume ?? 25
         };
     }
-
     function updateVolume() {
         const { volume } = getMusicSettings();
 
-        audio.volume = Math.max(0, Math.min(1, volume / 100)) * 0.40;
+        audio.volume = Math.max(0, Math.min(1, volume / 100));
     }
 
     async function syncAmbient() {

@@ -178,6 +178,15 @@
                     <label class="settings-row"><span><strong>Música ambiente</strong><small>Preferência para quando a
                                 trilha estiver disponível.</small></span><input id="setting-music" type="checkbox"
                             class="settings-switch"></label>
+                    <label class="settings-row settings-volume">
+                        <span>
+                            <strong>Volume da música</strong>
+                            <small>
+                                <output id="setting-music-volume-value" for="setting-music-volume">25%</output>
+                            </small>
+                        </span>
+                        <input id="setting-music-volume" type="range" min="0" max="100" step="5" value="25">
+                    </label>
                 </section>
                 <section class="settings-group" aria-labelledby="settings-interface-title">
                     <h3 id="settings-interface-title">INTERFACE</h3>
