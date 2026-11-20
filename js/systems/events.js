@@ -198,19 +198,16 @@ function activateSurpriseInspection() {
 function updateEventDuration() {
     if (!gameState.activeEvent) return;
 
-    // Registra o turno que acabou de ser concluído
     gameState.eventTurnsRemaining--;
 
     console.log(
         `[EVENTO] ${gameState.activeEvent} — ${gameState.eventTurnsRemaining} turnos restantes.`
     );
 
-    // Mantém o evento ativo enquanto houver turnos
     if (gameState.eventTurnsRemaining > 0) {
         return;
     }
 
-    // Encerra o evento
     const finishedEvent = gameState.activeEvent;
 
     gameState.activeEvent = null;
