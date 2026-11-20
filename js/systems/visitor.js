@@ -55,6 +55,14 @@ function generateVisitor() {
   gameState.impostorReason = "";
   gameState.visitorCase = "legitimate";
   gameState.visitorFlaws = [];
+  /* ========================================
+   CASO INVESTIGATIVO DO VISITANTE
+======================================== */
+
+  const investigation = applyInvestigationCase(base.id_doc);
+
+  gameState.investigationCase = investigation?.id ?? "legitimate";
+  gameState.investigationDescription = investigation?.description ?? "";
 
   gameState.neighborAlreadyInside =
     log?.status_atual === "Dentro do quartel";

@@ -50,7 +50,154 @@ const investigationCases = [
     weight: 1
   }
 ];
+/* ========================================
+   SORTEIO PONDERADO DE CASOS
+======================================== */
 
+function drawInvestigationCase() {
+  const totalWeight = investigationCases.reduce(
+    (total, investigation) => total + investigation.weight,
+    0
+  );
+
+  let random = Math.random() * totalWeight;
+
+  for (const investigation of investigationCases) {
+    random -= investigation.weight;
+
+    if (random <= 0) {
+      return investigation;
+    }
+  }
+
+  return investigationCases[investigationCases.length - 1];
+}
+/* ========================================
+   RESTAURAR AUTORIZAÇÃO DO VISITANTE
+======================================== */
+
+function resetVisitorAuthorization(visitorId) {
+  const residentIndex = seedResidents.findIndex(
+    resident => resident.id_doc === visitorId
+  );
+
+  if (residentIndex === -1) return;
+
+  const responsible = seedResidents[
+    (residentIndex + 2) % seedResidents.length
+  ];
+
+  const authorization = {
+    id_doc: visitorId,
+    responsavel: responsible.id_doc,
+    horario: `${String(8 + residentIndex).padStart(2, "0")}:${String((residentIndex * 7) % 60).padStart(2, "0")}`,
+    setor: ["Portão Norte", "Portão Sul", "Portaria Central"][residentIndex % 3],
+    motivo: [
+      "Visita familiar",
+      "Entrega de documentos",
+      "Solicitação de atendimento",
+      "Visita autorizada pelo comando"
+    ][residentIndex % 4]
+  };
+
+  alasql(
+    "UPDATE autorizacoes SET responsavel = ?, horario = ?, setor = ?, motivo = ? WHERE id_doc = ?",
+    [
+      authorization.responsavel,
+      authorization.horario,
+      authorization.setor,
+      authorization.motivo,
+      visitorId
+    ]
+  );
+}
+/* ========================================
+   APLICAR CASO INVESTIGATIVO
+======================================== */
+
+function applyInvestigationCase(visitorId) {
+  resetVisitorAuthorization(visitorId);
+  const investigation = drawInvestigationCase();
+
+  const authorization = alasql(
+    "SELECT * FROM autorizacoes WHERE id_doc = ?",
+    [visitorId]
+  )[0];
+
+  if (!authorization) return null;
+
+  switch (investigation.id) {
+
+    case "invalid_authorizer":
+
+      alasql(
+        "UPDATE autorizacoes SET responsavel = ? WHERE id_doc = ?",
+        ["9999-XX", visitorId]
+      );
+
+      break;
+
+
+    case "unauthorized_sector":
+
+      alasql(
+        "UPDATE autorizacoes SET setor = ? WHERE id_doc = ?",
+        ["Área Restrita", visitorId]
+      );
+
+      break;
+
+
+    case "suspicious_time":
+
+      alasql(
+        "UPDATE autorizacoes SET horario = ? WHERE id_doc = ?",
+        ["03:17", visitorId]
+      );
+
+      break;
+
+
+    case "cross_reference": {
+      const possibleResponsibles = seedResidents.filter(
+        resident => resident.id_doc !== visitorId
+      );
+
+      const selectedResponsible = possibleResponsibles[
+        Math.floor(Math.random() * possibleResponsibles.length)
+      ];
+
+      alasql(
+        "UPDATE autorizacoes SET responsavel = ? WHERE id_doc = ?",
+        [selectedResponsible.id_doc, visitorId]
+      );
+
+      break;
+    }
+
+
+    case "multiple_inconsistencies":
+
+      alasql(
+        "UPDATE autorizacoes SET responsavel = ?, setor = ?, horario = ? WHERE id_doc = ?",
+        [
+          "9999-XX",
+          "Área Restrita",
+          "03:17",
+          visitorId
+        ]
+      );
+
+      break;
+
+
+    case "legitimate":
+    default:
+      break;
+  }
+
+  return investigation;
+}
 /* ========================================
   INICIALIZAÇÃO DAS TABELAS
 ======================================== */
@@ -94,6 +241,14 @@ function setupDatabase() {
           motivo STRING
       )
   `);
+  alasql(`
+    CREATE TABLE movimentacoes (
+        id_doc STRING,
+        local STRING,
+        horario STRING,
+        atividade STRING
+    )
+`);
 
   seedResidents.forEach((resident, i) => {
     alasql(
@@ -142,6 +297,21 @@ function setupDatabase() {
         ][i % 4]
       ]
     );
+  });
+  /* ========================================
+   REGISTROS DE MOVIMENTAÇÃO
+======================================== */
+
+  seedResidents.forEach((resident, i) => {
+    const hour = 8 + i;
+    const minute = (i * 13) % 60;
+
+    alasql("INSERT INTO movimentacoes VALUES (?, ?, ?, ?)", [
+      resident.id_doc,
+      ["Comando", "Arsenal", "Portaria Central", "Enfermaria", "Alojamento"][i % 5],
+      `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
+      ["Reunião", "Inspeção", "Serviço", "Atendimento", "Descanso"][i % 5]
+    ]);
   });
   console.table(
     alasql(`
