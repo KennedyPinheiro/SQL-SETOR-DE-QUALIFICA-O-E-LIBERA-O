@@ -98,6 +98,9 @@ function triggerRandomEvent() {
     } else if (selectedEvent.id === "security_alert") {
         activateSecurityAlert();
 
+    } else if (selectedEvent.id === "surprise_inspection") {
+        activateSurpriseInspection();
+
     } else {
         showEventNotification(selectedEvent);
     }
@@ -160,7 +163,6 @@ function activateSystemFailure() {
         description: "Terminal temporariamente indisponível."
     });
 
-    console.log("[EVENTO] Efeitos da Falha no Sistema ativados.");
 }
 
 function activateSecurityAlert() {
@@ -171,7 +173,24 @@ function activateSecurityAlert() {
         description: "Protocolo de segurança elevado. Informações de suspeita temporariamente restritas."
     });
 
-    console.log("[EVENTO] Protocolo de segurança ativado.");
+}
+/* ========================================
+   INSPEÇÃO SURPRESA
+======================================== */
+
+function activateSurpriseInspection() {
+    gameState.requiredQueries++;
+    gameState.queriesRemaining++;
+
+    updateQueriesHUD();
+    updateSqlProgress();
+
+    showEventNotification({
+        title: "INSPEÇÃO SURPRESA",
+        description: "O comando exige uma verificação adicional. Execute uma consulta SQL válida antes de tomar sua decisão."
+    });
+
+    console.log("[EVENTO] Inspeção Surpresa ativada. Uma consulta adicional foi exigida.");
 }
 /* ========================================
    CONTROLE DE DURAÇÃO DOS EVENTOS
@@ -199,7 +218,10 @@ function updateEventDuration() {
     gameState.eventTurnsRemaining = 0;
 
     // Remove efeitos visuais
-    document.body.classList.remove("system-failure");
+    document.body.classList.remove(
+        "system-failure",
+        "security-alert"
+    );
 
     // Restaura o terminal SQL
     const sqlInput = document.getElementById("sql-input");

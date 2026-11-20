@@ -19,9 +19,15 @@ function nextTurn() {
   cancelIntercomCall();
 
   /* Reinicia os dados da investigação */
-
   gameState.queriesRemaining = config.queries;
   gameState.requiredQueries = config.required;
+
+  /* Mantém a exigência durante a Inspeção Surpresa */
+  if (gameState.activeEvent === "surprise_inspection") {
+    gameState.queriesRemaining++;
+    gameState.requiredQueries++;
+  }
+
   gameState.successfulQueries = 0;
   gameState.usedQueries = new Set();
   gameState.decisionLocked = false;
