@@ -91,11 +91,18 @@ function nextTurn() {
   /* Sorteia evento aleatório */
 
   triggerRandomEvent();
+  
+  if (gameState.activeEvent === "priority_visitor") {
+    startPriorityTimer();
+  }
+
   // Mantém os botões liberados durante a Falha no Sistema
   if (gameState.activeEvent === "system_failure") {
     if (approveButton) approveButton.disabled = false;
     if (denyButton) denyButton.disabled = false;
   }
+
+
   /* Atualiza interface */
 
   renderVisitorUI();

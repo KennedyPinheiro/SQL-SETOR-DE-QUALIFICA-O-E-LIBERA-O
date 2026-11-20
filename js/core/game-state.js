@@ -7,7 +7,6 @@
 ======================================== */
 
 const gameState = {
-    /* Dificuldade */
 
     mode: "normal",
 
@@ -70,6 +69,9 @@ const gameState = {
     activeEvent: null,
     eventData: null,
     eventTurnsRemaining: 0,
+    priorityTimerRemaining: 15,
+    priorityTimerRunning: false,
+    priorityTimerId: null,
     eventHistory: [],
     eventEffects: {
         extraVerification: false,

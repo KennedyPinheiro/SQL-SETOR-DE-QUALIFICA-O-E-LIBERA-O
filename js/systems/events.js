@@ -101,6 +101,9 @@ function triggerRandomEvent() {
     } else if (selectedEvent.id === "surprise_inspection") {
         activateSurpriseInspection();
 
+    } else if (selectedEvent.id === "priority_visitor") {
+        activatePriorityVisitor();
+
     } else {
         showEventNotification(selectedEvent);
     }
@@ -189,8 +192,18 @@ function activateSurpriseInspection() {
         title: "INSPEÇÃO SURPRESA",
         description: "O comando exige uma verificação adicional. Execute uma consulta SQL válida antes de tomar sua decisão."
     });
+}
+/* ========================================
+   EVENTO — VISITANTE PRIORITÁRIO
+======================================== */
 
-    console.log("[EVENTO] Inspeção Surpresa ativada. Uma consulta adicional foi exigida.");
+function activatePriorityVisitor() {
+    showEventNotification({
+        title: "VISITANTE PRIORITÁRIO",
+        description: "Este visitante exige atendimento prioritário. Você tem 15 segundos para tomar uma decisão."
+    });
+
+   
 }
 /* ========================================
    CONTROLE DE DURAÇÃO DOS EVENTOS
@@ -200,15 +213,15 @@ function updateEventDuration() {
 
     gameState.eventTurnsRemaining--;
 
-    console.log(
-        `[EVENTO] ${gameState.activeEvent} — ${gameState.eventTurnsRemaining} turnos restantes.`
-    );
-
+    
     if (gameState.eventTurnsRemaining > 0) {
         return;
     }
-
     const finishedEvent = gameState.activeEvent;
+
+    if (finishedEvent === "priority_visitor") {
+        stopPriorityTimer();
+    }
 
     gameState.activeEvent = null;
     gameState.eventData = null;

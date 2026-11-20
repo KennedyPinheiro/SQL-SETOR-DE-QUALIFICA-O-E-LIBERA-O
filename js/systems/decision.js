@@ -13,6 +13,7 @@ function makeDecision(approved) {
   gameState.decisionLocked = true;
 
   stopDecisionTimer();
+  stopPriorityTimer();;
 
   const toast = document.getElementById("toast-message");
 
