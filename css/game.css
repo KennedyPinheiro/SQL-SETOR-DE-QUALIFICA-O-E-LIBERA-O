@@ -3098,13 +3098,62 @@ body.system-failure .terminal-actions button {
   opacity: 0.4;
   cursor: not-allowed;
 }
+
 /* ========================================
    FALHA NO SISTEMA — ANÁLISE DE SUSPEITA
 ======================================== */
 
 body.system-failure #suspicion-panel {
-    filter: grayscale(1) brightness(0.45);
-    opacity: 0.35;
-    pointer-events: none;
-    transition: opacity 0.4s ease, filter 0.4s ease;
+  filter: grayscale(1) brightness(0.45);
+  opacity: 0.35;
+  pointer-events: none;
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+/* ========================================
+   ALERTA DE SEGURANÇA — INFORMAÇÕES RESTRITAS
+======================================== */
+
+body.security-alert #suspicion-level,
+body.security-alert #suspicion-score {
+  filter: blur(6px);
+  opacity: 0.2;
+  user-select: none;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* ========================================
+   ALERTA DE SEGURANÇA — ANÁLISE RESTRITA
+======================================== */
+
+body.security-alert #suspicion-panel {
+  position: relative;
+}
+
+body.security-alert #suspicion-panel>* {
+  filter: blur(8px);
+  opacity: 0.12;
+  pointer-events: none;
+  user-select: none;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+body.security-alert #suspicion-panel::after {
+  content: "ACESSO RESTRITO\A PROTOCOLO DE SEGURANÇA ATIVO";
+  white-space: pre-line;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #ff5252;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  line-height: 2;
+  background: rgba(10, 10, 10, 0.55);
+  border: 1px solid rgba(255, 82, 82, 0.25);
+  z-index: 5;
+  pointer-events: none;
 }

@@ -50,7 +50,7 @@ function triggerRandomEvent() {
     gameState.eventTurnsRemaining = 0;
 
     // Remove efeitos visuais anteriores
-    document.body.classList.remove("system-failure");
+    document.body.classList.remove("system-failure", "security-alert");
 
     // Restaura o terminal SQL
     const sqlInput = document.getElementById("sql-input");
@@ -89,11 +89,15 @@ function triggerRandomEvent() {
         Math.random() * 3
     ) + 2;
 
-  
+
 
     // Ativa os efeitos específicos
     if (selectedEvent.id === "system_failure") {
         activateSystemFailure();
+
+    } else if (selectedEvent.id === "security_alert") {
+        activateSecurityAlert();
+
     } else {
         showEventNotification(selectedEvent);
     }
@@ -158,6 +162,17 @@ function activateSystemFailure() {
 
     console.log("[EVENTO] Efeitos da Falha no Sistema ativados.");
 }
+
+function activateSecurityAlert() {
+    document.body.classList.add("security-alert");
+
+    showEventNotification({
+        title: "ALERTA DE SEGURANÇA",
+        description: "Protocolo de segurança elevado. Informações de suspeita temporariamente restritas."
+    });
+
+    console.log("[EVENTO] Protocolo de segurança ativado.");
+}
 /* ========================================
    CONTROLE DE DURAÇÃO DOS EVENTOS
 ======================================== */
@@ -194,5 +209,5 @@ function updateEventDuration() {
         sqlInput.placeholder = "Digite sua consulta SQL...";
     }
 
-    console.log(`[EVENTO] ${finishedEvent} encerrado.`);
+
 }
