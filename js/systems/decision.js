@@ -184,6 +184,8 @@ function makeDecision(approved) {
   if (gameState.lives <= 0) {
     gameState.gameOver = true;
 
+    window.playSound?.("defeat");
+
     later(() => {
       showGameOver(
         "Você perdeu todas as vidas. O setor de segurança foi comprometido."

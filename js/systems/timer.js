@@ -82,7 +82,9 @@ function triggerExplosion() {
 
     decisionTimerRunning = false;
     gameState.decisionLocked = true;
-
+    if (gameState.lives <= 0) {
+        window.playSound?.("defeat");
+    }
     const approveButton = document.getElementById("btn-approve");
     const denyButton = document.getElementById("btn-deny");
 
@@ -239,7 +241,7 @@ function triggerPriorityTimeout() {
     if (gameState.lives <= 0) {
         gameState.gameOver = true;
         stopPriorityTimer();
-
+        window.playSound?.("defeat");
         later(() => {
             showGameOver(
                 "Você perdeu todas as vidas por não atender os visitantes prioritários a tempo."
