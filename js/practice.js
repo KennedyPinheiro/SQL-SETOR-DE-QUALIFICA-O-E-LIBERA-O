@@ -96,25 +96,47 @@ function renderPracticeTables() {
   if (!container) return;
 
   container.replaceChildren();
-  Object.entries(practiceSchemas).forEach(([table, schema]) => {
-    const rows = alasql(`SELECT COUNT(*) AS total FROM ${table}`)[0]?.total ?? 0;
+  const tables = Object.entries(alasql.tables || {})
+    .filter(([name, info]) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(name) && Array.isArray(info?.data))
+    .map(([name, info]) => {
+      const schema = practiceSchemas[name];
+      const columns = schema?.columns || (info.columns || [])
+        .map(column => typeof column === "string" ? column : column.columnid || column.name)
+        .filter(Boolean);
+      const rowColumns = info.data[0] ? Object.keys(info.data[0]) : [];
+      return {
+        name,
+        description: schema?.description || "Tabela criada nesta sessão",
+        columns: columns.length ? columns : rowColumns,
+        rows: info.data.length
+      };
+    });
+
+  tables.forEach(({ name, description, columns, rows }) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "practice-table-button";
-    button.setAttribute("aria-label", `Consultar ${table}, ${rows} registros`);
-    button.innerHTML = `<strong>${table}</strong><small>${schema.description}<br>${schema.columns.join(" · ")}<br>${rows} REGISTROS</small>`;
+    button.setAttribute("aria-label", `Consultar ${name}, ${rows} registros`);
+    button.innerHTML = `<strong>${name}</strong><small>${description}<br>${columns.join(" · ") || "Sem colunas"}<br>${rows} REGISTROS</small>`;
     button.addEventListener("click", () => {
       const input = document.getElementById("practice-query");
-      input.value = `SELECT *\nFROM ${table}\nLIMIT 20;`;
+      input.value = `SELECT *\nFROM ${name}\nLIMIT 20;`;
       input.focus();
     });
     container.appendChild(button);
   });
+
+  const countLabel = `${tables.length} TABELAS`;
+  document.getElementById("practice-table-count").textContent = countLabel;
+  document.getElementById("practice-live-table-count").textContent = countLabel;
 }
 
 function setupPracticeDatabase() {
-  Object.keys(practiceSchemas).forEach(table => {
-    alasql(`DROP TABLE IF EXISTS ${table}`);
+  Object.entries(alasql.tables || {}).forEach(([table, info]) => {
+    if (Array.isArray(info?.data)) {
+      const safeName = table.replace(/]/g, "]]" );
+      alasql(`DROP TABLE IF EXISTS [${safeName}]`);
+    }
   });
 
   alasql("CREATE TABLE pessoal (matricula STRING, nome STRING, patente STRING, setor STRING, alojamento STRING, situacao STRING)");
@@ -187,37 +209,110 @@ function renderPracticeResults(rows) {
   results.appendChild(table);
 }
 
+function splitSqlStatements(script) {
+  const statements = [];
+  let current = "";
+  let quote = null;
+  let lineComment = false;
+  let blockComment = false;
+
+  for (let i = 0; i < script.length; i++) {
+    const char = script[i];
+    const next = script[i + 1];
+
+    if (lineComment) {
+      if (char === "\n") {
+        lineComment = false;
+        current += "\n";
+      }
+      continue;
+    }
+    if (blockComment) {
+      if (char === "*" && next === "/") {
+        blockComment = false;
+        i++;
+      }
+      continue;
+    }
+    if (quote) {
+      current += char;
+      if (char === quote) {
+        if (next === quote) {
+          current += next;
+          i++;
+        } else {
+          quote = null;
+        }
+      } else if (char === "\\" && next) {
+        current += next;
+        i++;
+      }
+      continue;
+    }
+    if (char === "-" && next === "-") {
+      lineComment = true;
+      i++;
+      continue;
+    }
+    if (char === "/" && next === "*") {
+      blockComment = true;
+      i++;
+      continue;
+    }
+    if (char === "'" || char === '"' || char === "`") {
+      quote = char;
+      current += char;
+      continue;
+    }
+    if (char === ";") {
+      if (current.trim()) statements.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+
+  if (current.trim()) statements.push(current.trim());
+  return statements;
+}
+
 function runPracticeQuery() {
   const input = document.getElementById("practice-query");
   const status = document.getElementById("practice-result-status");
   const resultMeta = document.getElementById("practice-result-meta");
-  const normalized = input.value
-    .replace(/--.*$/gm, "")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .trim();
+  const statements = splitSqlStatements(input.value);
 
-  if (!normalized) {
-    setPracticeMessage("Digite uma consulta SELECT para começar.");
+  if (!statements.length) {
+    setPracticeMessage("Digite uma instrução SQL para começar.");
     return;
   }
 
-  if (!/^SELECT\b/i.test(normalized) || /;[\s\S]*\S/.test(normalized.replace(/;\s*$/, ""))) {
-    setPracticeMessage("O modo de prática aceita uma consulta SELECT por execução.", "CONSULTA NÃO EXECUTADA", true);
-    return;
-  }
-
-  let rows;
-  try {
-    rows = alasql(normalized);
-  } catch (error) {
-    setPracticeMessage(`Erro SQL: ${error.message}`, "ERRO SQL", true);
-    return;
+  let lastTabularResult = null;
+  for (let i = 0; i < statements.length; i++) {
+    try {
+      const result = alasql(statements[i]);
+      if (Array.isArray(result) && result.every(row => row && typeof row === "object" && !Array.isArray(row))) {
+        lastTabularResult = result;
+      }
+    } catch (error) {
+      practiceQueryCount++;
+      renderPracticeTables();
+      setPracticeMessage(`Erro na instrução ${i + 1} de ${statements.length}: ${error.message}`, "ERRO SQL", true);
+      resultMeta.textContent = `${i} de ${statements.length} instruções concluídas antes do erro · ${practiceQueryCount} execuções nesta sessão`;
+      return;
+    }
   }
 
   practiceQueryCount++;
-  renderPracticeResults(rows);
-  status.textContent = "CONSULTA CONCLUÍDA";
-  resultMeta.textContent = `${Array.isArray(rows) ? rows.length : 0} registros retornados · ${practiceQueryCount} consultas executadas`;
+  renderPracticeTables();
+  if (lastTabularResult) {
+    renderPracticeResults(lastTabularResult);
+  } else {
+    setPracticeMessage("Instruções executadas. Nenhuma delas retornou uma tabela de resultados.", "SCRIPT CONCLUÍDO");
+  }
+  status.textContent = statements.length > 1 ? "SCRIPT CONCLUÍDO" : "CONSULTA CONCLUÍDA";
+  const rowCount = lastTabularResult?.length ?? 0;
+  resultMeta.textContent = `${statements.length} instrução(ões) executada(s) · ${rowCount} registros na última saída · ${practiceQueryCount} execuções nesta sessão`;
 }
 
 setupPracticeDatabase();
@@ -237,9 +332,50 @@ document.querySelectorAll("[data-practice-template]").forEach(button => {
     const input = document.getElementById("practice-query");
     if (type === "clear") {
       input.value = "";
+    } else if (type === "reset-db") {
+      setupPracticeDatabase();
+      renderPracticeTables();
+      setPracticeMessage("Banco restaurado com as cinco tabelas e dados originais do treino.", "BANCO RESTAURADO");
     } else {
       input.value = practiceTemplates[type] || "";
     }
     input.focus();
   });
+});
+
+document.getElementById("practice-import-button")?.addEventListener("click", () => {
+  document.getElementById("practice-import-file")?.click();
+});
+
+document.getElementById("practice-import-file")?.addEventListener("change", async event => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const input = document.getElementById("practice-query");
+  try {
+    input.value = await file.text();
+    input.focus();
+    document.getElementById("practice-result-status").textContent = "SCRIPT IMPORTADO";
+    document.getElementById("practice-result-meta").textContent = `${file.name} carregado · revise e pressione EXECUTAR para rodar`;
+  } catch (error) {
+    setPracticeMessage(`Não foi possível ler o arquivo: ${error.message}`, "FALHA NA IMPORTAÇÃO", true);
+  } finally {
+    event.target.value = "";
+  }
+});
+
+document.getElementById("practice-export-button")?.addEventListener("click", () => {
+  const content = document.getElementById("practice-query")?.value || "";
+  if (!content.trim()) {
+    setPracticeMessage("O editor está vazio. Escreva um script SQL antes de exportar.", "NADA PARA EXPORTAR");
+    return;
+  }
+  const blob = new Blob([content], { type: "application/sql;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "pratica-logistica.sql";
+  link.click();
+  URL.revokeObjectURL(url);
+  document.getElementById("practice-result-status").textContent = "SCRIPT EXPORTADO";
+  document.getElementById("practice-result-meta").textContent = "Editor salvo como pratica-logistica.sql";
 });

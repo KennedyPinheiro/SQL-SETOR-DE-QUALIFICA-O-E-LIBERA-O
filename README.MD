@@ -12,7 +12,7 @@ python3 -m http.server 5501
 
 Abra `http://localhost:5501` e escolha uma modalidade:
 
-- **Prática SQL:** abre `practice.html`, com banco didático próprio, cinco tabelas de logística, editor e resultados em uma tela de treino livre. Não usa as tabelas da partida nem tem visitantes, eventos, vidas ou pontuação.
+- **Prática SQL:** abre `practice.html`, com banco didático próprio, editor em tela ampla, explorador de tabelas e resultados. Aceita scripts com várias instruções SQL, além de importar e exportar arquivos `.sql`; tabelas criadas durante a sessão aparecem no explorador. Não usa as tabelas da partida nem tem visitantes, eventos, vidas ou pontuação.
 - **Falha do Sistema:** abre a partida com o evento de falha ativo em todos os turnos. O terminal SQL fica bloqueado; o jogador decide usando identidade, retrato, declaração, perguntas, rádio e arquivo do efetivo.
 - **Clássico:** mantém o ciclo atual de inspeção, investigação SQL e decisão.
 
