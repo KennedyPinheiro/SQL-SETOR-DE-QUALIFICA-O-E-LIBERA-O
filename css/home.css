@@ -15,6 +15,73 @@
     radial-gradient(ellipse at 50% 0%, #34442f 0, #1a231d 48%, #0b100c 100%);
 }
 
+/* Camada ambiente de radar e varredura do terminal */
+.home-radar {
+  position: absolute;
+  z-index: 0;
+  top: 52%;
+  right: -5vw;
+  width: clamp(250px, 39vw, 570px);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid #9ab99a20;
+  border-radius: 50%;
+  opacity: .45;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, transparent 0 19.5%, #9ab99a20 19.7% 20%, transparent 20.2% 39.5%, #9ab99a20 39.7% 40%, transparent 40.2% 59.5%, #9ab99a20 59.7% 60%, transparent 60.2%),
+    linear-gradient(90deg, transparent calc(50% - .5px), #9ab99a20 50%, transparent calc(50% + .5px)),
+    linear-gradient(0deg, transparent calc(50% - .5px), #9ab99a20 50%, transparent calc(50% + .5px));
+  transform: translateY(-50%);
+  mask-image: linear-gradient(90deg, transparent, #000 22%);
+}
+
+.home-radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(from 0deg, transparent 0 78%, #8ebd7720 88%, #a8d78a72 99%, transparent 100%);
+  animation: radar-sweep 12s linear infinite;
+}
+
+.home-radar-center {
+  position: absolute;
+  top: 49%;
+  left: 66%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #e3bd75;
+  box-shadow: 0 0 10px 3px #e3bd7566;
+  animation: radar-contact 3.2s ease-in-out infinite alternate;
+}
+
+.home-scanline {
+  position: absolute;
+  z-index: 0;
+  top: -18%;
+  left: 0;
+  width: 100%;
+  height: 18%;
+  opacity: .32;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, #a9c49b0b 45%, #a9c49b1c 50%, transparent);
+  animation: screen-scan 14s linear infinite;
+}
+
+@keyframes radar-sweep {
+  to { transform: rotate(1turn); }
+}
+
+@keyframes radar-contact {
+  from { opacity: .35; }
+  to { opacity: 1; }
+}
+
+@keyframes screen-scan {
+  to { transform: translateY(700%); }
+}
+
 .start-top {
   flex: none;
   display: flex;
@@ -81,7 +148,12 @@
   height: 7px;
   border-radius: 50%;
   background: #82c58e;
-  box-shadow: 0 0 10px #82c58e
+  box-shadow: 0 0 10px #82c58e;
+  animation: online-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes online-pulse {
+  50% { opacity: .58; box-shadow: 0 0 3px #82c58e; }
 }
 
 .start-content {
@@ -246,6 +318,20 @@
   .mode-card:hover {
     transform: none;
   }
+
+  .home-radar-sweep,
+  .home-radar-center,
+  .home-scanline,
+  .live-dot {
+    animation: none;
+  }
+}
+
+body.reduce-motion .home-radar-sweep,
+body.reduce-motion .home-radar-center,
+body.reduce-motion .home-scanline,
+body.reduce-motion .live-dot {
+  animation: none !important;
 }
 
 @media (max-width: 900px) {

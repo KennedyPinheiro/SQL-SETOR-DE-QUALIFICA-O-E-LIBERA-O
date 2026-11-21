@@ -3078,7 +3078,8 @@ body.system-failure::after {
       rgba(30, 0, 0, 0.25) 65%,
       rgba(0, 0, 0, 0.95) 100%);
 
-  z-index: 8000;
+  /* Efeito de tela fica abaixo dos modais e acima da interface do turno. */
+  z-index: 900;
   pointer-events: none;
 
   animation: systemFailureFlicker 9s infinite;
@@ -3319,7 +3320,8 @@ body.event-security-alert::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 7900;
+  /* Mantém a varredura atrás de diálogos interativos. */
+  z-index: 900;
   pointer-events: none;
   opacity: .16;
   background: repeating-linear-gradient(
