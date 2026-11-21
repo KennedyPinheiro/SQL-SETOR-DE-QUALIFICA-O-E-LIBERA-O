@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#11151a">
+    <title>S.Q.L. — Prática SQL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/practice.css">
+    <script src="https://cdn.jsdelivr.net/npm/alasql@4/dist/alasql.min.js"></script>
+</head>
+<body class="practice-page">
+    <header class="practice-topbar">
+        <a class="practice-brand" href="index.html" aria-label="Voltar à seleção de modos">S.Q.L.<span> / TREINO</span></a>
+        <div class="practice-status"><i></i> BANCO LOCAL PRONTO</div>
+        <a class="practice-exit" href="index.html">VOLTAR AOS MODOS</a>
+    </header>
+
+    <main class="practice-workspace">
+        <aside class="practice-sidebar" aria-labelledby="database-title">
+            <div class="practice-panel-heading">
+                <div><small>EXPLORADOR</small><h1 id="database-title">BANCO DE DADOS</h1></div>
+                <span id="practice-table-count">5 TABELAS</span>
+            </div>
+            <p class="practice-hint">Selecione uma tabela para inserir uma consulta inicial no editor.</p>
+            <div id="practice-tables" class="practice-tables"></div>
+            <div class="practice-sidebar-note">
+                <strong>AMBIENTE LIVRE</strong>
+                <span>Sem limite de consultas, visitantes, eventos ou pontuação. Os dados reiniciam ao recarregar a página.</span>
+            </div>
+        </aside>
+
+        <section class="practice-main" aria-label="Editor e resultado SQL">
+            <section class="practice-editor-panel">
+                <div class="practice-panel-heading">
+                    <div><small>CONSULTA</small><h2>EDITOR SQL</h2></div>
+                    <span>SELECT</span>
+                </div>
+                <div class="practice-toolbar">
+                    <button type="button" data-practice-template="join">EXEMPLO JOIN</button>
+                    <button type="button" data-practice-template="group">EXEMPLO GROUP BY</button>
+                    <button type="button" data-practice-template="clear">LIMPAR</button>
+                </div>
+                <label class="sr-only" for="practice-query">Digite uma consulta SQL</label>
+                <textarea id="practice-query" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="practice-editor-help">SELECT nome, patente, alojamento
+FROM militares
+ORDER BY alojamento
+LIMIT 10;</textarea>
+                <div class="practice-editor-footer">
+                    <small id="practice-editor-help">Uma consulta SELECT por vez · Ctrl + Enter para executar</small>
+                    <button id="practice-run" class="button button-green" type="button">▶ EXECUTAR</button>
+                </div>
+            </section>
+
+            <section class="practice-results-panel" aria-live="polite">
+                <div class="practice-panel-heading">
+                    <div><small>SAÍDA</small><h2>RESULTADOS</h2></div>
+                    <span id="practice-result-status">AGUARDANDO CONSULTA</span>
+                </div>
+                <div id="practice-result-meta" class="practice-result-meta">O resultado da consulta aparecerá aqui.</div>
+                <div id="practice-results" class="practice-results">
+                    <p class="practice-empty">Execute uma consulta para explorar os dados.</p>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="js/core/database.js"></script>
+    <script src="js/practice.js"></script>
+</body>
+</html>

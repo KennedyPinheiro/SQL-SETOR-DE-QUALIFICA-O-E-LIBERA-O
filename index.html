@@ -49,31 +49,33 @@
         </header>
 
         <main class="start-content">
-            <h1>ESSE NÃO É<br><em>DOS NOSSOS.</em></h1>
-            <p class="start-description">Confira as identidades, investigue os registros do quartel com SQL e decida
-                quem pode cruzar o portão.</p>
+            <h1 id="home-headline">ESSE NÃO É<br><em>DOS NOSSOS.</em></h1>
+            <p class="start-description">Treine SQL no banco do quartel, enfrente o terminal em falha contínua ou jogue o turno clássico de controle de acesso.</p>
             <div class="start-divider"></div>
-            <h2>SELECIONE O NÍVEL DE ALERTA</h2>
+            <h2>SELECIONE O MODO DE JOGO</h2>
             <div class="mode-options">
-                <button type="button" aria-pressed="false" class="mode-card" data-mode="facil" data-hover-sound="hover"
-                    data-sound="select"><span class="mode-tag">PROTOCOLO 01</span><strong>FÁCIL</strong><span
-                        class="mode-lives">♥ ♥ ♥ ♥
-                        ♥</span><small>5 vidas · 5 consultas por solicitante<br>1 consulta válida para
-                        decidir</small></button>
-                <button type="button" aria-pressed="true" class="mode-card selected" data-mode="normal"
-                    data-hover-sound="hover" data-sound="select"><span class="mode-tag">PROTOCOLO
-                        02</span><strong>NORMAL</strong><span class="mode-lives">♥ ♥
-                        ♥</span><small>3 vidas · 4 consultas por solicitante<br>2 consultas válidas para
-                        decidir</small></button>
-                <button type="button" aria-pressed="false" class="mode-card" data-mode="dificil"
-                    data-hover-sound="hover" data-sound="select"><span class="mode-tag">PROTOCOLO
-                        03</span><strong>DIFÍCIL</strong><span class="mode-lives">♥</span><small>1 vida · 4 consultas
-                        por solicitante<br>3 consultas válidas
-                        para decidir</small></button>
+                <button type="button" aria-pressed="true" class="mode-card selected" data-mode="classico" data-hover-sound="hover" data-sound="select">
+                    <span class="mode-tag">PROTOCOLO DE ACESSO</span><strong>CLÁSSICO</strong>
+                    <small>Investigue visitantes com SQL, faça perguntas e decida se autoriza, nega ou encaminha.</small>
+                </button>
+                <button type="button" aria-pressed="false" class="mode-card" data-mode="falha" data-hover-sound="hover" data-sound="select">
+                    <span class="mode-tag">CONTINGÊNCIA</span><strong>FALHA DO SISTEMA</strong>
+                    <small>O terminal fica indisponível em todos os turnos. Decida com inspeção, declaração e recursos do quartel.</small>
+                </button>
+                <button type="button" aria-pressed="false" class="mode-card" data-mode="practice" data-hover-sound="hover" data-sound="select">
+                    <span class="mode-tag">AMBIENTE DE TREINO</span><strong>PRÁTICA SQL</strong>
+                    <small>Explore as cinco tabelas e treine consultas em um terminal livre, sem visitantes ou pressão.</small>
+                </button>
             </div>
-            <div class="start-actions"><button type="button" class="button button-green start-button"
-                    id="start-game">INICIAR TURNO →</button><span>O terminal SQL é sua principal ferramenta de
-                    investigação.</span></div>
+            <section id="difficulty-selector" class="difficulty-selector" aria-labelledby="difficulty-heading">
+                <h3 id="difficulty-heading">DIFICULDADE CLÁSSICA</h3>
+                <div class="difficulty-options">
+                    <button type="button" class="difficulty-card" data-difficulty="facil" aria-pressed="false"><strong>FÁCIL</strong><span>♥ ♥ ♥ ♥ ♥</span><small>5 vidas · 5 consultas · meta 1</small></button>
+                    <button type="button" class="difficulty-card selected" data-difficulty="normal" aria-pressed="true"><strong>NORMAL</strong><span>♥ ♥ ♥</span><small>3 vidas · 4 consultas · meta 2</small></button>
+                    <button type="button" class="difficulty-card" data-difficulty="dificil" aria-pressed="false"><strong>DIFÍCIL</strong><span>♥</span><small>1 vida · 4 consultas · meta 3</small></button>
+                </div>
+            </section>
+            <div class="start-actions"><button type="button" class="button button-green start-button" id="start-game">INICIAR TURNO →</button><span id="start-mode-hint">O terminal SQL é sua principal ferramenta de investigação.</span></div>
         </main>
 
         <footer class="start-footer"><span>S.Q.L. TERMINAL | BUILD 0.9.1</span><span>ACESSO RESTRITO</span></footer>
@@ -94,8 +96,8 @@
 
             <div class="home-help-body">
                 <p class="rules-intro">
-                    Você é o sentinela do portão do quartel. Sua missão é identificar
-                    militares legítimos e impedir a entrada de possíveis infiltrados.
+                    Escolha como quer jogar: treine SQL sem pressão, enfrente uma falha
+                    permanente no terminal ou faça a inspeção completa no modo clássico.
                 </p>
 
                 <ol class="rules-list">
@@ -110,9 +112,10 @@
                     <li>
                         <strong>Investigue com SQL</strong>
                         <span>
-                            Utilize o terminal para consultar as tabelas
-                            <code>militares</code>, <code>lista_hoje</code>
-                            e <code>logs_portao</code>.
+                            Explore <code>militares</code>, <code>lista_hoje</code>,
+                            <code>logs_portao</code>, <code>autorizacoes</code> e
+                            <code>movimentacoes</code>. A Prática permite consultar livremente;
+                            no Clássico, investigue visitantes com SQL.
                         </span>
                     </li>
 
@@ -146,9 +149,9 @@
                 <div class="home-help-tip">
                     <strong>ATENÇÃO, OPERADOR</strong>
                     <span>
-                        As consultas SQL válidas e distintas são obrigatórias.
-                        Você precisa atingir o mínimo exigido pelo nível de alerta
-                        antes de tomar uma decisão.
+                        No modo Falha do Sistema, o evento permanece ativo em todos os turnos
+                        e a dificuldade altera somente as vidas. No Clássico, escolha entre
+                        Fácil, Normal e Difícil.
                     </span>
                 </div>
             </div>

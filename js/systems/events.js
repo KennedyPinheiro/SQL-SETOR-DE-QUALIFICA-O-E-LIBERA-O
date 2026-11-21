@@ -62,6 +62,8 @@ function clearEventEffects() {
    SORTEIO DE EVENTOS
 ======================================== */
 function triggerRandomEvent() {
+    if (gameState.gameMode === "falha") return;
+
     // Não substitui um evento que ainda está ativo
     if (gameState.activeEvent) {
         return;
@@ -190,6 +192,17 @@ function showEventNotification(event) {
 function activateSystemFailure() {
     document.body.classList.add("system-failure");
 
+    const sqlInput = document.getElementById("sql-input");
+    const executeButton = document.getElementById("btn-exec-sql");
+
+    if (sqlInput) {
+        sqlInput.disabled = true;
+        sqlInput.placeholder = "SQL bloqueado durante a falha do sistema.";
+    }
+    if (executeButton) {
+        executeButton.disabled = true;
+    }
+
     const approveButton = document.getElementById("btn-approve");
     const denyButton = document.getElementById("btn-deny");
     const referButton = document.getElementById("btn-refer");
@@ -253,6 +266,8 @@ function activatePriorityVisitor() {
    CONTROLE DE DURAÇÃO DOS EVENTOS
 ======================================== */
 function updateEventDuration() {
+    if (gameState.gameMode === "falha") return;
+
     if (!gameState.activeEvent) return;
 
     gameState.eventTurnsRemaining--;
@@ -286,6 +301,8 @@ function updateEventDuration() {
         sqlInput.disabled = false;
         sqlInput.placeholder = "Digite sua consulta SQL...";
     }
+
+    if (typeof updateSqlButton === "function") updateSqlButton();
 
 
 }

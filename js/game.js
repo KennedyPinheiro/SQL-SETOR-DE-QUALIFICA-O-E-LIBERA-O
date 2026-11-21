@@ -12,7 +12,7 @@ function nextTurn({ skipEventRoll = false } = {}) {
 
   updateEventDuration();
 
-  const config = gameState.modeConfig[gameState.mode];
+  const config = getActiveModeConfig();
 
   /* Cancela chamada pendente do interfone */
 
@@ -39,6 +39,7 @@ function nextTurn({ skipEventRoll = false } = {}) {
   /* Atualiza controles */
 
   const callButton = document.getElementById("btn-call");
+  const operationStatus = document.getElementById("operation-status");
   const intercomResult = document.getElementById("intercom-result");
   const destination = document.getElementById("intercom-destination");
   const resultArea = document.getElementById("sql-result-area");
@@ -48,6 +49,11 @@ function nextTurn({ skipEventRoll = false } = {}) {
   const referButton = document.getElementById("btn-refer");
 
   if (callButton) callButton.disabled = false;
+  if (operationStatus && gameState.gameMode === "falha") {
+    operationStatus.textContent = "FALHA DO SISTEMA • CONTÍNUA";
+  } else if (operationStatus) {
+    operationStatus.textContent = "POSTO OPERACIONAL";
+  }
 
   if (intercomResult) {
     intercomResult.textContent =
@@ -147,9 +153,18 @@ function selectMode(mode) {
 ======================================== */
 
 function startGame() {
-  const config = gameState.modeConfig[gameState.mode];
+  const config = getActiveModeConfig();
 
   if (typeof clearEventEffects === "function") clearEventEffects();
+  const sqlInput = document.getElementById("sql-input");
+  if (sqlInput) {
+    sqlInput.disabled = false;
+    sqlInput.placeholder = "Digite sua consulta SQL...";
+  }
+  clearPendingTimers();
+  cancelIntercomCall();
+  stopDecisionTimer();
+
   gameState.activeEvent = null;
   gameState.eventData = null;
   gameState.eventTurnsRemaining = 0;
@@ -163,11 +178,14 @@ function startGame() {
     alteredAuthorization: false
   };
 
-  /* Limpa temporizadores pendentes */
-
-  clearPendingTimers();
-  cancelIntercomCall();
-  stopDecisionTimer();
+  if (gameState.gameMode === "falha") {
+    const failureEvent = RANDOM_EVENTS.find(event => event.id === "system_failure");
+    gameState.activeEvent = "system_failure";
+    gameState.eventData = { ...failureEvent };
+    gameState.eventTurnsRemaining = Infinity;
+    document.body.classList.add("event-system-failure");
+    activateSystemFailure();
+  }
 
   /* Reinicia estado geral */
 
@@ -304,12 +322,20 @@ document.addEventListener("keydown", event => {
 
 const params = new URLSearchParams(window.location.search);
 const requestedMode = params.get("mode");
+const requestedDifficulty = params.get("difficulty");
 
-selectMode(
-  gameState.modeConfig[requestedMode]
-    ? requestedMode
-    : "normal"
-);
+if (requestedMode === "falha" || requestedMode === "classico") {
+  gameState.gameMode = requestedMode;
+  selectMode(
+    gameState.modeConfig[requestedDifficulty]
+      ? requestedDifficulty
+      : "normal"
+  );
+} else {
+  // Compatibilidade com links antigos: ?mode=facil|normal|dificil.
+  gameState.gameMode = "classico";
+  selectMode(gameState.modeConfig[requestedMode] ? requestedMode : "normal");
+}
 
 /* Inicializa partida */
 

@@ -41,8 +41,9 @@ function updateQueriesHUD() {
     document.getElementById("queries-left");
 
   if (queriesLeft) {
-    queriesLeft.textContent =
-      `${gameState.queriesRemaining} CONSULTAS RESTANTES`;
+    queriesLeft.textContent = gameState.gameMode === "falha"
+      ? "SQL BLOQUEADO NESTE MODO"
+      : `${gameState.queriesRemaining} CONSULTAS RESTANTES`;
   }
 
   updateSqlButton();
@@ -54,6 +55,7 @@ function updateQueriesHUD() {
 ======================================== */
 
 function updateSqlProgress() {
+  const modeFailure = gameState.gameMode === "falha";
   const required = Math.max(1, Number(gameState.requiredQueries) || 1);
   const completed = Math.min(
     required,
@@ -63,8 +65,9 @@ function updateSqlProgress() {
     document.getElementById("sql-progress");
 
   if (progress) {
-    progress.textContent =
-      `${completed} / ${required} PESQUISAS DIRECIONADAS`;
+    progress.textContent = modeFailure
+      ? "SQL BLOQUEADO • MODO FALHA"
+      : `${completed} / ${required} PESQUISAS DIRECIONADAS`;
   }
 
   const progressTrack = document.getElementById("sql-progress-track");
@@ -73,25 +76,25 @@ function updateSqlProgress() {
   if (progressTrack) {
     progressTrack.setAttribute("aria-valuemin", "0");
     progressTrack.setAttribute("aria-valuemax", String(required));
-    progressTrack.setAttribute("aria-valuenow", String(completed));
-    progressTrack.setAttribute(
-      "aria-valuetext",
-      `${completed} de ${required} pesquisas direcionadas em fontes diferentes`
-    );
+    progressTrack.setAttribute("aria-valuenow", modeFailure ? "0" : String(completed));
+    progressTrack.setAttribute("aria-valuetext", modeFailure
+      ? "Consultas SQL bloqueadas no modo Falha do Sistema"
+      : `${completed} de ${required} pesquisas direcionadas em fontes diferentes`);
   }
 
   if (progressFill) {
-    progressFill.style.width = `${(completed / required) * 100}%`;
+    progressFill.style.width = modeFailure ? "0%" : `${(completed / required) * 100}%`;
   }
 
   const objective =
     document.getElementById("sql-objective-text");
 
   if (objective) {
-    objective.textContent =
-      gameState.queriesRemaining <= 0
+    objective.textContent = modeFailure
+      ? "FALHA DO SISTEMA ATIVA EM TODOS OS TURNOS: use identidade, declaração, perguntas e arquivo do efetivo para decidir."
+      : gameState.queriesRemaining <= 0
         ? "CONSULTAS ESGOTADAS: decida se autoriza, nega ou encaminha. A barra mede pesquisas; evidências ficam no painel de suspeita."
-        : `Modo ${gameState.modeConfig[gameState.mode].label}: filtre por documento, nome ou alojamento. A barra conta pesquisas em fontes diferentes; evidências SQL aparecem no painel de suspeita.`;
+        : `Modo ${getActiveModeConfig().label}: filtre por documento, nome ou alojamento. A barra conta pesquisas em fontes diferentes; evidências SQL aparecem no painel de suspeita.`;
   }
 
   /* ========================================
@@ -99,6 +102,7 @@ function updateSqlProgress() {
   ======================================== */
 
   const ready =
+    modeFailure ||
     gameState.queriesRemaining <= 0 ||
     gameState.successfulQueries >= gameState.requiredQueries;
 
@@ -140,6 +144,8 @@ function updateSqlButton() {
   if (!executeButton) return;
 
   executeButton.disabled =
+    gameState.gameMode === "falha" ||
+    gameState.activeEvent === "system_failure" ||
     gameState.queriesRemaining <= 0 ||
     gameState.decisionLocked ||
     gameState.gameOver;

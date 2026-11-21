@@ -179,7 +179,10 @@
       INVESTIGAÇÃO INCOMPLETA
     ======================================== */
 
-    if (gameState.successfulQueries < gameState.requiredQueries) {
+    if (
+      gameState.gameMode !== "falha" &&
+      gameState.successfulQueries < gameState.requiredQueries
+    ) {
       gameState.score = Math.max(0, gameState.score - 50);
 
       toast.textContent +=

@@ -12,21 +12,42 @@ let menuReturnFocus = null;
 ======================================== */
 
 function openRulesModal(isIntro = false, fromMenu = false) {
-  const cfg = gameState.modeConfig[gameState.mode];
+  const cfg = getActiveModeConfig();
 
   const plural = (n, one, many) =>
     `${n} ${n === 1 ? one : many}`;
 
   const rulesMode = document.getElementById("rules-mode");
+  const failureMode = gameState.gameMode === "falha";
 
   if (rulesMode) {
-    rulesMode.innerHTML = `
-      <span class="rules-mode-name">MODO ${cfg.label}</span>
-      <span><b>${plural(cfg.lives, "vida", "vidas")}</b></span>
-      <span><b>${plural(cfg.queries, "consulta", "consultas")}</b> por solicitante</span>
-      <span><b>${plural(cfg.required, "consulta válida", "consultas válidas")}</b> para decidir</span>
-    `;
+    rulesMode.innerHTML = failureMode
+      ? `
+          <span class="rules-mode-name">FALHA DO SISTEMA • ${cfg.label}</span>
+          <span><b>${plural(cfg.lives, "vida", "vidas")}</b></span>
+          <span>SQL bloqueado em todos os turnos</span>
+          <span>A dificuldade altera somente as vidas</span>
+        `
+      : `
+          <span class="rules-mode-name">CLÁSSICO • ${cfg.label}</span>
+          <span><b>${plural(cfg.lives, "vida", "vidas")}</b></span>
+          <span><b>${plural(cfg.queries, "consulta", "consultas")}</b> por solicitante</span>
+          <span><b>${plural(cfg.required, "consulta válida", "consultas válidas")}</b> para decidir</span>
+        `;
   }
+
+  const rulesIntro = document.getElementById("rules-intro");
+  if (rulesIntro) {
+    rulesIntro.innerHTML = failureMode
+      ? "A falha no sistema permanece ativa durante toda a partida. Inspecione o visitante e use os recursos disponíveis para decidir sem SQL."
+      : "Você controla o acesso ao quartel. Em cada turno, investigue o solicitante e decida se deve <b>autorizar</b>, <b>negar a entrada</b> ou <b>encaminhar o caso</b>.";
+  }
+
+  document.querySelectorAll("[data-rule-classic]").forEach(rule => {
+    rule.hidden = failureMode;
+  });
+  const failureRule = document.getElementById("rule-failure-mode");
+  if (failureRule) failureRule.hidden = !failureMode;
 
   rulesFromMenu = fromMenu === true;
 

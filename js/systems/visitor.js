@@ -122,7 +122,7 @@ function generateVisitor() {
      CHANCE DE IMPOSTOR
   ======================================== */
 
-  const config = gameState.modeConfig[gameState.mode];
+  const config = getActiveModeConfig();
 
   if (!config) {
     console.error("Configuração de dificuldade inválida.");

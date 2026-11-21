@@ -215,7 +215,7 @@
   padding: clamp(14px, 2.4vh, 34px) clamp(14px, 1.6vw, 26px);
   text-align: left;
   cursor: pointer;
-  min-height: clamp(150px, 22vh, 280px);
+  min-height: clamp(125px, 17vh, 190px);
 }
 
 .mode-tag {
@@ -247,6 +247,68 @@
   font-size: clamp(14px, 1.2vw, 17px);
   line-height: 1.6;
   font-size: 14px;
+}
+
+.difficulty-selector {
+  margin: clamp(12px, 2vh, 22px) auto 0;
+  width: min(880px, 100%);
+}
+
+.difficulty-selector[hidden],
+.difficulty-card[hidden] {
+  display: none;
+}
+
+.difficulty-selector h3 {
+  margin: 0 0 8px;
+  color: #9eaea2;
+  text-align: center;
+  font: 10px var(--mono);
+  letter-spacing: 1.5px;
+}
+
+.difficulty-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.difficulty-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 3px 10px;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid #3d5145;
+  background: #121a16cc;
+  color: #dce6dd;
+  text-align: left;
+  cursor: pointer;
+}
+
+.difficulty-card strong {
+  font: 600 11px var(--mono);
+}
+
+.difficulty-card>span {
+  color: #d27d70;
+  font: 11px var(--mono);
+  white-space: nowrap;
+}
+
+.difficulty-card small {
+  grid-column: 1 / -1;
+  color: #99a79d;
+  font-size: 10px;
+}
+
+.difficulty-card.selected,
+.difficulty-card:hover,
+.difficulty-card:focus-visible {
+  border-color: var(--amber);
+  outline: none;
+  box-shadow: inset 0 0 0 1px #d7a85c55;
 }
 
 .start-actions {
@@ -347,6 +409,10 @@ body.reduce-motion .live-dot {
 
   .mode-card {
     min-height: 0;
+  }
+
+  .difficulty-options {
+    grid-template-columns: 1fr;
   }
 
   .start-online {

@@ -33,7 +33,7 @@
 
             <div class="shift-status">
                 <span class="live-dot"></span>
-                <span>POSTO OPERACIONAL</span>
+                <span id="operation-status">POSTO OPERACIONAL</span>
                 <span class="top-divider"></span>
                 <span id="hud-day">TURNO 01</span>
             </div>
@@ -361,13 +361,14 @@
                 <ol class="rules-list">
                     <li><strong>Observe e leia a declaração</strong><span>Compare o retrato e a fala com os dados da identidade. Se o solicitante disser que está sem documento, o cartão não será apresentado; os dados do cadastro ainda podem ser investigados.</span></li>
                     <li><strong>Faça perguntas</strong><span>Você tem quatro perguntas por solicitante: documento, alojamento, aparência e autorização. Cada uma pode ser usada uma vez. A resposta aparece em <b>Declaração do solicitante</b> como uma afirmação do visitante. Compare-a com documentos e registros: perguntar, por si só, não adiciona evidência.</span></li>
-                    <li><strong>Consulte o banco com SQL</strong><span>Use uma consulta <code>SELECT</code> por execução. As cinco tabelas disponíveis são <code>militares</code>, <code>lista_hoje</code>, <code>logs_portao</code>, <code>autorizacoes</code> e <code>movimentacoes</code>. Pressione <code>Ctrl + Enter</code> ou clique em <b>Executar consulta</b>.</span></li>
-                    <li><strong>Acompanhe o progresso SQL</strong><span>A barra conta pesquisas direcionadas por combinações de tabelas diferentes. Filtre por um dado do solicitante, como documento, nome ou alojamento. Consultas sem filtro ou fontes já investigadas gastam uma tentativa, mas não avançam a meta, mesmo que você mude as colunas ou a formatação. Essa barra mede pesquisas, não evidências.</span></li>
-                    <li><strong>Compare as evidências</strong><span>Confira documento, alojamento, aparência, autorização, lista do dia, registros do portão e movimentações. O painel de suspeita conta as evidências únicas que você confirmou com SQL; o índice mostra os pontos de suspeita acumulados. Uma pesquisa pode avançar a barra sem revelar evidência.</span></li>
+                    <li data-rule-classic><strong>Consulte o banco com SQL</strong><span>Use uma consulta <code>SELECT</code> por execução. As cinco tabelas disponíveis são <code>militares</code>, <code>lista_hoje</code>, <code>logs_portao</code>, <code>autorizacoes</code> e <code>movimentacoes</code>. Pressione <code>Ctrl + Enter</code> ou clique em <b>Executar consulta</b>.</span></li>
+                    <li data-rule-classic><strong>Acompanhe o progresso SQL</strong><span>A barra conta pesquisas direcionadas por combinações de tabelas diferentes. Filtre por um dado do solicitante, como documento, nome ou alojamento. Consultas sem filtro ou fontes já investigadas gastam uma tentativa, mas não avançam a meta, mesmo que você mude as colunas ou a formatação. Essa barra mede pesquisas, não evidências.</span></li>
+                    <li data-rule-classic><strong>Compare as evidências</strong><span>Confira documento, alojamento, aparência, autorização, lista do dia, registros do portão e movimentações. O painel de suspeita conta as evidências únicas que você confirmou com SQL; o índice mostra os pontos de suspeita acumulados. Uma pesquisa pode avançar a barra sem revelar evidência.</span></li>
+                    <li id="rule-failure-mode" hidden><strong>Contingência permanente</strong><span>O terminal SQL fica bloqueado durante todos os turnos. Use o retrato, a declaração, as quatro perguntas, o rádio e o arquivo do efetivo para decidir. Neste modo, a dificuldade altera somente a quantidade de vidas.</span></li>
                     <li><strong>Use o rádio e o arquivo do efetivo</strong><span>O rádio tenta chamar o alojamento informado. No mapa do quartel, selecione um alojamento para ver quem está cadastrado e consultar seus registros.</span></li>
                     <li><strong>Tome a decisão</strong><span>Autorize militares sem irregularidades, negue infiltrados com sinais de identidade falsa e encaminhe ao comando divergências nos registros para confirmação. Um erro de cadastro, sozinho, não prova que o visitante é um infiltrado. A decisão fica disponível ao cumprir a meta de consultas ou quando as tentativas acabam. Uma decisão errada custa <b>1 vida</b>.</span></li>
                     <li><strong>Ganhe pontos e preserve vidas</strong><span>Autorizar um militar legítimo vale <b>+100</b>; identificar um infiltrado vale <b>+150</b>. O índice de suspeita pode aumentar os bônus. Se decidir antes de cumprir a meta de consultas, perde <b>50 pontos</b>. Sem vidas, a partida termina.</span></li>
-                    <li><strong>Fique atento aos eventos</strong><span>Eventos podem exigir uma consulta extra, interromper temporariamente o terminal ou iniciar um prazo para decidir. Leia cada aviso: ele informa a regra especial daquele momento.</span></li>
+                    <li data-rule-classic><strong>Fique atento aos eventos</strong><span>Eventos podem exigir uma consulta extra, interromper temporariamente o terminal ou iniciar um prazo para decidir. Leia cada aviso: ele informa a regra especial daquele momento.</span></li>
                 </ol>
             </div>
             <div class="modal-footer"><span>CONSULTE • COMPARE • DECIDA</span><button id="btn-rules-close"

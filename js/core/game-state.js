@@ -8,7 +8,14 @@
 
 const gameState = {
 
+    gameMode: "classico",
     mode: "normal",
+
+    failureModeLives: {
+        facil: 5,
+        normal: 3,
+        dificil: 1
+    },
 
     modeConfig: {
         facil: {
@@ -93,6 +100,21 @@ const gameState = {
 
     selectedApartment: null
 };
+
+function getActiveModeConfig() {
+    const config = gameState.modeConfig[gameState.mode];
+    if (!config) return null;
+
+    if (gameState.gameMode === "falha") {
+        return {
+            ...config,
+            lives: gameState.failureModeLives[gameState.mode],
+            impostorChance: 0.45
+        };
+    }
+
+    return config;
+}
 
 
 /* ========================================

@@ -72,9 +72,10 @@ function renderVisitorUI() {
   if (sqlInput) {
     sqlInput.value = "";
 
-    sqlInput.placeholder =
-      "-- Investigue o cadastro deste solicitante.\n" +
-      "-- Exemplo: SELECT * FROM militares;";
+    sqlInput.placeholder = gameState.gameMode === "falha"
+      ? "SQL bloqueado durante a falha do sistema."
+      : "-- Investigue o cadastro deste solicitante.\n" +
+        "-- Exemplo: SELECT * FROM militares;";
   }
 
 

@@ -10,11 +10,17 @@ O jogo roda no navegador e não precisa de etapa de build. Na pasta do projeto, 
 python3 -m http.server 5501
 ```
 
-Abra `http://localhost:5501`. A home permite escolher a dificuldade; a partida começa em `game.html`.
+Abra `http://localhost:5501` e escolha uma modalidade:
+
+- **Prática SQL:** abre `practice.html`, com as cinco tabelas, editor e resultados em uma tela de treino livre. Não há visitantes, eventos, vidas nem pontuação.
+- **Falha do Sistema:** abre a partida com o evento de falha ativo em todos os turnos. O terminal SQL fica bloqueado; o jogador decide usando identidade, retrato, declaração, perguntas, rádio e arquivo do efetivo.
+- **Clássico:** mantém o ciclo atual de inspeção, investigação SQL e decisão.
+
+Clássico e Falha do Sistema oferecem Fácil, Normal e Difícil. No modo Falha, a dificuldade muda apenas as vidas: 5, 3 ou 1.
 
 O navegador precisa de acesso à internet para carregar AlaSQL e as fontes do Google Fonts via CDN. Os dados do jogo são criados em memória e reiniciados ao iniciar uma nova partida.
 
-## Ciclo de jogo
+## Ciclo clássico
 
 1. **Inspecione o solicitante:** compare o retrato, a declaração e a identidade militar. Se ele disser que está sem documento, a identidade não é apresentada.
 2. **Faça perguntas:** há quatro perguntas predefinidas por solicitante — documento, alojamento, aparência e autorização. Cada uma só pode ser feita uma vez. As respostas variam e aparecem em **Declaração do solicitante**; são afirmações a comparar com os dados, não evidências automáticas.
@@ -41,6 +47,8 @@ A decisão fica disponível ao atingir a quantidade de consultas exigida pela di
 | Fácil | 5 | 5 | 1 | 28% |
 | Normal | 3 | 4 | 2 | 45% |
 | Difícil | 1 | 4 | 3 | 62% |
+
+No modo **Falha do Sistema**, as dificuldades oferecem respectivamente **5, 3 e 1 vida**. As consultas permanecem bloqueadas em todos os turnos, sem penalidade por investigação incompleta.
 
 ## Banco de dados
 
@@ -93,14 +101,17 @@ A ajuda abre automaticamente no começo da partida. O menu oferece retorno ao jo
 sql-game/
 ├── index.html
 ├── game.html
+├── practice.html
 ├── README.MD
 ├── css/
 │   ├── global.css
 │   ├── home.css
 │   ├── game.css
+│   ├── practice.css
 │   └── leaves.css
 └── js/
     ├── game.js
+    ├── practice.js
     ├── settings.js
     ├── portraits.js
     ├── sounds.js
