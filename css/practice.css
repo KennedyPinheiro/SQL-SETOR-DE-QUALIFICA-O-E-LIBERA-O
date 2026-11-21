@@ -108,7 +108,7 @@
   max-width: none;
   min-height: calc(100vh - 76px);
   display: grid;
-  grid-template-columns: minmax(230px, 300px) minmax(0, 1fr);
+  grid-template-columns: minmax(210px, 260px) minmax(0, 1fr) minmax(220px, 280px);
   gap: 14px;
   margin: 0 auto;
   padding: clamp(12px, 2vw, 24px);
@@ -116,7 +116,8 @@
 
 .practice-sidebar,
 .practice-editor-panel,
-.practice-results-panel {
+.practice-results-panel,
+.practice-history-panel {
   min-width: 0;
   border: 1px solid #354149;
   background: #171d21;
@@ -230,6 +231,78 @@
   display: flex;
   flex-direction: column;
   padding: 15px;
+}
+
+.practice-history-panel {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.practice-history-clear {
+  flex: none;
+  padding: 6px 8px;
+  border: 1px solid #3b484e;
+  background: #20282e;
+  color: #d7a85c;
+  font: 9px var(--mono);
+  cursor: pointer;
+}
+
+.practice-history-clear:hover,
+.practice-history-clear:focus-visible {
+  border-color: #d7a85c;
+  outline: none;
+}
+
+.practice-history-hint {
+  margin: 12px 0;
+  color: #97a3a8;
+  font: 11px/1.5 var(--display);
+}
+
+.practice-history-list {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow: auto;
+}
+
+.practice-history-item {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #303c42;
+  background: #11171a;
+  color: #c8d3cc;
+  text-align: left;
+  cursor: pointer;
+}
+
+.practice-history-item:hover,
+.practice-history-item:focus-visible {
+  border-color: #89a58e;
+  outline: none;
+}
+
+.practice-history-item time {
+  display: block;
+  margin-bottom: 6px;
+  color: #d7a85c;
+  font: 9px var(--mono);
+}
+
+.practice-history-item code {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #b8d2bd;
+  font: 10px/1.45 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
 }
 
 .practice-toolbar {
@@ -362,6 +435,10 @@
     grid-template-columns: 1fr;
   }
 
+  .practice-history-panel {
+    min-height: 260px;
+  }
+
   .practice-sidebar-note {
     margin-top: 16px;
   }
@@ -401,7 +478,8 @@
   }
 
   .practice-editor-panel,
-  .practice-results-panel {
+  .practice-results-panel,
+  .practice-history-panel {
     padding: 11px;
   }
 }

@@ -36,7 +36,7 @@
                 <div><small>EXPLORADOR DE DADOS DIDÁTICOS</small><h1 id="database-title">BANCO DE LOGÍSTICA</h1></div>
                 <span id="practice-table-count">5 TABELAS</span>
             </div>
-            <p class="practice-hint">Este banco didático é separado do jogo. Selecione uma tabela para inserir uma consulta inicial. Scripts podem criar e alterar tabelas durante a sessão.</p>
+            <p class="practice-hint">Este banco didático é separado do jogo. Selecione uma tabela para inserir uma consulta inicial. Scripts podem criar e alterar tabelas durante a sessão. O terminal roda no navegador com o dialeto AlaSQL.</p>
             <div id="practice-tables" class="practice-tables"></div>
             <div class="practice-sidebar-note">
                 <strong>AMBIENTE LIVRE</strong>
@@ -48,7 +48,7 @@
             <section class="practice-editor-panel">
                 <div class="practice-panel-heading">
                     <div><small>CONSULTA</small><h2>EDITOR SQL</h2></div>
-                <span>SQL LIVRE</span>
+                    <span>SQL · ALASQL</span>
                 </div>
                 <div class="practice-toolbar">
                     <button type="button" id="practice-import-button">IMPORTAR .SQL</button>
@@ -81,6 +81,17 @@ LIMIT 10;</textarea>
                 </div>
             </section>
         </section>
+
+        <aside class="practice-history-panel" aria-labelledby="practice-history-title">
+            <div class="practice-panel-heading">
+                <div><small>ARMAZENADO NESTE NAVEGADOR</small><h2 id="practice-history-title">HISTÓRICO SQL</h2></div>
+                <button type="button" id="practice-history-clear" class="practice-history-clear">LIMPAR</button>
+            </div>
+            <p id="practice-history-hint" class="practice-history-hint">Instruções SQL executadas no editor ficam salvas neste navegador. Selecione uma para trazê-la de volta.</p>
+            <div id="practice-history-list" class="practice-history-list" aria-live="polite">
+                <p class="practice-empty">Nenhuma instrução salva ainda.</p>
+            </div>
+        </aside>
     </main>
 
     <script src="js/practice.js"></script>

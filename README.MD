@@ -12,7 +12,7 @@ python3 -m http.server 5501
 
 Abra `http://localhost:5501` e escolha uma modalidade:
 
-- **Prática SQL:** abre `practice.html`, com banco didático próprio, editor em tela ampla, explorador de tabelas e resultados. Aceita scripts com várias instruções SQL, além de importar e exportar arquivos `.sql`; tabelas criadas durante a sessão aparecem no explorador. Não usa as tabelas da partida nem tem visitantes, eventos, vidas ou pontuação.
+- **Prática SQL:** abre `practice.html`, com banco didático próprio, editor em tela ampla, explorador de tabelas, resultados e histórico local das instruções SQL executadas. O histórico fica no `localStorage` do navegador. Aceita scripts com várias instruções SQL, além de importar e exportar arquivos `.sql`; tabelas criadas durante a sessão aparecem no explorador. Não usa as tabelas da partida nem tem visitantes, eventos, vidas ou pontuação.
 - **Falha do Sistema:** abre a partida com o evento de falha ativo em todos os turnos. O terminal SQL fica bloqueado; o jogador decide usando identidade, retrato, declaração, perguntas, rádio e arquivo do efetivo.
 - **Clássico:** mantém o ciclo atual de inspeção, investigação SQL e decisão.
 
@@ -62,7 +62,7 @@ O banco usa AlaSQL no navegador e é recriado a cada partida. Ele começa com 16
 | `autorizacoes` | `id_doc`, `responsavel`, `horario`, `setor`, `motivo` |
 | `movimentacoes` | `id_doc`, `local`, `horario`, `atividade` |
 
-O modo **Prática SQL** usa um banco separado, com dados didáticos de logística. As tabelas são `pessoal` (matrícula, nome, patente, setor e alojamento), `equipamentos` (equipamento, tipo, setor e condição), `ordens_servico` (responsável, equipamento, prioridade e status), `suprimentos` (categoria, quantidade e estoque mínimo) e `movimentacoes_suprimentos` (item, responsável, tipo e quantidade). Os exemplos de `JOIN` e `GROUP BY` usam esse esquema de treino.
+O modo **Prática SQL** usa um banco separado, com dados didáticos de logística. As tabelas são `pessoal` (matrícula, nome, patente, setor e alojamento), `equipamentos` (equipamento, tipo, setor e condição), `ordens_servico` (responsável, equipamento, prioridade e status), `suprimentos` (categoria, quantidade e estoque mínimo) e `movimentacoes_suprimentos` (item, responsável, tipo e quantidade). Os exemplos de `JOIN` e `GROUP BY` usam esse esquema de treino. O editor executa scripts em lote no navegador com AlaSQL, permite importar e exportar `.sql` e lista tabelas criadas durante a sessão. A compatibilidade depende do dialeto suportado por AlaSQL; não é um servidor SQLite nem um banco remoto. Use **RESTAURAR BANCO** para voltar às cinco tabelas iniciais.
 
 Exemplo:
 

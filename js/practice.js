@@ -90,6 +90,86 @@ ORDER BY quantidade DESC;`
 };
 
 let practiceQueryCount = 0;
+const practiceHistoryStorageKey = "sql-game-practice-sql-history-v1";
+const legacyPracticeHistoryStorageKey = "sql-game-practice-select-history-v1";
+const practiceHistoryLimit = 50;
+let practiceHistoryStorageAvailable = true;
+let practiceHistory = loadPracticeHistory();
+
+function loadPracticeHistory() {
+  try {
+    const currentValue = localStorage.getItem(practiceHistoryStorageKey);
+    const isLegacyHistory = currentValue === null;
+    const stored = JSON.parse(currentValue ?? localStorage.getItem(legacyPracticeHistoryStorageKey) ?? "[]");
+    const history = Array.isArray(stored)
+      ? stored.filter(item => item && typeof item.query === "string" && typeof item.timestamp === "number").slice(0, practiceHistoryLimit)
+      : [];
+    if (isLegacyHistory && history.length) {
+      localStorage.setItem(practiceHistoryStorageKey, JSON.stringify(history));
+    }
+    return history;
+  } catch {
+    practiceHistoryStorageAvailable = false;
+    return [];
+  }
+}
+
+function savePracticeHistory() {
+  try {
+    localStorage.setItem(practiceHistoryStorageKey, JSON.stringify(practiceHistory));
+    practiceHistoryStorageAvailable = true;
+  } catch {
+    practiceHistoryStorageAvailable = false;
+  }
+}
+
+function renderPracticeHistory() {
+  const list = document.getElementById("practice-history-list");
+  if (!list) return;
+  const hint = document.getElementById("practice-history-hint");
+  if (hint) {
+    hint.textContent = practiceHistoryStorageAvailable
+      ? "Todas as instruções SQL executadas ficam salvas neste navegador. Selecione uma para trazê-la de volta ao editor."
+      : "O navegador bloqueou o localStorage; o histórico desta sessão não sobreviverá ao recarregamento.";
+  }
+  list.replaceChildren();
+
+  if (!practiceHistory.length) {
+    const empty = document.createElement("p");
+    empty.className = "practice-empty";
+    empty.textContent = "Nenhuma instrução salva ainda.";
+    list.appendChild(empty);
+    return;
+  }
+
+  practiceHistory.forEach(item => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "practice-history-item";
+    button.setAttribute("aria-label", `Carregar instrução SQL executada em ${new Date(item.timestamp).toLocaleString("pt-BR")}`);
+    const time = document.createElement("time");
+    time.dateTime = new Date(item.timestamp).toISOString();
+    time.textContent = new Date(item.timestamp).toLocaleString("pt-BR");
+    const query = document.createElement("code");
+    query.textContent = item.query;
+    button.append(time, query);
+    button.addEventListener("click", () => {
+      const editor = document.getElementById("practice-query");
+      editor.value = item.query;
+      editor.focus();
+      document.getElementById("practice-result-status").textContent = "SELECT DO HISTÓRICO";
+      document.getElementById("practice-result-meta").textContent = "Consulta carregada no editor; execute para rodá-la novamente.";
+    });
+    list.appendChild(button);
+  });
+}
+
+function addPracticeHistory(query) {
+  practiceHistory.unshift({ query, timestamp: Date.now() });
+  practiceHistory = practiceHistory.slice(0, practiceHistoryLimit);
+  savePracticeHistory();
+  renderPracticeHistory();
+}
 
 function renderPracticeTables() {
   const container = document.getElementById("practice-tables");
@@ -100,7 +180,8 @@ function renderPracticeTables() {
     .filter(([name, info]) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(name) && Array.isArray(info?.data))
     .map(([name, info]) => {
       const schema = practiceSchemas[name];
-      const columns = schema?.columns || (info.columns || [])
+      const storedColumns = Array.isArray(info.columns) ? info.columns : [];
+      const columns = schema?.columns || storedColumns
         .map(column => typeof column === "string" ? column : column.columnid || column.name)
         .filter(Boolean);
       const rowColumns = info.data[0] ? Object.keys(info.data[0]) : [];
@@ -117,7 +198,11 @@ function renderPracticeTables() {
     button.type = "button";
     button.className = "practice-table-button";
     button.setAttribute("aria-label", `Consultar ${name}, ${rows} registros`);
-    button.innerHTML = `<strong>${name}</strong><small>${description}<br>${columns.join(" · ") || "Sem colunas"}<br>${rows} REGISTROS</small>`;
+    const title = document.createElement("strong");
+    title.textContent = name;
+    const details = document.createElement("small");
+    details.append(description, document.createElement("br"), columns.join(" · ") || "Sem colunas", document.createElement("br"), `${rows} REGISTROS`);
+    button.append(title, details);
     button.addEventListener("click", () => {
       const input = document.getElementById("practice-query");
       input.value = `SELECT *\nFROM ${name}\nLIMIT 20;`;
@@ -134,7 +219,7 @@ function renderPracticeTables() {
 function setupPracticeDatabase() {
   Object.entries(alasql.tables || {}).forEach(([table, info]) => {
     if (Array.isArray(info?.data)) {
-      const safeName = table.replace(/]/g, "]]" );
+      const safeName = table.replace(/]/g, "]]");
       alasql(`DROP TABLE IF EXISTS [${safeName}]`);
     }
   });
@@ -231,6 +316,7 @@ function splitSqlStatements(script) {
       if (char === "*" && next === "/") {
         blockComment = false;
         i++;
+        current += " ";
       }
       continue;
     }
@@ -252,11 +338,13 @@ function splitSqlStatements(script) {
     if (char === "-" && next === "-") {
       lineComment = true;
       i++;
+      current += " ";
       continue;
     }
     if (char === "/" && next === "*") {
       blockComment = true;
       i++;
+      current += " ";
       continue;
     }
     if (char === "'" || char === '"' || char === "`") {
@@ -294,6 +382,7 @@ function runPracticeQuery() {
       if (Array.isArray(result) && result.every(row => row && typeof row === "object" && !Array.isArray(row))) {
         lastTabularResult = result;
       }
+      addPracticeHistory(statements[i]);
     } catch (error) {
       practiceQueryCount++;
       renderPracticeTables();
@@ -317,6 +406,13 @@ function runPracticeQuery() {
 
 setupPracticeDatabase();
 renderPracticeTables();
+renderPracticeHistory();
+
+document.getElementById("practice-history-clear")?.addEventListener("click", () => {
+  practiceHistory = [];
+  savePracticeHistory();
+  renderPracticeHistory();
+});
 
 document.getElementById("practice-run")?.addEventListener("click", runPracticeQuery);
 document.getElementById("practice-query")?.addEventListener("keydown", event => {
@@ -374,8 +470,10 @@ document.getElementById("practice-export-button")?.addEventListener("click", () 
   const link = document.createElement("a");
   link.href = url;
   link.download = "pratica-logistica.sql";
+  document.body.appendChild(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
   document.getElementById("practice-result-status").textContent = "SCRIPT EXPORTADO";
   document.getElementById("practice-result-meta").textContent = "Editor salvo como pratica-logistica.sql";
 });
