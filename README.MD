@@ -1,63 +1,125 @@
-# S.Q.L. — Setor de Qualificação e Liberação — versão 0.9.0
+# S.Q.L. — Setor de Qualificação e Liberação
 
-<p align="center">
-  <img src="Emblema SQL_ Setor de Liberação.png" alt="S.Q.L. — Setor de Qualificação e Liberação" width="600">
-</p>
-
-Jogo de investigação inspirado em *That's Not My Neighbor*, em clima militar. O jogador é o sentinela do portão de um quartel e usa consultas SQL para verificar identidades, registros e autorizações antes de decidir quem pode entrar.
-
-## Estrutura
-
-```
-sql-game/
-├── index.html        # tela inicial (tela cheia, rodapé fixo) e seleção de dificuldade
-├── game.html         # interface principal da inspeção
-├── README.md
-├── css/
-│   ├── global.css    # reset, variáveis, fundo geral e botões base (compartilhado)
-│   ├── home.css      # estilos da tela inicial
-│   └── game.css      # estilos da partida, modais, cronômetro e explosão
-└── js/
-    ├── home.js       # seleção do modo e navegação para o jogo
-    ├── portraits.js  # retratos vetoriais (SVG) dos militares
-    └── script.js     # regras, banco AlaSQL, terminal, decisões e modais
-```
-
-- `portraits.js`: retratos vetoriais (SVG) de 16 militares; quepe, óculos e pele esverdeada seguem o solicitante apresentado.
-- `script.js`: regras, banco AlaSQL, consultas, visitantes, decisões, cronômetro de decisão e modais.
+Jogo de investigação e controle de acesso com temática militar. Você assume o posto de sentinela de um quartel: observa o solicitante, confere sua declaração e seus documentos, investiga os registros com SQL e decide se autoriza ou nega a entrada.
 
 ## Como executar
 
-Na pasta do projeto, execute:
+O jogo roda no navegador e não precisa de etapa de build. Na pasta do projeto, inicie um servidor local:
 
 ```bash
 python3 -m http.server 5501
 ```
 
-Acesse `http://localhost:5501` no navegador. A tela inicial abre em `index.html`; após escolher a dificuldade, o jogo abre em `game.html`.
+Abra `http://localhost:5501`. A home permite escolher a dificuldade; a partida começa em `game.html`.
 
-> Se a porta 5501 estiver ocupada, escolha outra, como 5502.
+O navegador precisa de acesso à internet para carregar AlaSQL e as fontes do Google Fonts via CDN. Os dados do jogo são criados em memória e reiniciados ao iniciar uma nova partida.
 
-## Regras na partida
+## Ciclo de jogo
 
-Ao entrar em `game.html`, o modal **Como o jogo funciona** abre automaticamente. Depois, o menu hambúrguer à esquerda da pontuação abre o modal **Ações**: Voltar ao jogo, Reiniciar (zera pontos, vidas e turnos e recomeça direto no primeiro turno, no mesmo modo), Ajuda (abre as regras e, ao fechar, volta ao menu) e Sair (volta à home). Os modais fecham com o botão, `Esc` ou clique fora.
+1. **Inspecione o solicitante:** compare o retrato, a declaração e a identidade militar. Se ele disser que está sem documento, a identidade não é apresentada.
+2. **Faça perguntas:** há quatro perguntas predefinidas por solicitante — documento, alojamento, aparência e autorização. Cada uma só pode ser feita uma vez. As respostas têm variações e aparecem em **Declaração do solicitante**.
+3. **Investigue com SQL:** consulte os registros do efetivo, autorizações, lista do dia, portão e movimentações. O terminal aceita uma consulta `SELECT` por execução.
+4. **Compare os dados:** use também o rádio para chamar o alojamento e o arquivo do efetivo para consultar os alojamentos cadastrados.
+5. **Decida:** autorize a entrada ou negue o acesso. Uma decisão incorreta custa uma vida.
+
+O painel de suspeita registra evidências únicas encontradas durante as perguntas e consultas. Entre as irregularidades investigáveis estão documento ou alojamento divergente, anomalias visuais, duplicidade no portão, falta de autorização, responsável inexistente, setor divergente, horário inconsistente e incompatibilidade entre autorização e movimentação.
+
+## Consultas e progresso
+
+O terminal permite consultar as cinco tabelas descritas abaixo. Cada execução SQL válida consome uma tentativa; consultas vazias, inválidas ou com erro não são executadas. A saída mostra o resultado mais recente.
+
+Uma consulta nova avança o objetivo quando os resultados identificam o solicitante ou quando a consulta usa um dado apresentado por ele, como documento, nome ou alojamento. Uma busca direcionada sem resultados também pode avançar. Consultas repetidas ou sobre registros sem relação com o solicitante consomem uma tentativa, mas não avançam o objetivo.
+
+A decisão fica disponível ao atingir a quantidade de consultas exigida pela dificuldade ou ao esgotar as tentativas. Quando as tentativas acabam, começa um prazo de **10 segundos** para decidir; se o tempo terminar, ocorre a sequência de derrota.
 
 ## Dificuldades
 
-- **Fácil:** 5 vidas, 5 consultas por visitante e 1 consulta SQL válida diferente para liberar a decisão.
-- **Normal:** 3 vidas, 4 consultas por visitante e 2 consultas SQL válidas diferentes.
-- **Difícil:** 1 vida, 4 consultas por visitante e 3 consultas SQL válidas diferentes.
+| Nível | Vidas | Consultas por solicitante | Consultas relacionadas exigidas | Chance-base de impostor aleatório |
+| --- | ---: | ---: | ---: | ---: |
+| Fácil | 5 | 5 | 1 | 28% |
+| Normal | 3 | 4 | 2 | 45% |
+| Difícil | 1 | 4 | 3 | 62% |
 
-A chance de impostores também aumenta conforme a dificuldade.
+## Banco de dados
 
-## Consultas esgotadas e cronômetro
+O banco usa AlaSQL no navegador e é recriado a cada partida. Ele começa com 16 militares cadastrados.
 
-Quando o jogador gasta a última consulta do solicitante, os botões de decisão são liberados imediatamente e um cronômetro de **10 segundos** aparece no painel de decisão. Se nenhuma ação for tomada a tempo, uma **explosão** toma a tela (com tremor) e o modal de derrota no padrão dos demais modais (cabeçalho, corpo, rodapé) mostra a pontuação com os botões **VOLTAR À TELA INICIAL** e **NOVO JOGO**. Todos os modais cobrem a tela e bloqueiam o fundo.
+| Tabela | Colunas |
+| --- | --- |
+| `militares` | `id_doc`, `nome`, `alojamento`, `patente`, `quepe`, `oculos`, `pele` |
+| `lista_hoje` | `id_doc`, `autorizado` |
+| `logs_portao` | `id_doc`, `status_atual` |
+| `autorizacoes` | `id_doc`, `responsavel`, `horario`, `setor`, `motivo` |
+| `movimentacoes` | `id_doc`, `local`, `horario`, `atividade` |
 
-## Tecnologias
+Exemplo:
 
-HTML5, CSS3, JavaScript e AlaSQL (carregado por CDN). É necessária conexão com a internet para carregar AlaSQL e as fontes externas.
+```sql
+SELECT nome, alojamento, patente
+FROM militares
+WHERE id_doc = '8841-FM';
+```
 
-## Observação
+## Pontuação e fim de partida
 
-O banco é criado em memória no navegador e reiniciado ao iniciar uma nova partida. O terminal permite consultas `SELECT` nas tabelas `militares` (id_doc, nome, alojamento, patente, quepe, oculos, pele), `lista_hoje` e `logs_portao`.
+- Autorizar um militar legítimo corretamente rende **100 pontos-base**. Com índice de suspeita zero, há **50 pontos adicionais**; com índice até 20, há **25 pontos adicionais**.
+- Identificar um infiltrado corretamente rende **150 pontos-base**. Evidências acumuladas podem render bônus de até **100 pontos**; descobrir todas as evidências esperadas do caso concede mais **100 pontos**.
+- Decidir antes de cumprir o objetivo de consultas desconta **50 pontos**.
+- Uma decisão incorreta desconta **uma vida**. Ao perder todas as vidas, a partida termina.
+- Deixar o prazo de decisão de 10 segundos acabar aciona a sequência de derrota.
+
+## Eventos
+
+Há **35% de chance** de surgir um evento quando não há outro ativo. Os eventos duram de dois a quatro turnos, conforme o evento.
+
+- **Alerta de segurança:** restringe temporariamente a leitura do painel de suspeita.
+- **Falha no sistema:** bloqueia consultas SQL durante o evento; a decisão permanece disponível.
+- **Inspeção surpresa:** exige uma consulta relacionada adicional naquele atendimento.
+- **Visitante prioritário:** inicia um prazo de 15 segundos. O prazo esgotado custa uma vida.
+- **Ordem do comando:** exibe uma notificação e um destaque visual temporário.
+
+## Interface e configurações
+
+A home e a partida usam uma interface de terminal militar, com efeitos de radar, câmera, rádio e alertas. As configurações permitem ajustar efeitos sonoros, música ambiente e seus volumes, animações da interface e folhas decorativas da home. A preferência de movimento reduzido do sistema também desativa animações e transições.
+
+A ajuda abre automaticamente no começo da partida. O menu oferece retorno ao jogo, reinício, configurações, ajuda e saída para a home. Os modais podem ser fechados pelo botão, por `Esc` ou clicando fora, quando aplicável.
+
+## Estrutura do projeto
+
+```text
+sql-game/
+├── index.html
+├── game.html
+├── README.MD
+├── css/
+│   ├── global.css
+│   ├── home.css
+│   ├── game.css
+│   └── leaves.css
+└── js/
+    ├── game.js
+    ├── settings.js
+    ├── portraits.js
+    ├── sounds.js
+    ├── ambient.js
+    ├── leaves.js
+    ├── core/
+    │   ├── game-state.js
+    │   ├── database.js
+    │   └── utils.js
+    ├── systems/
+    │   ├── visitor.js
+    │   ├── suspicion.js
+    │   ├── sql.js
+    │   ├── decision.js
+    │   ├── events.js
+    │   └── timer.js
+    └── interface/
+        ├── visitor-ui.js
+        ├── hud.js
+        ├── suspicion-ui.js
+        ├── modals.js
+        └── building.js
+```
+
+`index.html` e `game.html` carregam os módulos ativos diretamente. `js/script.js` é um backup legado e não é carregado por essas páginas; as regras atuais estão nos módulos listados acima.
