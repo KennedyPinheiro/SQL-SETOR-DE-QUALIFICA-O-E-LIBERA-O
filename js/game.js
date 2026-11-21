@@ -7,7 +7,7 @@
    FLUXO DE TURNOS
 ======================================== */
 
-function nextTurn() {
+function nextTurn({ skipEventRoll = false } = {}) {
   if (gameState.gameOver) return;
 
   updateEventDuration();
@@ -90,7 +90,9 @@ function nextTurn() {
 
   /* Sorteia evento aleatório */
 
-  triggerRandomEvent();
+  if (!skipEventRoll) {
+    triggerRandomEvent();
+  }
   
   if (gameState.activeEvent === "priority_visitor") {
     startPriorityTimer();
@@ -146,6 +148,15 @@ function startGame() {
   gameState.activeEvent = null;
   gameState.eventData = null;
   gameState.eventTurnsRemaining = 0;
+  gameState.priorityTimerRemaining = 15;
+  gameState.priorityTimerRunning = false;
+  gameState.eventHistory = [];
+  gameState.eventEffects = {
+    extraVerification: false,
+    priorityVisitor: false,
+    restrictedQueries: false,
+    alteredAuthorization: false
+  };
 
   /* Limpa temporizadores pendentes */
 
@@ -189,7 +200,7 @@ function startGame() {
 
   /* Inicia primeiro turno */
 
-  nextTurn();
+  nextTurn({ skipEventRoll: true });
 }
 
 

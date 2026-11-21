@@ -70,7 +70,7 @@ WHERE id_doc = '8841-FM';
 
 ## Eventos
 
-Há **35% de chance** de surgir um evento quando não há outro ativo. Os eventos duram de dois a quatro turnos, conforme o evento.
+Há **35% de chance** de surgir um evento quando não há outro ativo. O primeiro turno de uma partida nova começa sem evento; os sorteios começam nos turnos seguintes. Os eventos duram de dois a quatro turnos, conforme o evento.
 
 - **Alerta de segurança:** restringe temporariamente a leitura do painel de suspeita.
 - **Falha no sistema:** bloqueia consultas SQL durante o evento; a decisão permanece disponível.
