@@ -64,7 +64,7 @@ function updateSqlProgress() {
 
   if (progress) {
     progress.textContent =
-      `${completed} / ${required} CONSULTAS DO SOLICITANTE`;
+      `${completed} / ${required} PESQUISAS DIRECIONADAS`;
   }
 
   const progressTrack = document.getElementById("sql-progress-track");
@@ -76,7 +76,7 @@ function updateSqlProgress() {
     progressTrack.setAttribute("aria-valuenow", String(completed));
     progressTrack.setAttribute(
       "aria-valuetext",
-      `${completed} de ${required} consultas do solicitante`
+      `${completed} de ${required} pesquisas direcionadas em fontes diferentes`
     );
   }
 
@@ -90,8 +90,8 @@ function updateSqlProgress() {
   if (objective) {
     objective.textContent =
       gameState.queriesRemaining <= 0
-        ? "CONSULTAS ESGOTADAS: nenhuma consulta resta. Decida se autoriza, nega ou encaminha o caso ao comando."
-        : `Modo ${gameState.modeConfig[gameState.mode].label}: filtre por documento, nome ou alojamento; consultas amplas ou em fontes já investigadas não avançam a meta.`;
+        ? "CONSULTAS ESGOTADAS: decida se autoriza, nega ou encaminha. A barra mede pesquisas; evidências ficam no painel de suspeita."
+        : `Modo ${gameState.modeConfig[gameState.mode].label}: filtre por documento, nome ou alojamento. A barra conta pesquisas em fontes diferentes; evidências SQL aparecem no painel de suspeita.`;
   }
 
   /* ========================================

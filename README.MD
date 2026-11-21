@@ -28,7 +28,9 @@ O painel de suspeita registra evidências únicas confirmadas por consultas SQL.
 
 O terminal permite consultar as cinco tabelas descritas abaixo. Cada execução SQL válida consome uma tentativa; consultas vazias, inválidas ou com erro não são executadas. A saída mostra o resultado mais recente.
 
-Uma consulta avança o objetivo quando filtra diretamente por um dado apresentado pelo solicitante, como documento, nome ou alojamento, e consulta uma combinação de tabelas ainda não investigada. Uma busca direcionada sem resultados também pode avançar. Consultas sem filtro e novas consultas às mesmas fontes consomem uma tentativa, mas não avançam, mesmo que mudem as colunas, espaços ou capitalização do SQL.
+O progresso SQL conta pesquisas direcionadas por combinações de tabelas ainda não investigadas. A consulta precisa filtrar por um dado apresentado pelo solicitante, como documento, nome ou alojamento; uma busca direcionada sem resultados também pode avançar. Consultas sem filtro e novas consultas às mesmas fontes consomem uma tentativa, mas não avançam, mesmo que mudem as colunas, espaços ou capitalização do SQL. Essa barra mede pesquisas realizadas, não evidências encontradas.
+
+O painel de suspeita mostra separadamente a quantidade de evidências únicas confirmadas por SQL e os pontos de suspeita acumulados. Uma pesquisa pode avançar a barra de progresso sem revelar uma evidência.
 
 A decisão fica disponível ao atingir a quantidade de consultas exigida pela dificuldade ou ao esgotar as tentativas. Quando as tentativas acabam, começa um prazo de **10 segundos** para decidir; se o tempo terminar, ocorre a sequência de derrota.
 

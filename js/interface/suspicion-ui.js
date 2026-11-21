@@ -11,7 +11,6 @@ function updateSuspicionUI() {
     const barElement = document.getElementById("suspicion-bar");
     const levelElement = document.getElementById("suspicion-level");
     const evidenceContainer = document.getElementById("suspicion-evidence-list");
-
     if (!scoreElement || !barElement || !levelElement || !evidenceContainer) {
         return;
     }
@@ -95,6 +94,12 @@ function renderSuspicionEvidence() {
     if (!container) return;
 
     const discovered = Array.from(gameState.discoveredEvidence);
+    const count = document.getElementById("suspicion-evidence-count");
+
+    if (count) {
+        count.textContent = String(discovered.length);
+        count.setAttribute("aria-label", `${discovered.length} evidências únicas confirmadas`);
+    }
 
     /* Nenhuma evidência */
 

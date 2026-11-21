@@ -2397,11 +2397,19 @@ body.reduce-motion #gameover-modal.defeat .gameover-modal::before {
 }
 
 .suspicion-evidence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   color: #818b91;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 1.2px;
   margin-bottom: 12px;
+}
+
+#suspicion-evidence-count {
+  color: var(--amber);
+  font: 700 10px var(--mono);
 }
 
 #suspicion-evidence-list {
