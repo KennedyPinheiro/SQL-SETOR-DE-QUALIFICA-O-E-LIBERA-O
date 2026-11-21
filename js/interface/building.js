@@ -20,15 +20,20 @@ function callApartment() {
 
   const result = document.getElementById("intercom-result");
   const button = document.getElementById("btn-call");
+  const panel = document.querySelector(".intercom-card");
 
   if (!result || !button) return;
 
   result.textContent = `Chamando alojamento ${alojamento}...`;
+  panel?.classList.add("is-transmitting");
+  panel?.setAttribute("aria-busy", "true");
 
   button.disabled = true;
 
   intercomTimer = later(() => {
     intercomTimer = null;
+    panel?.classList.remove("is-transmitting");
+    panel?.removeAttribute("aria-busy");
 
     if (gameState.gameOver || gameState.decisionLocked) return;
 
@@ -64,6 +69,8 @@ function callApartment() {
 ======================================== */
 
 function cancelIntercomCall() {
+  const panel = document.querySelector(".intercom-card");
+
   if (intercomTimer !== null) {
     clearTimeout(intercomTimer);
 
@@ -71,6 +78,9 @@ function cancelIntercomCall() {
 
     intercomTimer = null;
   }
+
+  panel?.classList.remove("is-transmitting");
+  panel?.removeAttribute("aria-busy");
 }
 
 

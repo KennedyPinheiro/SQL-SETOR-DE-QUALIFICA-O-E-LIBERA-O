@@ -263,6 +263,20 @@
   min-width: 105px
 }
 
+.intercom-card.is-transmitting .intercom-display {
+  border-color: #86a77f;
+  animation: radio-transmission .35s ease-in-out infinite alternate;
+}
+
+.intercom-card.is-transmitting .card-title > span:first-child {
+  color: #d7e8c5;
+  text-shadow: 0 0 9px #9fc7a988;
+}
+
+@keyframes radio-transmission {
+  to { box-shadow: inset 0 0 14px #9fc7a922, 0 0 10px #9fc7a944; }
+}
+
 .intercom-display small, .intercom-display strong {
   display: block;
   font-family: var(--mono)
@@ -1693,28 +1707,38 @@ body.exploding .topbar {
   .building-layout {
     margin: 0 10px;
     padding: 8px;
-    grid-template-columns: 55px 1fr
+    grid-template-columns: 42px minmax(0, 1fr)
   }
 
   .building-grid {
-    grid-template-columns: 55px 1fr
+    grid-template-columns: 42px minmax(0, 1fr)
   }
 
   .floor-units {
-    gap: 4px
+    gap: 3px
   }
 
   .apt-unit {
-    min-height: 50px
+    min-height: 50px;
+    padding-inline: 1px
   }
 
   .apt-unit strong {
-    font-size: 10px
+    font-size: 9px
+  }
+
+  .apt-unit small {
+    font-size: 8px
   }
 
   .building-legend {
     gap: 9px;
     padding: 12px
+  }
+
+  .building-modal > .modal-footer {
+    justify-content: center;
+    padding-inline: 14px;
   }
 
   .modal-header {
