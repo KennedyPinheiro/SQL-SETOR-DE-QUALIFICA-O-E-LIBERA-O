@@ -19,19 +19,19 @@ const RANDOM_EVENTS = [
         id: "system_failure",
         icon: "⌁",
         title: "FALHA NO SISTEMA",
-        description: "O terminal apresentou instabilidade. Consultas SQL limitadas."
+        description: "Falha temporária: consultas SQL indisponíveis. Você ainda pode decidir o destino do visitante."
     },
     {
         id: "surprise_inspection",
         icon: "◎",
         title: "INSPEÇÃO SURPRESA",
-        description: "Uma verificação adicional será exigida neste atendimento."
+        description: "Faça uma consulta direcionada adicional ao visitante, usando uma fonte de dados ainda não investigada."
     },
     {
         id: "command_order",
         icon: "▤",
         title: "ORDEM DO COMANDO",
-        description: "Uma nova determinação alterou temporariamente as regras de autorização."
+        description: "O comando destacou o painel de decisão para chamar atenção aos procedimentos. As regras de autorização continuam as mesmas."
     },
     {
         id: "priority_visitor",
@@ -207,7 +207,7 @@ function activateSystemFailure() {
 
     showEventNotification({
         ...gameState.eventData,
-        description: "Terminal temporariamente indisponível."
+        description: "Consultas SQL temporariamente indisponíveis. Você ainda pode autorizar, negar ou encaminhar o caso."
     });
 
 }
@@ -234,7 +234,7 @@ function activateSurpriseInspection() {
 
     showEventNotification({
         ...gameState.eventData,
-        description: "O comando exige uma verificação adicional. Execute uma consulta SQL válida antes de tomar sua decisão."
+        description: "O comando exige mais uma consulta direcionada ao visitante, em uma fonte de dados ainda não investigada."
     });
 }
 /* ========================================

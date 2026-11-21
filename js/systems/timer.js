@@ -10,6 +10,7 @@ function startDecisionTimer() {
     if (
         gameState.gameOver ||
         gameState.decisionLocked ||
+        gameState.activeEvent === "priority_visitor" ||
         decisionTimerRunning
     ) return;
 

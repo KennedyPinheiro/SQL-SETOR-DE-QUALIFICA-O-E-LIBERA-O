@@ -106,6 +106,7 @@ function nextTurn({ skipEventRoll = false } = {}) {
   if (gameState.activeEvent === "system_failure") {
     if (approveButton) approveButton.disabled = false;
     if (denyButton) denyButton.disabled = false;
+    if (referButton) referButton.disabled = false;
   }
 
 

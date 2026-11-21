@@ -74,10 +74,10 @@ WHERE id_doc = '8841-FM';
 Há **35% de chance** de surgir um evento quando não há outro ativo. O primeiro turno de uma partida nova começa sem evento; os sorteios começam nos turnos seguintes. Os eventos duram de dois a quatro turnos, conforme o evento.
 
 - **Alerta de segurança:** restringe temporariamente a leitura do painel de suspeita.
-- **Falha no sistema:** bloqueia consultas SQL durante o evento; a decisão permanece disponível.
-- **Inspeção surpresa:** exige uma consulta relacionada adicional naquele atendimento.
-- **Visitante prioritário:** inicia um prazo de 15 segundos. O prazo esgotado custa uma vida.
-- **Ordem do comando:** exibe uma notificação e um destaque visual temporário.
+- **Falha no sistema:** bloqueia consultas SQL durante o evento; autorizar, negar e encaminhar continuam disponíveis.
+- **Inspeção surpresa:** exige uma consulta direcionada adicional, usando uma combinação de tabelas ainda não investigada.
+- **Visitante prioritário:** inicia um prazo de 15 segundos para decidir. Esse prazo substitui o cronômetro comum de 10 segundos; o tempo esgotado custa uma vida.
+- **Ordem do comando:** destaca temporariamente o painel de decisão e mostra uma notificação; não altera as regras de autorização.
 
 ## Interface e configurações
 
