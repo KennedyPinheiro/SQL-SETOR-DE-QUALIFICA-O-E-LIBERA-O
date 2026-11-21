@@ -220,12 +220,18 @@ function analyzeQueryEvidence(query, result) {
             .filter(value => value !== null && value !== undefined)
             .map(value => String(value).trim().toLowerCase())
     );
+    const queryTargetsVisitor = sql.includes("id_doc") &&
+        [...visitorIds].some(id => sql.includes(`'${id}'`) || sql.includes(`\"${id}\"`));
     const isVisitorRow = row => Object.entries(row).some(([column, value]) =>
         ["id_doc", "visitante", "id_visitante"].includes(column.toLowerCase()) &&
         visitorIds.has(String(value).trim().toLowerCase())
     );
     const relevantRows = result.filter(isVisitorRow);
-    const rowsToCheck = relevantRows;
+    const rowsToCheck = relevantRows.length
+        ? relevantRows
+        : queryTargetsVisitor
+            ? result
+            : [];
     const hasFlag = (row, names) => names.some(name =>
         Object.entries(row).some(([column, value]) =>
             column.toLowerCase() === name &&
