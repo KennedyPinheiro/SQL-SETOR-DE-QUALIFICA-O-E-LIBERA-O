@@ -139,7 +139,7 @@ function renderBuilding() {
 
     units.className = "floor-units";
 
-    for (let number = 1; number <= 4; number++) {
+    for (let number = 1; number <= 5; number++) {
       const alojamento = `${floor}0${number}`;
 
       const resident = alasql(

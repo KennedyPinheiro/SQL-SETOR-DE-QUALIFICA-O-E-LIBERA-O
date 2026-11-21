@@ -842,7 +842,7 @@
 
 .apartment-head {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
   text-align: center;
   padding-bottom: 9px;
@@ -880,7 +880,7 @@
 
 .floor-units {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
   padding: 9px 0;
   border-bottom: 1px solid #2a353a
@@ -1745,7 +1745,10 @@ body.exploding .topbar {
   }
 
   .apt-unit small {
-    font-size: 8px
+    min-width: 0;
+    font-size: 8px;
+    overflow-wrap: anywhere;
+    text-align: center
   }
 
   .building-legend {
