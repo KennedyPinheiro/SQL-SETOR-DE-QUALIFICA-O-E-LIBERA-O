@@ -71,12 +71,27 @@
         ? gameState.visitorFlaws
         : [gameState.visitorCase];
 
-      const discoveredCount = flaws.filter(
-        flaw => gameState.discoveredEvidence.has(flaw)
+      const sqlCaseEvidence = {
+        invalid_authorizer: ["invalid_authorizer"],
+        unauthorized_sector: ["unauthorized_sector"],
+        suspicious_time: ["suspicious_time"],
+        cross_reference: ["cross_reference"],
+        multiple_inconsistencies: [
+          "invalid_authorizer",
+          "unauthorized_sector",
+          "suspicious_time"
+        ]
+      };
+      const expectedEvidence = gameState.visitorFlaws?.length
+        ? gameState.visitorFlaws
+        : sqlCaseEvidence[gameState.investigationCase] || flaws;
+
+      const discoveredCount = expectedEvidence.filter(
+        evidence => gameState.discoveredEvidence.has(evidence)
       ).length;
 
       const completeInvestigationBonus =
-        flaws.length > 0 && discoveredCount === flaws.length
+        expectedEvidence.length > 0 && discoveredCount === expectedEvidence.length
           ? 100
           : 0;
 
