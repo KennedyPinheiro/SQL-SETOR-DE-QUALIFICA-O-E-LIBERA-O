@@ -54,12 +54,34 @@ function updateQueriesHUD() {
 ======================================== */
 
 function updateSqlProgress() {
+  const required = Math.max(1, Number(gameState.requiredQueries) || 1);
+  const completed = Math.min(
+    required,
+    Math.max(0, Number(gameState.successfulQueries) || 0)
+  );
   const progress =
     document.getElementById("sql-progress");
 
   if (progress) {
     progress.textContent =
-      `${gameState.successfulQueries} / ${gameState.requiredQueries} CONSULTAS DO SOLICITANTE`;
+      `${completed} / ${required} CONSULTAS DO SOLICITANTE`;
+  }
+
+  const progressTrack = document.getElementById("sql-progress-track");
+  const progressFill = document.getElementById("sql-progress-fill");
+
+  if (progressTrack) {
+    progressTrack.setAttribute("aria-valuemin", "0");
+    progressTrack.setAttribute("aria-valuemax", String(required));
+    progressTrack.setAttribute("aria-valuenow", String(completed));
+    progressTrack.setAttribute(
+      "aria-valuetext",
+      `${completed} de ${required} consultas do solicitante`
+    );
+  }
+
+  if (progressFill) {
+    progressFill.style.width = `${(completed / required) * 100}%`;
   }
 
   const objective =

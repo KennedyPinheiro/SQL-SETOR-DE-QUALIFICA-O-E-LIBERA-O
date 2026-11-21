@@ -187,8 +187,13 @@
                     <div class="sql-objective">
                         <div class="objective-icon">SQL</div>
                         <div><strong>INVESTIGAÇÃO OBRIGATÓRIA</strong><small id="sql-objective-text">Consulte o banco de
-                                dados e compare o registro oficial com o documento apresentado.</small></div><span
-                            id="sql-progress">0 / 2 CONSULTAS</span>
+                                dados e compare o registro oficial com o documento apresentado.</small>
+                            <div id="sql-progress-track" class="sql-progress-track" role="progressbar"
+                                aria-label="Consultas novas sobre o solicitante" aria-valuemin="0" aria-valuemax="2"
+                                aria-valuenow="0" aria-valuetext="0 de 2 consultas">
+                                <div id="sql-progress-fill" class="sql-progress-fill"></div>
+                            </div>
+                        </div><span id="sql-progress">0 / 2 CONSULTAS DO SOLICITANTE</span>
                     </div>
                     <div class="query-toolbar">
                         <span>EXEMPLOS DE CONSULTA</span>

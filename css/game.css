@@ -1056,7 +1056,8 @@
 }
 
 .sql-objective>div:nth-child(2) {
-  flex: 1
+  flex: 1;
+  min-width: 0;
 }
 
 .sql-objective strong, .sql-objective small {
@@ -1072,6 +1073,22 @@
   font-size: 14px;
   color: #9aaa9f;
   margin-top: 4px
+}
+
+.sql-progress-track {
+  height: 5px;
+  margin-top: 7px;
+  overflow: hidden;
+  background: #111914;
+  border: 1px solid #415444;
+}
+
+.sql-progress-fill {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #668d69, #b3d28d);
+  box-shadow: 0 0 8px #9fc7a955;
+  transition: width .35s ease;
 }
 
 #sql-progress {
@@ -2885,6 +2902,11 @@ body.reduce-motion #gameover-modal.defeat .gameover-modal::before {
   .sql-objective small {
     font-size: 11px;
     margin-top: 2px;
+  }
+
+  .sql-progress-track {
+    height: 4px;
+    margin-top: 4px;
   }
 
   #sql-progress {
