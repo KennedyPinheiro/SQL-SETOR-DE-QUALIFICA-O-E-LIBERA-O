@@ -357,6 +357,10 @@ function insertTemplate(type) {
 
   if (!input) return;
 
+  const visitorId = String(
+    gameState.realNeighbor?.id_doc || gameState.currentVisitor?.id_doc || ""
+  ).replace(/'/g, "''");
+
   const templates = {
 
     militares: `-- Listar militares cadastrados
@@ -371,11 +375,31 @@ JOIN logs_portao p ON m.id_doc = p.id_doc;`,
     logs: `-- Consultar todos os registros do portão
 SELECT * FROM logs_portao;`,
 
-    autorizacao: `-- Encontrar militares sem autorização
-SELECT m.nome, m.alojamento, l.autorizado
-FROM militares m
-JOIN lista_hoje l ON m.id_doc = l.id_doc
-WHERE l.autorizado = 'Nao';`
+    lista: `-- Consultar a autorização do solicitante na lista de hoje
+SELECT id_doc, autorizado
+FROM lista_hoje
+WHERE id_doc = '${visitorId}';`,
+
+    autorizacao: `-- Consultar a autorização registrada para o solicitante
+SELECT id_doc, responsavel, horario, setor, motivo
+FROM autorizacoes
+WHERE id_doc = '${visitorId}';`,
+
+    movimentacoes: `-- Consultar movimentações do militar
+SELECT id_doc, local, horario, atividade
+FROM movimentacoes
+WHERE id_doc = '${visitorId}';`,
+
+    cruzamento: `-- Cruzar autorização com a movimentação do responsável
+SELECT a.id_doc AS visitante, a.responsavel,
+       a.horario AS horario_autorizacao, a.setor,
+       m.id_doc AS militar_movimentacao,
+       m.horario AS horario_movimentacao, m.local, m.atividade
+FROM autorizacoes a
+JOIN movimentacoes m
+  ON m.id_doc = a.responsavel
+ AND m.horario = a.horario
+WHERE a.id_doc = '${visitorId}';`
 
   };
 
