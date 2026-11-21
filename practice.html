@@ -13,23 +13,34 @@
     <script src="https://cdn.jsdelivr.net/npm/alasql@4/dist/alasql.min.js"></script>
 </head>
 <body class="practice-page">
-    <header class="practice-topbar">
-        <a class="practice-brand" href="index.html" aria-label="Voltar à seleção de modos">S.Q.L.<span> / TREINO</span></a>
-        <div class="practice-status"><i></i> BANCO LOCAL PRONTO</div>
+    <header class="topbar practice-topbar">
+        <div class="brand">
+            <div class="brand-mark"><img src="Emblema SQL_ Setor de Liberação.png" alt="S.Q.L."></div>
+            <div class="brand-info">
+                <strong>SETOR DE QUALIFICAÇÃO E LIBERAÇÃO</strong>
+                <small>AMBIENTE DE TREINAMENTO SQL</small>
+            </div>
+        </div>
+        <div class="shift-status">
+            <span class="live-dot"></span>
+            <span>BANCO DE LOGÍSTICA</span>
+            <span class="top-divider"></span>
+            <span>5 TABELAS</span>
+        </div>
         <a class="practice-exit" href="index.html">VOLTAR AOS MODOS</a>
     </header>
 
     <main class="practice-workspace">
         <aside class="practice-sidebar" aria-labelledby="database-title">
             <div class="practice-panel-heading">
-                <div><small>EXPLORADOR</small><h1 id="database-title">BANCO DE DADOS</h1></div>
+                <div><small>EXPLORADOR DE DADOS DIDÁTICOS</small><h1 id="database-title">BANCO DE LOGÍSTICA</h1></div>
                 <span id="practice-table-count">5 TABELAS</span>
             </div>
-            <p class="practice-hint">Selecione uma tabela para inserir uma consulta inicial no editor.</p>
+            <p class="practice-hint">Este banco didático é separado do jogo. Selecione uma tabela para inserir uma consulta inicial no editor.</p>
             <div id="practice-tables" class="practice-tables"></div>
             <div class="practice-sidebar-note">
                 <strong>AMBIENTE LIVRE</strong>
-                <span>Sem limite de consultas, visitantes, eventos ou pontuação. Os dados reiniciam ao recarregar a página.</span>
+                <span>Sem limite de consultas, visitantes, eventos ou pontuação. As tabelas são próprias deste treino; os dados reiniciam ao recarregar.</span>
             </div>
         </aside>
 
@@ -46,7 +57,7 @@
                 </div>
                 <label class="sr-only" for="practice-query">Digite uma consulta SQL</label>
                 <textarea id="practice-query" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="practice-editor-help">SELECT nome, patente, alojamento
-FROM militares
+FROM pessoal
 ORDER BY alojamento
 LIMIT 10;</textarea>
                 <div class="practice-editor-footer">
@@ -68,7 +79,6 @@ LIMIT 10;</textarea>
         </section>
     </main>
 
-    <script src="js/core/database.js"></script>
     <script src="js/practice.js"></script>
 </body>
 </html>

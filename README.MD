@@ -12,7 +12,7 @@ python3 -m http.server 5501
 
 Abra `http://localhost:5501` e escolha uma modalidade:
 
-- **Prática SQL:** abre `practice.html`, com as cinco tabelas, editor e resultados em uma tela de treino livre. Não há visitantes, eventos, vidas nem pontuação.
+- **Prática SQL:** abre `practice.html`, com banco didático próprio, cinco tabelas de logística, editor e resultados em uma tela de treino livre. Não usa as tabelas da partida nem tem visitantes, eventos, vidas ou pontuação.
 - **Falha do Sistema:** abre a partida com o evento de falha ativo em todos os turnos. O terminal SQL fica bloqueado; o jogador decide usando identidade, retrato, declaração, perguntas, rádio e arquivo do efetivo.
 - **Clássico:** mantém o ciclo atual de inspeção, investigação SQL e decisão.
 
@@ -61,6 +61,8 @@ O banco usa AlaSQL no navegador e é recriado a cada partida. Ele começa com 16
 | `logs_portao` | `id_doc`, `status_atual` |
 | `autorizacoes` | `id_doc`, `responsavel`, `horario`, `setor`, `motivo` |
 | `movimentacoes` | `id_doc`, `local`, `horario`, `atividade` |
+
+O modo **Prática SQL** usa um banco separado, com dados didáticos de logística. As tabelas são `pessoal` (matrícula, nome, patente, setor e alojamento), `equipamentos` (equipamento, tipo, setor e condição), `ordens_servico` (responsável, equipamento, prioridade e status), `suprimentos` (categoria, quantidade e estoque mínimo) e `movimentacoes_suprimentos` (item, responsável, tipo e quantidade). Os exemplos de `JOIN` e `GROUP BY` usam esse esquema de treino.
 
 Exemplo:
 
