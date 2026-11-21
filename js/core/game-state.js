@@ -60,6 +60,8 @@ const gameState = {
     realNeighbor: null,
     lastVisitorId: null,
     isImpostor: false,
+    requiresReferral: false,
+    referralReason: "",
     visitorCase: null,
     impostorReason: "",
     visitorFlaws: [],

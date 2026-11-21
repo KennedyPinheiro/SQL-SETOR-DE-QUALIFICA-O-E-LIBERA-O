@@ -765,8 +765,23 @@
 }
 
 .decision-buttons {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  flex: 1 1 320px;
+  min-width: 0;
   gap: 8px
+}
+
+.decision-copy {
+  flex: 1 1 150px;
+  min-width: 120px;
+}
+
+.decision-buttons .button {
+  min-width: 0;
+  padding: 10px 6px;
+  line-height: 1.2;
+  white-space: normal;
 }
 
 .button-approve {
@@ -779,6 +794,12 @@
   background: #873f3d;
   color: #fff0ed;
   min-width: 140px
+}
+
+.button-refer {
+  background: #735d36;
+  color: #fff0d2;
+  border: 1px solid #a9874d;
 }
 
 .footer {
@@ -2999,9 +3020,9 @@ body.reduce-motion #gameover-modal.defeat .gameover-modal::before {
   }
 
   .decision-buttons .button {
-    min-width: 100px;
-    padding: 9px 10px;
-    font-size: 11px;
+    min-width: 0;
+    padding: 9px 5px;
+    font-size: 10px;
   }
 
   .decision-timer {

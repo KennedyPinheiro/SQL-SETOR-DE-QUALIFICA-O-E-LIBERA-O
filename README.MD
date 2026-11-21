@@ -20,7 +20,7 @@ O navegador precisa de acesso à internet para carregar AlaSQL e as fontes do Go
 2. **Faça perguntas:** há quatro perguntas predefinidas por solicitante — documento, alojamento, aparência e autorização. Cada uma só pode ser feita uma vez. As respostas têm variações e aparecem em **Declaração do solicitante**.
 3. **Investigue com SQL:** consulte os registros do efetivo, autorizações, lista do dia, portão e movimentações. O terminal aceita uma consulta `SELECT` por execução.
 4. **Compare os dados:** use também o rádio para chamar o alojamento e o arquivo do efetivo para consultar os alojamentos cadastrados.
-5. **Decida:** autorize a entrada ou negue o acesso. Uma decisão incorreta custa uma vida.
+5. **Decida:** autorize militares sem irregularidades, negue infiltrados ou encaminhe ao comando casos com falhas cadastrais isoladas. Uma decisão incorreta custa uma vida.
 
 O painel de suspeita registra evidências únicas encontradas durante as perguntas e consultas. Entre as irregularidades investigáveis estão documento ou alojamento divergente, anomalias visuais, duplicidade no portão, falta de autorização, responsável inexistente, setor divergente, horário inconsistente e incompatibilidade entre autorização e movimentação.
 
@@ -64,6 +64,7 @@ WHERE id_doc = '8841-FM';
 
 - Autorizar um militar legítimo corretamente rende **100 pontos-base**. Com índice de suspeita zero, há **50 pontos adicionais**; com índice até 20, há **25 pontos adicionais**.
 - Identificar um infiltrado corretamente rende **150 pontos-base**. Evidências acumuladas podem render bônus de até **100 pontos**; descobrir todas as evidências esperadas do caso concede mais **100 pontos**.
+- Encaminhar corretamente um militar real com irregularidade cadastral isolada rende **100 pontos-base**. O índice de suspeita e a identificação de todas as evidências do caso também podem conceder bônus.
 - Decidir antes de cumprir o objetivo de consultas desconta **50 pontos**.
 - Uma decisão incorreta desconta **uma vida**. Ao perder todas as vidas, a partida termina.
 - Deixar o prazo de decisão de 10 segundos acabar aciona a sequência de derrota.

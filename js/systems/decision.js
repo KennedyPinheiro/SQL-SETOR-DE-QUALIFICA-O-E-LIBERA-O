@@ -7,14 +7,55 @@
     TOMADA DE DECISÃO
   ======================================== */
 
-  function makeDecision(approved) {
+  function getExpectedInvestigationEvidence() {
+    const visitorFlaws = gameState.visitorFlaws || [];
+
+    if (visitorFlaws.length) return visitorFlaws;
+
+    const sqlCaseEvidence = {
+      invalid_authorizer: ["invalid_authorizer"],
+      unauthorized_sector: ["unauthorized_sector"],
+      suspicious_time: ["suspicious_time"],
+      cross_reference: ["cross_reference"],
+      multiple_inconsistencies: [
+        "invalid_authorizer",
+        "unauthorized_sector",
+        "suspicious_time"
+      ]
+    };
+
+    return sqlCaseEvidence[gameState.investigationCase] ||
+      (gameState.visitorCase ? [gameState.visitorCase] : []);
+  }
+
+  function getInvestigationCompletionBonus() {
+    const expectedEvidence = getExpectedInvestigationEvidence();
+
+    return expectedEvidence.length > 0 && expectedEvidence.every(
+      evidence => gameState.discoveredEvidence.has(evidence)
+    )
+      ? 100
+      : 0;
+  }
+
+  function getSuspicionInvestigationBonus() {
+    if (gameState.suspicion >= 80) return 100;
+    if (gameState.suspicion >= 60) return 75;
+    if (gameState.suspicion >= 40) return 50;
+    if (gameState.suspicion >= 20) return 25;
+    return 0;
+  }
+
+  function makeDecision(decision) {
     if (gameState.gameOver || gameState.decisionLocked) return;
+
+    if (![true, false, "refer"].includes(decision)) return;
 
     gameState.decisionLocked = true;
     if (typeof renderInterrogationUI === "function") renderInterrogationUI();
 
     stopDecisionTimer();
-    stopPriorityTimer();;
+    stopPriorityTimer();
 
     const toast = document.getElementById("toast-message");
 
@@ -22,7 +63,29 @@
       MILITAR LEGÍTIMO AUTORIZADO
     ======================================== */
 
-    if (approved && !gameState.isImpostor) {
+    if (decision === "refer" && gameState.requiresReferral) {
+      const basePoints = 100;
+      const investigationBonus = getSuspicionInvestigationBonus();
+      const completeInvestigationBonus = getInvestigationCompletionBonus();
+      const totalPoints =
+        basePoints + investigationBonus + completeInvestigationBonus;
+
+      gameState.score += totalPoints;
+
+      toastMessage(
+        "IRREGULARIDADE CADASTRAL ENCAMINHADA AO COMANDO. " +
+        `+${basePoints} PONTOS` +
+        (investigationBonus > 0
+          ? ` +${investigationBonus} BÔNUS DE INVESTIGAÇÃO`
+          : "") +
+        (completeInvestigationBonus > 0
+          ? ` +${completeInvestigationBonus} BÔNUS POR INVESTIGAÇÃO COMPLETA`
+          : ""),
+        true
+      );
+    }
+
+    else if (decision === true && !gameState.isImpostor && !gameState.requiresReferral) {
       const basePoints = 100;
       let investigationBonus = 0;
 
@@ -53,47 +116,10 @@
       INFILTRADO IDENTIFICADO
     ======================================== */
 
-    else if (!approved && gameState.isImpostor) {
+    else if (decision === false && gameState.isImpostor && !gameState.requiresReferral) {
       const basePoints = 150;
-      let investigationBonus = 0;
-
-      if (gameState.suspicion >= 80) {
-        investigationBonus = 100;
-      } else if (gameState.suspicion >= 60) {
-        investigationBonus = 75;
-      } else if (gameState.suspicion >= 40) {
-        investigationBonus = 50;
-      } else if (gameState.suspicion >= 20) {
-        investigationBonus = 25;
-      }
-
-      const flaws = gameState.visitorFlaws?.length
-        ? gameState.visitorFlaws
-        : [gameState.visitorCase];
-
-      const sqlCaseEvidence = {
-        invalid_authorizer: ["invalid_authorizer"],
-        unauthorized_sector: ["unauthorized_sector"],
-        suspicious_time: ["suspicious_time"],
-        cross_reference: ["cross_reference"],
-        multiple_inconsistencies: [
-          "invalid_authorizer",
-          "unauthorized_sector",
-          "suspicious_time"
-        ]
-      };
-      const expectedEvidence = gameState.visitorFlaws?.length
-        ? gameState.visitorFlaws
-        : sqlCaseEvidence[gameState.investigationCase] || flaws;
-
-      const discoveredCount = expectedEvidence.filter(
-        evidence => gameState.discoveredEvidence.has(evidence)
-      ).length;
-
-      const completeInvestigationBonus =
-        expectedEvidence.length > 0 && discoveredCount === expectedEvidence.length
-          ? 100
-          : 0;
+      const investigationBonus = getSuspicionInvestigationBonus();
+      const completeInvestigationBonus = getInvestigationCompletionBonus();
 
       const totalPoints =
         basePoints +
@@ -125,12 +151,22 @@
     else {
       gameState.lives--;
 
-      toastMessage(
-        approved
-          ? `FALHA: UM INFILTRADO ENTROU. ${gameState.impostorReason}`
-          : "ERRO: VOCÊ NEGOU A ENTRADA DE UM MILITAR LEGÍTIMO.",
-        false
-      );
+      let errorMessage;
+
+      if (gameState.requiresReferral) {
+        errorMessage =
+          `ERRO: A AUTORIZAÇÃO TEM IRREGULARIDADES E DEVERIA SER ENCAMINHADA. ${gameState.referralReason}`;
+      } else if (decision === "refer") {
+        errorMessage = gameState.isImpostor
+          ? `ENCAMINHAMENTO INDEVIDO: suspeita de infiltração exige negar a entrada. ${gameState.impostorReason}`
+          : "ENCAMINHAMENTO INDEVIDO: não há irregularidade que exija revisão do comando.";
+      } else if (decision === true) {
+        errorMessage = `FALHA: UM INFILTRADO ENTROU. ${gameState.impostorReason}`;
+      } else {
+        errorMessage = "ERRO: VOCÊ NEGOU A ENTRADA DE UM MILITAR LEGÍTIMO.";
+      }
+
+      toastMessage(errorMessage, false);
     }
 
     /* ========================================
@@ -191,6 +227,8 @@
       !systemFailureActive;
 
     document.getElementById("btn-deny").disabled =
+      !systemFailureActive;
+    document.getElementById("btn-refer").disabled =
       !systemFailureActive;
 
     /* ========================================

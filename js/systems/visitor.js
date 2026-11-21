@@ -52,6 +52,8 @@ function generateVisitor() {
   gameState.currentVisitor = { ...base };
 
   gameState.isImpostor = false;
+  gameState.requiresReferral = false;
+  gameState.referralReason = "";
   gameState.impostorReason = "";
   gameState.visitorCase = "legitimate";
   gameState.visitorFlaws = [];
@@ -109,11 +111,21 @@ function generateVisitor() {
   const audit = investigateVisitor(base.id_doc);
 
   if (audit.found && audit.suspicious) {
-    gameState.isImpostor = true;
-
     gameState.visitorCase = investigation?.id ?? "sql_investigation";
 
-    gameState.impostorReason = audit.evidences.join(" ");
+    const administrativeCases = [
+      "invalid_authorizer",
+      "unauthorized_sector",
+      "suspicious_time"
+    ];
+
+    if (administrativeCases.includes(gameState.investigationCase)) {
+      gameState.requiresReferral = true;
+      gameState.referralReason = audit.evidences.join(" ");
+    } else {
+      gameState.isImpostor = true;
+      gameState.impostorReason = audit.evidences.join(" ");
+    }
   }
 
 
@@ -128,7 +140,11 @@ function generateVisitor() {
     return;
   }
 
-  if (!gameState.isImpostor && Math.random() < config.impostorChance) {
+  if (
+    !gameState.isImpostor &&
+    !gameState.requiresReferral &&
+    Math.random() < config.impostorChance
+  ) {
     gameState.isImpostor = true;
 
     const flaws = [

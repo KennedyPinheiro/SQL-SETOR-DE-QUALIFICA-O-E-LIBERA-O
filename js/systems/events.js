@@ -192,6 +192,7 @@ function activateSystemFailure() {
 
     const approveButton = document.getElementById("btn-approve");
     const denyButton = document.getElementById("btn-deny");
+    const referButton = document.getElementById("btn-refer");
 
     if (approveButton) {
         approveButton.disabled = false;
@@ -199,6 +200,9 @@ function activateSystemFailure() {
 
     if (denyButton) {
         denyButton.disabled = false;
+    }
+    if (referButton) {
+        referButton.disabled = false;
     }
 
     showEventNotification({

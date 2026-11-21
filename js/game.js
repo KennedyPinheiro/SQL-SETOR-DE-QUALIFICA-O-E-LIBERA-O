@@ -45,6 +45,7 @@ function nextTurn({ skipEventRoll = false } = {}) {
   const resultStatus = document.getElementById("result-status");
   const approveButton = document.getElementById("btn-approve");
   const denyButton = document.getElementById("btn-deny");
+  const referButton = document.getElementById("btn-refer");
 
   if (callButton) callButton.disabled = false;
 
@@ -78,6 +79,9 @@ function nextTurn({ skipEventRoll = false } = {}) {
 
   if (denyButton) {
     denyButton.disabled = true;
+  }
+  if (referButton) {
+    referButton.disabled = true;
   }
   /* Atualiza HUD */
 
@@ -180,6 +184,8 @@ function startGame() {
   gameState.currentVisitor = null;
   gameState.realNeighbor = null;
   gameState.isImpostor = false;
+  gameState.requiresReferral = false;
+  gameState.referralReason = "";
   gameState.visitorCase = null;
   gameState.impostorReason = "";
   gameState.neighborAlreadyInside = false;

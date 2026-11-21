@@ -87,9 +87,11 @@ function triggerExplosion() {
     }
     const approveButton = document.getElementById("btn-approve");
     const denyButton = document.getElementById("btn-deny");
+    const referButton = document.getElementById("btn-refer");
 
     if (approveButton) approveButton.disabled = true;
     if (denyButton) denyButton.disabled = true;
+    if (referButton) referButton.disabled = true;
 
     const overlay = document.getElementById("explosion-overlay");
 
@@ -227,9 +229,11 @@ function triggerPriorityTimeout() {
 
     const approveButton = document.getElementById("btn-approve");
     const denyButton = document.getElementById("btn-deny");
+    const referButton = document.getElementById("btn-refer");
 
     if (approveButton) approveButton.disabled = true;
     if (denyButton) denyButton.disabled = true;
+    if (referButton) referButton.disabled = true;
 
     toastMessage(
         "PRAZO ESGOTADO! Você demorou para atender o visitante prioritário. -1 VIDA.",

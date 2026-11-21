@@ -222,9 +222,9 @@
                     </div>
                 </div>
 
-                <div class="decision-panel">
-                    <div class="decision-copy"><strong>DECISÃO DO OPERADOR</strong><small>Verifique os dados antes de
-                            autorizar a entrada.</small>
+                    <div class="decision-panel">
+                    <div class="decision-copy"><strong>DECISÃO DO OPERADOR</strong><small>Autorize, negue ou encaminhe
+                            irregularidades administrativas ao comando.</small>
                         <div id="decision-timer" class="decision-timer" hidden>⏱ 10s PARA DECIDIR</div>
                     </div>
                     <div class="decision-buttons">
@@ -232,6 +232,9 @@
                             AUTORIZAR</button>
                         <button id="btn-deny" class="button button-deny" onclick="makeDecision(false)">✕ NEGAR
                             ENTRADA</button>
+                        <button id="btn-refer" class="button button-refer" onclick="makeDecision('refer')"
+                            aria-label="Encaminhar ao comando para revisão" title="Encaminhar ao comando para revisão">
+                            ⚑ ENCAMINHAR AO COMANDO</button>
                     </div>
                 </div>
             </section>
@@ -362,7 +365,7 @@
                     <li><strong>Acompanhe o progresso</strong><span>Uma consulta nova avança a meta quando encontra o registro do solicitante ou filtra por um dado apresentado, como documento, nome ou alojamento. Uma busca direcionada sem resultados também pode ser uma pista. Consultas repetidas ou sobre outros registros gastam uma tentativa, mas não avançam. Consultas vazias, inválidas ou com erro não são executadas. A saída mostra apenas o resultado mais recente, então compare os dados antes da próxima consulta.</span></li>
                     <li><strong>Compare as evidências</strong><span>Confira documento, alojamento, aparência, autorização, lista do dia, registros do portão e movimentações. O painel de suspeita reúne as evidências descobertas; cada evidência única aumenta o índice.</span></li>
                     <li><strong>Use o rádio e o arquivo do efetivo</strong><span>O rádio tenta chamar o alojamento informado. No mapa do quartel, selecione um alojamento para ver quem está cadastrado e consultar seus registros.</span></li>
-                    <li><strong>Tome a decisão</strong><span>Autorize quem for legítimo e negue a entrada de infiltrados. A decisão fica disponível ao cumprir a meta de consultas ou quando as tentativas acabam. Uma decisão errada custa <b>1 vida</b>.</span></li>
+                    <li><strong>Tome a decisão</strong><span>Autorize militares sem irregularidades, negue infiltrados e encaminhe ao comando casos com falhas cadastrais isoladas. A decisão fica disponível ao cumprir a meta de consultas ou quando as tentativas acabam. Uma decisão errada custa <b>1 vida</b>.</span></li>
                     <li><strong>Ganhe pontos e preserve vidas</strong><span>Autorizar um militar legítimo vale <b>+100</b>; identificar um infiltrado vale <b>+150</b>. O índice de suspeita pode aumentar os bônus. Se decidir antes de cumprir a meta de consultas, perde <b>50 pontos</b>. Sem vidas, a partida termina.</span></li>
                     <li><strong>Fique atento aos eventos</strong><span>Eventos podem exigir uma consulta extra, interromper temporariamente o terminal ou iniciar um prazo para decidir. Leia cada aviso: ele informa a regra especial daquele momento.</span></li>
                 </ol>

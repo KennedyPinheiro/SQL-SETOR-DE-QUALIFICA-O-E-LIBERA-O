@@ -111,6 +111,8 @@ function updateSqlProgress() {
 
   const deny =
     document.getElementById("btn-deny");
+  const refer =
+    document.getElementById("btn-refer");
 
   if (approve) {
     approve.disabled = !ready || locked;
@@ -118,6 +120,9 @@ function updateSqlProgress() {
 
   if (deny) {
     deny.disabled = !ready || locked;
+  }
+  if (refer) {
+    refer.disabled = !ready || locked;
   }
 
   updateSqlButton();
