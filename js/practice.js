@@ -95,6 +95,7 @@ const legacyPracticeHistoryStorageKey = "sql-game-practice-select-history-v1";
 const practiceHistoryLimit = 50;
 let practiceHistoryStorageAvailable = true;
 let practiceHistory = loadPracticeHistory();
+const practiceTableGroups = new Map();
 
 function loadPracticeHistory() {
   try {
@@ -157,8 +158,8 @@ function renderPracticeHistory() {
       const editor = document.getElementById("practice-query");
       editor.value = item.query;
       editor.focus();
-      document.getElementById("practice-result-status").textContent = "SELECT DO HISTÓRICO";
-      document.getElementById("practice-result-meta").textContent = "Consulta carregada no editor; execute para rodá-la novamente.";
+      document.getElementById("practice-result-status").textContent = "SQL DO HISTÓRICO";
+      document.getElementById("practice-result-meta").textContent = "Instrução carregada no editor; execute para rodá-la novamente.";
     });
     list.appendChild(button);
   });
@@ -193,22 +194,84 @@ function renderPracticeTables() {
       };
     });
 
-  tables.forEach(({ name, description, columns, rows }) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "practice-table-button";
-    button.setAttribute("aria-label", `Consultar ${name}, ${rows} registros`);
-    const title = document.createElement("strong");
-    title.textContent = name;
-    const details = document.createElement("small");
-    details.append(description, document.createElement("br"), columns.join(" · ") || "Sem colunas", document.createElement("br"), `${rows} REGISTROS`);
-    button.append(title, details);
-    button.addEventListener("click", () => {
-      const input = document.getElementById("practice-query");
-      input.value = `SELECT *\nFROM ${name}\nLIMIT 20;`;
-      input.focus();
+  const databases = new Map();
+  tables.forEach(table => {
+    const databaseName = practiceTableGroups.get(table.name)
+      || (practiceSchemas[table.name] ? "Banco de Logística" : "Banco da Sessão SQL");
+    if (!databases.has(databaseName)) databases.set(databaseName, []);
+    databases.get(databaseName).push(table);
+  });
+
+  [...databases.entries()].sort(([nameA], [nameB]) => {
+    if (nameA === "Banco de Logística") return -1;
+    if (nameB === "Banco de Logística") return 1;
+    return nameA.localeCompare(nameB, "pt-BR");
+  }).forEach(([databaseName, databaseTables]) => {
+    const database = document.createElement("details");
+    database.className = "practice-database-accordion";
+    database.open = true;
+    const databaseSummary = document.createElement("summary");
+    const databaseTitle = document.createElement("strong");
+    databaseTitle.textContent = databaseName;
+    const databaseCount = document.createElement("span");
+    databaseCount.textContent = `${databaseTables.length} TABELAS`;
+    databaseSummary.append(databaseTitle, databaseCount);
+    database.appendChild(databaseSummary);
+
+    const tableList = document.createElement("div");
+    tableList.className = "practice-database-tables";
+    databaseTables.forEach(({ name, description, columns, rows }) => {
+      const tableDetails = document.createElement("details");
+      tableDetails.className = "practice-table-accordion";
+      const tableSummary = document.createElement("summary");
+      const tableTitle = document.createElement("strong");
+      tableTitle.textContent = name;
+      const tableCount = document.createElement("span");
+      tableCount.textContent = `${rows} REG.`;
+      tableSummary.append(tableTitle, tableCount);
+      tableDetails.appendChild(tableSummary);
+
+      const tableContent = document.createElement("div");
+      tableContent.className = "practice-table-content";
+      const tableDescription = document.createElement("small");
+      tableDescription.className = "practice-table-description";
+      tableDescription.textContent = description;
+      tableContent.appendChild(tableDescription);
+
+      const queryButton = document.createElement("button");
+      queryButton.type = "button";
+      queryButton.className = "practice-table-query-button";
+      queryButton.textContent = "CONSULTAR TABELA";
+      queryButton.addEventListener("click", () => {
+        const input = document.getElementById("practice-query");
+        input.value = `SELECT *\nFROM ${name}\nLIMIT 20;`;
+        input.focus();
+      });
+      tableContent.appendChild(queryButton);
+
+      const columnList = document.createElement("ul");
+      columnList.className = "practice-column-list";
+      columns.forEach(column => {
+        const item = document.createElement("li");
+        const columnButton = document.createElement("button");
+        columnButton.type = "button";
+        columnButton.textContent = column;
+        columnButton.title = `Consultar a coluna ${column}`;
+        columnButton.addEventListener("click", () => {
+          const input = document.getElementById("practice-query");
+          input.value = `SELECT ${column}\nFROM ${name}\nLIMIT 20;`;
+          input.focus();
+        });
+        item.appendChild(columnButton);
+        columnList.appendChild(item);
+      });
+      tableContent.appendChild(columnList);
+      tableDetails.appendChild(tableContent);
+      tableList.appendChild(tableDetails);
     });
-    container.appendChild(button);
+
+    database.appendChild(tableList);
+    container.appendChild(database);
   });
 
   const countLabel = `${tables.length} TABELAS`;
@@ -236,6 +299,8 @@ function setupPracticeDatabase() {
       alasql(`INSERT INTO ${table} VALUES (${placeholders})`, row);
     });
   });
+  practiceTableGroups.clear();
+  Object.keys(practiceSchemas).forEach(table => practiceTableGroups.set(table, "Banco de Logística"));
 }
 
 function setPracticeMessage(message, status = "AVISO", isError = false) {
@@ -454,6 +519,204 @@ document.getElementById("practice-import-file")?.addEventListener("change", asyn
     document.getElementById("practice-result-meta").textContent = `${file.name} carregado · revise e pressione EXECUTAR para rodar`;
   } catch (error) {
     setPracticeMessage(`Não foi possível ler o arquivo: ${error.message}`, "FALHA NA IMPORTAÇÃO", true);
+  } finally {
+    event.target.value = "";
+  }
+});
+
+function parseDelimitedRows(text, delimiter) {
+  const rows = [];
+  let row = [];
+  let value = "";
+  let quoted = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (quoted) {
+      if (char === '"' && text[i + 1] === '"') {
+        value += '"';
+        i++;
+      } else if (char === '"') {
+        quoted = false;
+      } else {
+        value += char;
+      }
+    } else if (char === '"' && value === "") {
+      quoted = true;
+    } else if (char === delimiter) {
+      row.push(value);
+      value = "";
+    } else if (char === "\n" || char === "\r") {
+      if (char === "\r" && text[i + 1] === "\n") i++;
+      row.push(value);
+      if (row.some(cell => cell.trim() !== "")) rows.push(row);
+      row = [];
+      value = "";
+    } else {
+      value += char;
+    }
+  }
+
+  row.push(value);
+  if (row.some(cell => cell.trim() !== "")) rows.push(row);
+  return rows;
+}
+
+function detectDelimitedFile(text) {
+  const candidates = [",", ";", "\t"];
+  let quoted = false;
+  const counts = Object.fromEntries(candidates.map(delimiter => [delimiter, 0]));
+  for (let i = 0; i < text.length; i++) {
+    if (text[i] === '"') {
+      if (quoted && text[i + 1] === '"') i++;
+      else quoted = !quoted;
+    } else if (!quoted && (text[i] === "\n" || text[i] === "\r")) {
+      break;
+    } else if (!quoted && candidates.includes(text[i])) {
+      counts[text[i]]++;
+    }
+  }
+  return candidates.reduce((best, candidate) => counts[candidate] > counts[best] ? candidate : best, candidates[0]);
+}
+
+function sanitizePracticeIdentifier(value, fallback) {
+  const identifier = String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return /^[a-z_]/.test(identifier) ? identifier : `${fallback}_${identifier || "campo"}`;
+}
+
+function uniquePracticeTableName(value) {
+  const baseName = sanitizePracticeIdentifier(value.replace(/\.[^.]+$/, ""), "tabela").slice(0, 48) || "tabela_importada";
+  let tableName = baseName;
+  let suffix = 2;
+  while (alasql.tables?.[tableName]) {
+    tableName = `${baseName.slice(0, 43)}_${suffix++}`;
+  }
+  return tableName;
+}
+
+function importRowsAsPracticeTable(requestedName, headers, records, databaseName) {
+  if (!Array.isArray(headers) || !headers.length) throw new Error("O arquivo não contém cabeçalhos de colunas.");
+  if (!Array.isArray(records)) throw new Error("Os registros do arquivo não estão em uma lista válida.");
+
+  const usedColumns = new Set();
+  const columns = headers.map((header, index) => {
+    const base = sanitizePracticeIdentifier(header, `coluna_${index + 1}`).slice(0, 48);
+    let column = base || `coluna_${index + 1}`;
+    let suffix = 2;
+    while (usedColumns.has(column)) column = `${base.slice(0, 43)}_${suffix++}`;
+    usedColumns.add(column);
+    return column;
+  });
+  const tableName = uniquePracticeTableName(requestedName);
+  const dataTypes = headers.map((_, columnIndex) => {
+    const values = records.map(record => Array.isArray(record) ? record[columnIndex] : record?.[headers[columnIndex]])
+      .filter(value => value !== null && value !== undefined && value !== "");
+    if (values.length && values.every(value => typeof value === "number")) return "NUMBER";
+    if (values.length && values.every(value => typeof value === "boolean")) return "BOOLEAN";
+    return "STRING";
+  });
+
+  const quoteIdentifier = name => `[${name.replace(/]/g, "]]")}]`;
+  const createColumns = columns.map((column, index) => `${quoteIdentifier(column)} ${dataTypes[index]}`).join(", ");
+  alasql(`CREATE TABLE ${quoteIdentifier(tableName)} (${createColumns})`);
+  try {
+    const placeholders = columns.map(() => "?").join(", ");
+    records.forEach(record => {
+      const values = headers.map((header, index) => {
+        const value = Array.isArray(record) ? record[index] : record?.[header];
+        if (value === undefined || value === null) return null;
+        return typeof value === "object" ? JSON.stringify(value) : value;
+      });
+      alasql(`INSERT INTO ${quoteIdentifier(tableName)} VALUES (${placeholders})`, values);
+    });
+  } catch (error) {
+    alasql(`DROP TABLE IF EXISTS ${quoteIdentifier(tableName)}`);
+    throw error;
+  }
+
+  practiceTableGroups.set(tableName, databaseName || "Banco importado");
+  return { tableName, rows: records.length, columns };
+}
+
+function parseJsonImport(fileName, data, databaseName) {
+  const tables = [];
+  if (Array.isArray(data)) {
+    if (!data.length || !data.every(record => record && typeof record === "object" && !Array.isArray(record))) {
+      throw new Error("O JSON deve ser uma lista não vazia de objetos.");
+    }
+    const headers = [...new Set(data.flatMap(record => Object.keys(record)))];
+    tables.push(importRowsAsPracticeTable(fileName, headers, data, databaseName));
+    return tables;
+  }
+
+  if (data && typeof data === "object") {
+    if (Array.isArray(data.data) && data.data.length && data.data.every(record => record && typeof record === "object" && !Array.isArray(record))) {
+      const headers = [...new Set(data.data.flatMap(record => Object.keys(record)))];
+      tables.push(importRowsAsPracticeTable(data.table || fileName, headers, data.data, databaseName));
+      return tables;
+    }
+    const collections = Object.entries(data).filter(([, value]) => Array.isArray(value));
+    if (collections.length) {
+      collections.forEach(([name, records]) => {
+        if (!records.length || !records.every(record => record && typeof record === "object" && !Array.isArray(record))) return;
+        const headers = [...new Set(records.flatMap(record => Object.keys(record)))];
+        tables.push(importRowsAsPracticeTable(name, headers, records, databaseName));
+      });
+      if (tables.length) return tables;
+    }
+    const headers = Object.keys(data);
+    if (headers.length) {
+      tables.push(importRowsAsPracticeTable(fileName, headers, [data], databaseName));
+      return tables;
+    }
+  }
+  throw new Error("Formato JSON não reconhecido. Use uma lista de objetos ou um objeto com listas de registros.");
+}
+
+async function importPracticeDataFile(file) {
+  if (file.size > 10 * 1024 * 1024) throw new Error("O arquivo excede o limite de 10 MB.");
+  const text = (await file.text()).replace(/^\uFEFF/, "");
+  const extension = file.name.split(".").pop().toLowerCase();
+  const databaseName = file.name.replace(/\.[^.]+$/, "") || "Banco importado";
+  if (extension === "json") return parseJsonImport(file.name, JSON.parse(text), databaseName);
+  if (!["csv", "tsv"].includes(extension)) throw new Error("Formato não suportado. Importe arquivos CSV, TSV ou JSON.");
+
+  const delimiter = extension === "tsv" ? "\t" : detectDelimitedFile(text);
+  const rows = parseDelimitedRows(text, delimiter);
+  if (rows.length < 1) throw new Error("O arquivo está vazio.");
+  const headers = rows[0].map((header, index) => header.trim() || `coluna_${index + 1}`);
+  const records = rows.slice(1).map(row => headers.map((_, index) => row[index] ?? ""));
+  return [importRowsAsPracticeTable(file.name, headers, records, databaseName)];
+}
+
+document.getElementById("practice-import-data-button")?.addEventListener("click", () => {
+  document.getElementById("practice-import-data-file")?.click();
+});
+
+document.getElementById("practice-import-data-file")?.addEventListener("change", async event => {
+  const files = [...(event.target.files || [])];
+  if (!files.length) return;
+  const imported = [];
+  try {
+    for (const file of files) imported.push(...await importPracticeDataFile(file));
+    renderPracticeTables();
+    const description = imported.map(table => `${table.tableName}: ${table.rows} registros`).join(" · ");
+    document.getElementById("practice-result-status").textContent = "DADOS IMPORTADOS";
+    document.getElementById("practice-result-meta").textContent = description;
+    document.getElementById("practice-results").replaceChildren();
+    const message = document.createElement("p");
+    message.className = "practice-empty";
+    message.textContent = `Importação concluída. Consulte ${imported.map(table => table.tableName).join(", ")} no editor SQL.`;
+    document.getElementById("practice-results").appendChild(message);
+  } catch (error) {
+    renderPracticeTables();
+    setPracticeMessage(`Falha ao importar dados: ${error.message}`, "ERRO NA IMPORTAÇÃO", true);
   } finally {
     event.target.value = "";
   }

@@ -33,10 +33,10 @@
     <main class="practice-workspace">
         <aside class="practice-sidebar" aria-labelledby="database-title">
             <div class="practice-panel-heading">
-                <div><small>EXPLORADOR DE DADOS DIDÁTICOS</small><h1 id="database-title">BANCO DE LOGÍSTICA</h1></div>
+                <div><small>EXPLORADOR DE DADOS DIDÁTICOS</small><h1 id="database-title">BANCOS DE DADOS</h1></div>
                 <span id="practice-table-count">5 TABELAS</span>
             </div>
-            <p class="practice-hint">Este banco didático é separado do jogo. Selecione uma tabela para inserir uma consulta inicial. Scripts podem criar e alterar tabelas durante a sessão. O terminal roda no navegador com o dialeto AlaSQL.</p>
+            <p class="practice-hint">Explore cada banco, tabela e coluna. Use “Consultar tabela” para inserir um SELECT inicial. O terminal roda no navegador com o dialeto AlaSQL.</p>
             <div id="practice-tables" class="practice-tables"></div>
             <div class="practice-sidebar-note">
                 <strong>AMBIENTE LIVRE</strong>
@@ -51,7 +51,9 @@
                     <span>SQL · ALASQL</span>
                 </div>
                 <div class="practice-toolbar">
-                    <button type="button" id="practice-import-button">IMPORTAR .SQL</button>
+                    <button type="button" id="practice-import-data-button">IMPORTAR DADOS</button>
+                    <input id="practice-import-data-file" type="file" accept=".csv,.tsv,.json,text/csv,application/json,text/tab-separated-values" multiple hidden>
+                    <button type="button" id="practice-import-button">CARREGAR .SQL</button>
                     <input id="practice-import-file" type="file" accept=".sql,text/plain,application/sql" hidden>
                     <button type="button" id="practice-export-button">EXPORTAR .SQL</button>
                     <button type="button" data-practice-template="join">EXEMPLO JOIN</button>
@@ -59,6 +61,7 @@
                     <button type="button" data-practice-template="reset-db">RESTAURAR BANCO</button>
                     <button type="button" data-practice-template="clear">LIMPAR</button>
                 </div>
+                <small class="practice-import-note">Dados: CSV/TSV com cabeçalho ou JSON. Scripts .SQL são carregados no editor para execução manual.</small>
                 <label class="sr-only" for="practice-query">Digite uma consulta SQL</label>
                 <textarea id="practice-query" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="practice-editor-help">SELECT nome, patente, alojamento
 FROM pessoal
