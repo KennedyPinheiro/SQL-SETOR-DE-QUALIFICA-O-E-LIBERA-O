@@ -814,7 +814,7 @@
   background: #131a1d;
   border: 1px solid #354248;
   display: grid;
-  grid-template-columns: 82px 1fr;
+  grid-template-columns: 82px minmax(0, 1fr);
   gap: 0
 }
 
@@ -851,7 +851,7 @@
 .building-grid {
   grid-column: 1/-1;
   display: grid;
-  grid-template-columns: 82px 1fr;
+  grid-template-columns: 82px minmax(0, 1fr);
   gap: 0
 }
 
@@ -866,13 +866,14 @@
 
 .floor-units {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   padding: 9px 0;
   border-bottom: 1px solid #2a353a
 }
 
 .apt-unit {
+  min-width: 0;
   min-height: 58px;
   background: #26332c;
   border: 1px solid #4c7055;
@@ -983,6 +984,11 @@
   padding: 13px 20px;
   font: 10px var(--mono);
   color: #77857f
+}
+
+.building-modal > .modal-footer {
+  flex-wrap: wrap;
+  gap: 8px 12px;
 }
 
 .button-quiet {
@@ -2050,6 +2056,10 @@ body.game-boot .right-column>*:nth-child(3) {
 #gameover-modal.defeat .modal-header {
   border-bottom-color: #663638;
   background: #21191c;
+}
+
+#gameover-modal.defeat .modal-header::after {
+  background: linear-gradient(90deg, transparent, #e07b72, transparent);
 }
 
 #gameover-modal.defeat .modal-header small {

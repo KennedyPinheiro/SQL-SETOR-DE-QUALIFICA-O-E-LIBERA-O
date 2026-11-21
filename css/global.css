@@ -65,6 +65,7 @@ body.reduce-motion,body.reduce-motion *,body.reduce-motion::before,body.reduce-m
 .modal {
     width: min(560px, 100%);
     max-height: min(85vh, 760px);
+    overflow-x: hidden;
     overflow-y: auto;
     background: #191f24;
     border: 1px solid #46534b;
@@ -77,12 +78,40 @@ body.reduce-motion,body.reduce-motion *,body.reduce-motion::before,body.reduce-m
 }
 
 .modal-header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
     padding: 20px;
     border-bottom: 1px solid #354149;
+}
+
+.modal-header > div {
+    min-width: 0;
+}
+
+.modal-header h2 {
+    overflow-wrap: anywhere;
+}
+
+.modal-backdrop.open .modal-header::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent 0 42%, var(--green) 50%, transparent 58%);
+    background-size: 200% 100%;
+    animation: modal-header-scan .65s ease-out both;
+}
+
+@keyframes modal-header-scan {
+    from { opacity: 0; background-position: 100% 0; }
+    35% { opacity: .75; }
+    to { opacity: 0; background-position: 0 0; }
 }
 
 .modal-header small {
