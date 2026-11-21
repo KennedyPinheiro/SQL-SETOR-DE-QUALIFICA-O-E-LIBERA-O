@@ -32,36 +32,58 @@ function showSqlMessage(message, type = "error") {
    CONSULTA RELACIONADA AO SOLICITANTE
 ======================================== */
 
-function queryIsAboutVisitor(query, result) {
+function getVisitorQueryProgressKey(query) {
   const visitor = gameState.currentVisitor;
-  const real = gameState.realNeighbor;
 
-  if (!visitor || !real) return false;
+  if (!visitor) return null;
 
-  const visitorIds = [visitor.id_doc, real.id_doc]
-    .filter(Boolean)
-    .map(value => String(value).trim().toLowerCase());
-  const resultIdentifiesVisitor = Array.isArray(result) && result.some(row =>
-    Object.entries(row).some(([column, value]) =>
-      ["id_doc", "visitante", "id_visitante"].includes(column.toLowerCase()) &&
-      visitorIds.includes(String(value).trim().toLowerCase())
-    )
-  );
+  const allowedTables = new Set([
+    "militares",
+    "lista_hoje",
+    "logs_portao",
+    "autorizacoes",
+    "movimentacoes"
+  ]);
+  const tables = [...new Set(
+    Array.from(query.matchAll(/\b(?:FROM|JOIN)\s+([a-z_][a-z0-9_]*)\b/gi), match =>
+      match[1].toLowerCase()
+    ).filter(table => allowedTables.has(table))
+  )].sort();
 
-  if (resultIdentifiesVisitor) return true;
+  if (!tables.length) return null;
 
-  const normalizedQuery = query.toLowerCase();
-  const presentedDetails = [
-    visitor.id_doc,
-    real.id_doc,
-    visitor.nome,
-    visitor.alojamento
-  ]
-    .filter(value => value !== null && value !== undefined)
-    .map(value => String(value).trim().toLowerCase())
-    .filter(value => value.length >= 3);
+  const whereClause = query.match(
+    /\bWHERE\b([\s\S]*?)(?:\bGROUP\s+BY\b|\bORDER\s+BY\b|\bLIMIT\b|;|$)/i
+  )?.[1];
 
-  return presentedDetails.some(value => normalizedQuery.includes(value));
+  if (!whereClause || /\bOR\b|\bNOT\b|\bUNION\b/i.test(whereClause)) return null;
+
+  const targetFields = [
+    ...(!gameState.visitorForgotDocument
+      ? [
+          { field: "id_doc", value: visitor.id_doc },
+          { field: "nome", value: visitor.nome }
+        ]
+      : []),
+    { field: "alojamento", value: visitor.alojamento }
+  ].filter(target => target.value !== null && target.value !== undefined);
+
+  const hasTargetFilter = targetFields.some(({ field, value }) => {
+    const escapedValue = String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const fieldExpression = `(?:\\b[a-z_][a-z0-9_]*\\.)?\\b${field}\\b`;
+    const literalExpression = `(?:'${escapedValue}'|"${escapedValue}")`;
+
+    return new RegExp(
+      `${fieldExpression}\\s*=\\s*${literalExpression}|${literalExpression}\\s*=\\s*${fieldExpression}`,
+      "i"
+    ).test(whereClause);
+  });
+
+  if (!hasTargetFilter) return null;
+
+  // A combinação de tabelas define uma fonte de investigação já consultada.
+  // Trocar projeção, caixa ou espaços não cria progresso adicional.
+  return tables.join("+");
 }
 
 
@@ -186,11 +208,6 @@ function runPlayerQuery() {
      IDENTIFICAÇÃO DE CONSULTAS VÁLIDAS
   ======================================== */
 
-  const normalizedQuery = normalized
-    .replace(/\s+/g, " ")
-    .trim()
-    .toLowerCase();
-
   const hasResults =
     Array.isArray(result) &&
     result.length > 0;
@@ -199,29 +216,17 @@ function runPlayerQuery() {
      CONTROLE DE CONSULTAS REPETIDAS
   ======================================== */
 
-  const isRepeatedQuery =
-    gameState.usedQueries.has(normalizedQuery);
+  const progressKey = getVisitorQueryProgressKey(normalized);
+  const isRepeatedInvestigation =
+    progressKey !== null && gameState.usedQueries.has(progressKey);
+  let progressStatus = "CONSULTA EXECUTADA • SEM PROGRESSO";
 
-  const isVisitorQuery = queryIsAboutVisitor(normalized, result);
-  const isNewInvestigationQuery =
-    isVisitorQuery && !isRepeatedQuery;
-
-  /* Toda execução bem-sucedida consome uma tentativa; apenas pesquisas
-     novas relacionadas ao solicitante avançam a investigação. */
-
-  if (isNewInvestigationQuery) {
+  if (progressKey && !isRepeatedInvestigation) {
     gameState.successfulQueries++;
-  }
-
-  gameState.usedQueries.add(normalizedQuery);
-
-  /* Informa quando uma consulta foi repetida */
-
-  if (isRepeatedQuery) {
-    showSqlMessage(
-      "CONSULTA REPETIDA: você já executou essa pesquisa. Nenhum progresso adicional foi contabilizado.",
-      "notice"
-    );
+    gameState.usedQueries.add(progressKey);
+    progressStatus = "INVESTIGAÇÃO DIRECIONADA • PROGRESSO REGISTRADO";
+  } else if (isRepeatedInvestigation) {
+    progressStatus = "FONTE JÁ INVESTIGADA • SEM PROGRESSO ADICIONAL";
   }
   /* ========================================
      ANÁLISE DE EVIDÊNCIAS
@@ -253,7 +258,7 @@ function runPlayerQuery() {
   ======================================== */
 
   if (status) {
-    status.textContent = "CONSULTA CONCLUÍDA";
+    status.textContent = progressStatus;
   }
 
 
@@ -357,38 +362,53 @@ function insertTemplate(type) {
 
   if (!input) return;
 
-  const visitorId = String(
-    gameState.realNeighbor?.id_doc || gameState.currentVisitor?.id_doc || ""
-  ).replace(/'/g, "''");
+  const visitor = gameState.currentVisitor;
+  if (!visitor) return;
+
+  const visitorId = gameState.visitorForgotDocument
+    ? ""
+    : String(visitor.id_doc || "").replace(/'/g, "''");
+  const visitorApartment = String(visitor.alojamento || "").replace(/'/g, "''");
+  const visitorFilter = alias => visitorId
+    ? `${alias}.id_doc = '${visitorId}'`
+    : `${alias}.alojamento = '${visitorApartment}'`;
 
   const templates = {
 
-    militares: `-- Listar militares cadastrados
-SELECT * FROM militares;`,
+    militares: `-- Consultar o cadastro correspondente ao solicitante
+SELECT m.* FROM militares m
+WHERE ${visitorFilter("m")};`,
 
-    join: `-- Relacionar militares, autorizações e registros
+    join: `-- Relacionar os registros correspondentes ao solicitante
 SELECT m.nome, m.alojamento, l.autorizado, p.status_atual
 FROM militares m
 JOIN lista_hoje l ON m.id_doc = l.id_doc
-JOIN logs_portao p ON m.id_doc = p.id_doc;`,
+JOIN logs_portao p ON m.id_doc = p.id_doc
+WHERE ${visitorFilter("m")};`,
 
-    logs: `-- Consultar todos os registros do portão
-SELECT * FROM logs_portao;`,
+    logs: `-- Consultar o registro do solicitante no portão
+SELECT p.id_doc, p.status_atual
+FROM logs_portao p
+JOIN militares m ON m.id_doc = p.id_doc
+WHERE ${visitorFilter("m")};`,
 
     lista: `-- Consultar a autorização do solicitante na lista de hoje
-SELECT id_doc, autorizado
-FROM lista_hoje
-WHERE id_doc = '${visitorId}';`,
+SELECT l.id_doc, l.autorizado
+FROM lista_hoje l
+JOIN militares m ON m.id_doc = l.id_doc
+WHERE ${visitorFilter("m")};`,
 
     autorizacao: `-- Consultar a autorização registrada para o solicitante
-SELECT id_doc, responsavel, horario, setor, motivo
-FROM autorizacoes
-WHERE id_doc = '${visitorId}';`,
+SELECT a.id_doc, a.responsavel, a.horario, a.setor, a.motivo
+FROM autorizacoes a
+JOIN militares m ON m.id_doc = a.id_doc
+WHERE ${visitorFilter("m")};`,
 
     movimentacoes: `-- Consultar movimentações do militar
-SELECT id_doc, local, horario, atividade
-FROM movimentacoes
-WHERE id_doc = '${visitorId}';`,
+SELECT p.id_doc, p.local, p.horario, p.atividade
+FROM movimentacoes p
+JOIN militares m ON m.id_doc = p.id_doc
+WHERE ${visitorFilter("m")};`,
 
     cruzamento: `-- Cruzar autorização com a movimentação do responsável
 SELECT a.id_doc AS visitante, a.responsavel,
@@ -399,7 +419,8 @@ FROM autorizacoes a
 JOIN movimentacoes m
   ON m.id_doc = a.responsavel
  AND m.horario = a.horario
-WHERE a.id_doc = '${visitorId}';`
+JOIN militares s ON s.id_doc = a.id_doc
+WHERE ${visitorFilter("s")};`
 
   };
 

@@ -90,8 +90,8 @@ function updateSqlProgress() {
   if (objective) {
     objective.textContent =
       gameState.queriesRemaining <= 0
-        ? "CONSULTAS ESGOTADAS: nenhuma consulta resta. Decida agora se autoriza ou nega a entrada!"
-        : `Modo ${gameState.modeConfig[gameState.mode].label}: consulte dados do solicitante; pesquisas de outros registros não avançam a meta.`;
+        ? "CONSULTAS ESGOTADAS: nenhuma consulta resta. Decida se autoriza, nega ou encaminha o caso ao comando."
+        : `Modo ${gameState.modeConfig[gameState.mode].label}: filtre por documento, nome ou alojamento; consultas amplas ou em fontes já investigadas não avançam a meta.`;
   }
 
   /* ========================================

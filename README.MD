@@ -28,7 +28,7 @@ O painel de suspeita registra evidências únicas confirmadas por consultas SQL.
 
 O terminal permite consultar as cinco tabelas descritas abaixo. Cada execução SQL válida consome uma tentativa; consultas vazias, inválidas ou com erro não são executadas. A saída mostra o resultado mais recente.
 
-Uma consulta nova avança o objetivo quando os resultados identificam o solicitante ou quando a consulta usa um dado apresentado por ele, como documento, nome ou alojamento. Uma busca direcionada sem resultados também pode avançar. Consultas repetidas ou sobre registros sem relação com o solicitante consomem uma tentativa, mas não avançam o objetivo.
+Uma consulta avança o objetivo quando filtra diretamente por um dado apresentado pelo solicitante, como documento, nome ou alojamento, e consulta uma combinação de tabelas ainda não investigada. Uma busca direcionada sem resultados também pode avançar. Consultas sem filtro e novas consultas às mesmas fontes consomem uma tentativa, mas não avançam, mesmo que mudem as colunas, espaços ou capitalização do SQL.
 
 A decisão fica disponível ao atingir a quantidade de consultas exigida pela dificuldade ou ao esgotar as tentativas. Quando as tentativas acabam, começa um prazo de **10 segundos** para decidir; se o tempo terminar, ocorre a sequência de derrota.
 
