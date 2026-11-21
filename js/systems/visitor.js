@@ -78,11 +78,11 @@ function generateVisitor() {
   // Residente que já está dentro do quartel
 
   if (gameState.neighborAlreadyInside) {
-    gameState.isImpostor = true;
+    gameState.requiresReferral = true;
     gameState.visitorCase = "duplicate_inside";
 
-    gameState.impostorReason =
-      "Este residente já consta como dentro do quartel.";
+    gameState.referralReason =
+      "O registro indica que este militar já está dentro do quartel; confirme a situação antes de liberar uma nova entrada.";
 
     return;
   }
@@ -91,11 +91,11 @@ function generateVisitor() {
   // Residente sem autorização
 
   if (!auth || auth.autorizado === "Nao") {
-    gameState.isImpostor = true;
+    gameState.requiresReferral = true;
     gameState.visitorCase = "unauthorized";
 
-    gameState.impostorReason =
-      "O residente não possui autorização para entrar hoje.";
+    gameState.referralReason =
+      "O militar não consta como autorizado para entrar hoje; encaminhe o caso para confirmação.";
 
     return;
   }
@@ -113,19 +113,8 @@ function generateVisitor() {
   if (audit.found && audit.suspicious) {
     gameState.visitorCase = investigation?.id ?? "sql_investigation";
 
-    const administrativeCases = [
-      "invalid_authorizer",
-      "unauthorized_sector",
-      "suspicious_time"
-    ];
-
-    if (administrativeCases.includes(gameState.investigationCase)) {
-      gameState.requiresReferral = true;
-      gameState.referralReason = audit.evidences.join(" ");
-    } else {
-      gameState.isImpostor = true;
-      gameState.impostorReason = audit.evidences.join(" ");
-    }
+    gameState.requiresReferral = true;
+    gameState.referralReason = audit.evidences.join(" ");
   }
 
 
