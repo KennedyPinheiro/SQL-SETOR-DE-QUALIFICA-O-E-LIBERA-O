@@ -17,12 +17,12 @@ O navegador precisa de acesso à internet para carregar AlaSQL e as fontes do Go
 ## Ciclo de jogo
 
 1. **Inspecione o solicitante:** compare o retrato, a declaração e a identidade militar. Se ele disser que está sem documento, a identidade não é apresentada.
-2. **Faça perguntas:** há quatro perguntas predefinidas por solicitante — documento, alojamento, aparência e autorização. Cada uma só pode ser feita uma vez. As respostas têm variações e aparecem em **Declaração do solicitante**.
+2. **Faça perguntas:** há quatro perguntas predefinidas por solicitante — documento, alojamento, aparência e autorização. Cada uma só pode ser feita uma vez. As respostas variam e aparecem em **Declaração do solicitante**; são afirmações a comparar com os dados, não evidências automáticas.
 3. **Investigue com SQL:** consulte os registros do efetivo, autorizações, lista do dia, portão e movimentações. O terminal aceita uma consulta `SELECT` por execução.
 4. **Compare os dados:** use também o rádio para chamar o alojamento e o arquivo do efetivo para consultar os alojamentos cadastrados.
 5. **Decida:** autorize militares sem irregularidades, negue visitantes com sinais de identidade falsa ou encaminhe divergências nos registros ao comando para confirmação. Uma inconsistência cadastral, sozinha, não prova fraude. Uma decisão incorreta custa uma vida.
 
-O painel de suspeita registra evidências únicas encontradas durante as perguntas e consultas. Entre as irregularidades investigáveis estão documento ou alojamento divergente, anomalias visuais, duplicidade no portão, falta de autorização, responsável inexistente, setor divergente, horário inconsistente e incompatibilidade entre autorização e movimentação.
+O painel de suspeita registra evidências únicas confirmadas por consultas SQL. As perguntas fornecem declarações do visitante para comparar com o cadastro. Entre as irregularidades investigáveis estão documento ou alojamento divergente, anomalias visuais, duplicidade no portão, falta de autorização, responsável inexistente, setor divergente, horário inconsistente e incompatibilidade entre autorização e movimentação.
 
 ## Consultas e progresso
 

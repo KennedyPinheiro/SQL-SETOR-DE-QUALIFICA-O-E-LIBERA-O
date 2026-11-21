@@ -154,7 +154,6 @@ function askVisitorQuestion(questionKey) {
   const real = gameState.realNeighbor || visitor;
   const declaration = document.getElementById("visitor-speech");
   const answerLines = [];
-  const evidenceKeys = [];
 
   if (questionKey === "document") {
     const mismatch = String(visitor.id_doc) !== String(real.id_doc);
@@ -165,7 +164,6 @@ function askVisitorQuestion(questionKey) {
         "“Não trouxe o documento. Achei que meu nome no cadastro seria suficiente.”"
       );
     } else if (mismatch) {
-      evidenceKeys.push("forged_document");
       answerLines.push(
         `“Meu documento é ${visitor.id_doc}. Está tudo certo, pode conferir.”`,
         `“O número é ${visitor.id_doc}; acabei de apresentar para você.”`,
@@ -183,7 +181,6 @@ function askVisitorQuestion(questionKey) {
   if (questionKey === "apartment") {
     const mismatch = String(visitor.alojamento) !== String(real.alojamento);
     if (mismatch) {
-      evidenceKeys.push("wrong_apartment");
       answerLines.push(
         `“Meu alojamento é o ${visitor.alojamento}. Sempre foi esse.”`,
         `“Anote aí: ${visitor.alojamento}. Deve estar no sistema.”`,
@@ -199,13 +196,7 @@ function askVisitorQuestion(questionKey) {
   }
 
   if (questionKey === "appearance") {
-    const hatMismatch = visitor.quepe !== real.quepe;
-    const glassesMismatch = visitor.oculos !== real.oculos;
     const skinMismatch = visitor.pele !== real.pele;
-
-    if (hatMismatch) evidenceKeys.push("hat_mismatch");
-    if (glassesMismatch) evidenceKeys.push("glasses_mismatch");
-    if (skinMismatch) evidenceKeys.push("physical_anomaly");
 
     const appearance = [
       visitor.quepe === "Sim" ? "estou usando quepe" : "estou sem quepe",
@@ -232,16 +223,11 @@ function askVisitorQuestion(questionKey) {
       ? investigateVisitor(real.id_doc)
       : null;
 
-    if (audit?.record?.responsavel_inexistente) evidenceKeys.push("invalid_authorizer");
-    if (audit?.record?.setor_irregular) evidenceKeys.push("unauthorized_sector");
-    if (audit?.record?.horario_irregular) evidenceKeys.push("suspicious_time");
-    if (audit?.evidences?.some(item => item.includes("Movimentação"))) evidenceKeys.push("cross_reference");
-
     const authorization = record
       ? `${record.responsavel}, às ${record.horario}, pelo setor ${record.setor}`
       : "Não sei informar quem autorizou";
 
-    const irregular = evidenceKeys.length > 0;
+    const irregular = audit?.suspicious === true;
     answerLines.push(...(irregular ? [
       `“A autorização está em nome de ${authorization}. Foi o que me informaram.”`,
       `“Só sei que consta ${authorization}. Não tenho mais detalhes.”`,
@@ -252,8 +238,6 @@ function askVisitorQuestion(questionKey) {
       `“Está tudo certo: ${authorization}.”`
     ]));
   }
-
-  evidenceKeys.forEach(key => discoverEvidence(key));
 
   if (declaration) {
     declaration.textContent = chooseVisitorLine(answerLines);
