@@ -179,8 +179,26 @@
   background: linear-gradient(90deg, transparent 49.5%, #819098 50%, transparent 50.5%), linear-gradient(0deg, transparent 49.5%, #819098 50%, transparent 50.5%)
 }
 
+.window-frame::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 3px, #d0e3d00a 4px),
+    linear-gradient(180deg, transparent 0 42%, #b8d9bf08 47%, #b8d9bf26 50%, #b8d9bf08 53%, transparent 58% 100%);
+  transform: translateY(-100%);
+  animation: surveillance-scan 8s linear infinite;
+}
+
+@keyframes surveillance-scan {
+  to { transform: translateY(100%); }
+}
+
 .window-label {
   position: absolute;
+  z-index: 3;
   bottom: 8px;
   left: 10px;
   font: 10px var(--mono);
@@ -529,7 +547,12 @@
   height: 8px;
   border-radius: 50%;
   background: #8dc69a;
-  box-shadow: 0 0 9px #8dc69a
+  box-shadow: 0 0 9px #8dc69a;
+  animation: terminal-standby 3.6s ease-in-out infinite;
+}
+
+@keyframes terminal-standby {
+  50% { opacity: .72; box-shadow: 0 0 4px #8dc69a; }
 }
 
 .query-counter {
