@@ -29,6 +29,43 @@ function showSqlMessage(message, type = "error") {
 
 
 /* ========================================
+   CONSULTA RELACIONADA AO SOLICITANTE
+======================================== */
+
+function queryIsAboutVisitor(query, result) {
+  const visitor = gameState.currentVisitor;
+  const real = gameState.realNeighbor;
+
+  if (!visitor || !real) return false;
+
+  const visitorIds = [visitor.id_doc, real.id_doc]
+    .filter(Boolean)
+    .map(value => String(value).trim().toLowerCase());
+  const resultIdentifiesVisitor = Array.isArray(result) && result.some(row =>
+    Object.entries(row).some(([column, value]) =>
+      ["id_doc", "visitante", "id_visitante"].includes(column.toLowerCase()) &&
+      visitorIds.includes(String(value).trim().toLowerCase())
+    )
+  );
+
+  if (resultIdentifiesVisitor) return true;
+
+  const normalizedQuery = query.toLowerCase();
+  const presentedDetails = [
+    visitor.id_doc,
+    real.id_doc,
+    visitor.nome,
+    visitor.alojamento
+  ]
+    .filter(value => value !== null && value !== undefined)
+    .map(value => String(value).trim().toLowerCase())
+    .filter(value => value.length >= 3);
+
+  return presentedDetails.some(value => normalizedQuery.includes(value));
+}
+
+
+/* ========================================
    EXECUÇÃO DE CONSULTAS
 ======================================== */
 
@@ -165,15 +202,18 @@ function runPlayerQuery() {
   const isRepeatedQuery =
     gameState.usedQueries.has(normalizedQuery);
 
-  const isNewValidQuery =
-    hasResults && !isRepeatedQuery;
+  const isVisitorQuery = queryIsAboutVisitor(normalized, result);
+  const isNewInvestigationQuery =
+    isVisitorQuery && !isRepeatedQuery;
 
-  /* Registra consulta válida inédita */
+  /* Toda execução bem-sucedida consome uma tentativa; apenas pesquisas
+     novas relacionadas ao solicitante avançam a investigação. */
 
-  if (isNewValidQuery) {
+  if (isNewInvestigationQuery) {
     gameState.successfulQueries++;
-    gameState.usedQueries.add(normalizedQuery);
   }
+
+  gameState.usedQueries.add(normalizedQuery);
 
   /* Informa quando uma consulta foi repetida */
 

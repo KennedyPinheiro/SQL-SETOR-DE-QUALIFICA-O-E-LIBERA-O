@@ -59,7 +59,7 @@ function updateSqlProgress() {
 
   if (progress) {
     progress.textContent =
-      `${gameState.successfulQueries} / ${gameState.requiredQueries} CONSULTAS`;
+      `${gameState.successfulQueries} / ${gameState.requiredQueries} CONSULTAS DO SOLICITANTE`;
   }
 
   const objective =
@@ -69,7 +69,7 @@ function updateSqlProgress() {
     objective.textContent =
       gameState.queriesRemaining <= 0
         ? "CONSULTAS ESGOTADAS: nenhuma consulta resta. Decida agora se autoriza ou nega a entrada!"
-        : `Modo ${gameState.modeConfig[gameState.mode].label}: execute consultas SQL diferentes e compare os dados oficiais antes de decidir.`;
+        : `Modo ${gameState.modeConfig[gameState.mode].label}: consulte dados do solicitante; pesquisas de outros registros não avançam a meta.`;
   }
 
   /* ========================================
