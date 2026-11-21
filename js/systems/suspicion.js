@@ -280,15 +280,12 @@ function analyzeQueryEvidence(query, result) {
         }
 
         if (sqlTables.has("autorizacoes") && sqlTables.has("movimentacoes")) {
-            const audit = typeof investigateVisitor === "function"
-                ? investigateVisitor(visitor.id_doc)
-                : null;
-            const queryShowsCrossReference = relevantRows.some(row =>
+            const queryShowsCrossReference = rowsToCheck.some(row =>
                 hasFlag(row, ["referencia_cruzada", "cross_reference", "movimentacao_incompativel"]) ||
                 ("local" in row && String(row.local).trim().toLowerCase() === "arsenal" &&
                     "atividade" in row && String(row.atividade).trim().toLowerCase() === "inspeção")
             );
-            if (audit?.evidences?.some(evidence => evidence.includes("Movimentação")) || queryShowsCrossReference) {
+            if (queryShowsCrossReference) {
                 discoverSqlEvidence("cross_reference", "A movimentação do responsável é incompatível com a autorização.");
             }
         }
