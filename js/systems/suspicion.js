@@ -215,10 +215,14 @@ function analyzeQueryEvidence(query, result) {
     const sqlTables = new Set(
         (query.toLowerCase().match(/\b(militares|lista_hoje|logs_portao|autorizacoes|movimentacoes)\b/g) || [])
     );
-    const visitorId = String(visitor.id_doc).trim().toLowerCase();
+    const visitorIds = new Set(
+        [visitor.id_doc, real.id_doc]
+            .filter(value => value !== null && value !== undefined)
+            .map(value => String(value).trim().toLowerCase())
+    );
     const isVisitorRow = row => Object.entries(row).some(([column, value]) =>
-        ["id_doc", "visitante", "id_visitante", "responsavel", "id_responsavel"].includes(column.toLowerCase()) &&
-        String(value).trim().toLowerCase() === visitorId
+        ["id_doc", "visitante", "id_visitante"].includes(column.toLowerCase()) &&
+        visitorIds.has(String(value).trim().toLowerCase())
     );
     const relevantRows = result.filter(isVisitorRow);
     const rowsToCheck = relevantRows;
