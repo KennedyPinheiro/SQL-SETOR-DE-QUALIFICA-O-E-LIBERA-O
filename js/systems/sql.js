@@ -110,7 +110,7 @@ function runPlayerQuery() {
     return;
   }
 
-  const tableRegex = /\b(militares|lista_hoje|logs_portao)\b/i;
+  const tableRegex = /\b(militares|lista_hoje|logs_portao|autorizacoes|movimentacoes)\b/i;
 
   if (!tableRegex.test(normalized)) {
     showSqlMessage(

@@ -55,8 +55,12 @@ function generateVisitor() {
   gameState.impostorReason = "";
   gameState.visitorCase = "legitimate";
   gameState.visitorFlaws = [];
+  gameState.askedVisitorQuestions = new Set();
+  gameState.visitorForgotDocument = false;
   gameState.investigationCase = "legitimate";
   gameState.investigationDescription = "";
+  resetMovements();
+  resetAllVisitorAuthorizations();
   /* ========================================
    CASO INVESTIGATIVO DO VISITANTE
 ======================================== */
@@ -98,10 +102,18 @@ function generateVisitor() {
   gameState.investigationCase = investigation?.id ?? "legitimate";
   gameState.investigationDescription = investigation?.description ?? "";
 
-  if (investigation && investigation.id !== "legitimate") {
+  /* ========================================
+     AUDITORIA SQL DO VISITANTE
+  ======================================== */
+
+  const audit = investigateVisitor(base.id_doc);
+
+  if (audit.found && audit.suspicious) {
     gameState.isImpostor = true;
-    gameState.visitorCase = investigation.id;
-    gameState.impostorReason = investigation.description;
+
+    gameState.visitorCase = investigation?.id ?? "sql_investigation";
+
+    gameState.impostorReason = audit.evidences.join(" ");
   }
 
 

@@ -13,7 +13,7 @@ const PORTRAIT_LOOKS = {
 
   "3920-AR": { // Ana Rudboys — professora
     bg: "#7c6bd1", skin: "#c98f6b", shade: "#b57655",
-    hair: "#1c1a2b", style: "bob", face: "oval",
+    hair: "#1c1a2b", style: "braids", face: "oval",
     eyes: "round", brows: "thin", nose: "small", mouth: "neutral",
     accessory: "earring",
     jacket: "#3d4f3a", hat: "#3c4a2e"
@@ -37,7 +37,7 @@ const PORTRAIT_LOOKS = {
 
   "6102-CR": { // Carlos Rocha — padeiro
     bg: "#4a8fd4", skin: "#d49a73", shade: "#bb7f5a",
-    hair: "#2b1a14", style: "crop", face: "square",
+    hair: "#2b1a14", style: "undercut", face: "square",
     eyes: "round", brows: "thick", nose: "wide", mouth: "smile",
     accessory: "none",
     jacket: "#4f5a40", hat: "#4a5a36", facial: "beard"
@@ -45,7 +45,7 @@ const PORTRAIT_LOOKS = {
 
   "9034-EB": { // Elena Vance — advogada
     bg: "#d9577f", skin: "#8d5a3b", shade: "#744630",
-    hair: "#150f10", style: "curly", face: "oval",
+    hair: "#150f10", style: "afro", face: "oval",
     eyes: "almond", brows: "arched", nose: "small", mouth: "neutral",
     accessory: "earring",
     jacket: "#2c3b30", hat: "#3a3f44"
@@ -53,7 +53,7 @@ const PORTRAIT_LOOKS = {
 
   "2280-JS": { // Jonas Silva — eletricista
     bg: "#58b36a", skin: "#6e4430", shade: "#5a3524",
-    hair: "#0f0d0e", style: "buzz", face: "wide",
+    hair: "#0f0d0e", style: "locs", face: "wide",
     eyes: "narrow", brows: "thick", nose: "wide", mouth: "neutral",
     accessory: "none",
     jacket: "#6a5a3c", hat: "#5c6b40"
@@ -61,7 +61,7 @@ const PORTRAIT_LOOKS = {
 
   "4491-PT": { // Paula Torres — enfermeira
     bg: "#5fb7d9", skin: "#f3c2a2", shade: "#dca486",
-    hair: "#c68a3a", style: "long", face: "round",
+    hair: "#c68a3a", style: "ponytail", face: "round",
     eyes: "round", brows: "thin", nose: "rounded", mouth: "smile",
     accessory: "earring",
     jacket: "#3f5246", hat: "#46563a"
@@ -69,7 +69,7 @@ const PORTRAIT_LOOKS = {
 
   "7355-RK": { // Ravi Kumar — contador
     bg: "#e8654a", skin: "#c58a64", shade: "#ad7250",
-    hair: "#14204a", style: "fringe", face: "narrow",
+    hair: "#14204a", style: "sidepart", face: "narrow",
     eyes: "almond", brows: "straight", nose: "narrow", mouth: "neutral",
     accessory: "none",
     jacket: "#2f3a2e", hat: "#394634"
@@ -79,7 +79,7 @@ const PORTRAIT_LOOKS = {
     bg: "#8bb35a", skin: "#f0bf9d", shade: "#d9a283",
     hair: "#8e3b25", style: "long", face: "soft",
     eyes: "tired", brows: "thin", nose: "rounded", mouth: "smile",
-    accessory: "glasses",
+    accessory: "none",
     jacket: "#505a4a", hat: "#6b5f3e"
   },
 
@@ -310,6 +310,30 @@ function portraitHair(style, c, d) {
       back: [[78, 54, 24], [104, 38, 24], [136, 38, 24], [162, 54, 24], [60, 86, 22], [180, 86, 22], [58, 118, 20], [182, 118, 20]]
         .map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`).join(""),
       front: `<path d="M68 104 C64 62 92 48 120 48 C150 48 176 62 172 104 C164 84 148 74 120 72 C94 74 76 84 68 104 Z" fill="${c}"/>`
+    },
+    afro: {
+      back: `<path d="M49 126 C42 91 48 52 72 39 C85 15 111 24 120 18 C137 20 151 22 166 39 C192 49 199 89 191 126 L178 149 L62 149 Z" fill="${c}"/>`,
+      front: `<path d="M58 106 C48 76 58 48 78 42 C84 19 105 30 116 24 C132 28 143 20 159 40 C182 46 190 75 182 106 C170 91 161 84 151 83 C145 95 137 97 129 88 C120 101 109 99 102 88 C92 100 82 96 77 86 C69 91 63 98 58 106 Z" fill="${c}"/>`
+    },
+    braids: {
+      back: `<path d="M62 83 C49 118 57 167 51 202 Q62 214 73 202 C79 164 70 125 83 96 Z M178 83 C191 118 183 167 189 202 Q178 214 167 202 C161 164 170 125 157 96 Z" fill="${c}"/>`,
+      front: `<path d="M63 107 C57 62 88 38 120 38 C154 38 183 62 177 107 C163 86 147 72 120 70 C94 72 77 86 63 107 Z" fill="${c}"/><path d="M87 51 Q103 64 91 82 M153 51 Q137 64 149 82" stroke="${d}" stroke-width="3" fill="none" stroke-linecap="round"/>`
+    },
+    ponytail: {
+      back: `<path d="M157 58 C187 68 190 92 180 111 C172 128 181 144 170 161 C160 174 170 190 154 203 C144 212 132 201 139 190 C150 174 139 158 151 141 C163 124 151 108 164 91 C171 79 164 68 157 58 Z" fill="${c}"/><circle cx="160" cy="73" r="9" fill="${d}"/>`,
+      front: `<path d="M63 108 C56 62 88 38 120 38 C153 38 181 62 175 108 C163 84 145 72 120 70 C95 72 77 85 63 108 Z" fill="${c}"/><path d="M120 39 Q139 43 151 58" stroke="${d}" stroke-width="3" fill="none" stroke-linecap="round"/>`
+    },
+    sidepart: {
+      back: "",
+      front: `<path d="M62 108 C55 64 84 34 120 34 C158 34 185 62 178 108 C166 88 155 80 143 75 C133 70 126 61 123 51 C111 72 92 79 75 91 C69 96 65 102 62 108 Z" fill="${c}"/><path d="M123 51 Q137 67 155 76" stroke="${d}" stroke-width="3" fill="none" stroke-linecap="round"/>`
+    },
+    undercut: {
+      back: "",
+      front: `<path d="M67 105 C61 72 71 49 91 40 C111 28 145 31 163 47 C178 60 182 82 174 105 L165 100 C163 82 153 70 137 65 C118 60 99 65 86 76 C79 84 76 95 75 108 Z" fill="${c}"/><path d="M71 90 L84 86 M169 88 L158 84" stroke="${d}" stroke-width="3" stroke-linecap="round"/>`
+    },
+    locs: {
+      back: `<path d="M63 85 Q51 121 59 165 L55 193 Q66 204 76 193 L79 158 Q73 124 86 94 Z M177 85 Q189 121 181 165 L185 193 Q174 204 164 193 L161 158 Q167 124 154 94 Z" fill="${c}"/><path d="M88 56 Q76 97 88 126 L84 151 Q95 160 104 148 L104 119 Q94 91 108 59 Z M152 56 Q164 97 152 126 L156 151 Q145 160 136 148 L136 119 Q146 91 132 59 Z" fill="${c}"/>`,
+      front: `<path d="M64 105 C59 62 89 38 120 38 C154 38 181 62 176 105 C163 84 148 70 120 68 C93 70 77 85 64 105 Z" fill="${c}"/><path d="M91 51 Q82 82 94 103 M120 42 Q112 75 122 96 M149 51 Q158 82 146 103" stroke="${d}" stroke-width="4" fill="none" stroke-linecap="round"/>`
     }
   };
   return styles[style] || styles.crop;

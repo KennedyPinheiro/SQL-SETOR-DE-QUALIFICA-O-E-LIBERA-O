@@ -11,30 +11,53 @@ const EVENT_CHANCE = 0.35;
 const RANDOM_EVENTS = [
     {
         id: "security_alert",
+        icon: "⚠",
         title: "ALERTA DE SEGURANÇA",
         description: "O nível de segurança foi elevado. Redobre a atenção."
     },
     {
         id: "system_failure",
+        icon: "⌁",
         title: "FALHA NO SISTEMA",
         description: "O terminal apresentou instabilidade. Consultas SQL limitadas."
     },
     {
         id: "surprise_inspection",
+        icon: "◎",
         title: "INSPEÇÃO SURPRESA",
         description: "Uma verificação adicional será exigida neste atendimento."
     },
     {
         id: "command_order",
+        icon: "▤",
         title: "ORDEM DO COMANDO",
         description: "Uma nova determinação alterou temporariamente as regras de autorização."
     },
     {
         id: "priority_visitor",
+        icon: "!",
         title: "VISITANTE PRIORITÁRIO",
         description: "Este visitante exige atendimento prioritário. O tempo é limitado."
     }
 ];
+
+function eventVisualClass(eventId) {
+    return `event-${String(eventId).replace(/_/g, "-")}`;
+}
+
+function clearEventEffects() {
+    document.body.classList.remove(
+        "system-failure",
+        "security-alert",
+        ...RANDOM_EVENTS.map(event => eventVisualClass(event.id))
+    );
+
+    if (typeof stopPriorityTimer === "function") {
+        stopPriorityTimer();
+    }
+
+    document.getElementById("event-notification")?.remove();
+}
 /* ========================================
    SORTEIO DE EVENTOS
 ======================================== */
@@ -50,7 +73,7 @@ function triggerRandomEvent() {
     gameState.eventTurnsRemaining = 0;
 
     // Remove efeitos visuais anteriores
-    document.body.classList.remove("system-failure", "security-alert");
+    clearEventEffects();
 
     // Restaura o terminal SQL
     const sqlInput = document.getElementById("sql-input");
@@ -89,6 +112,8 @@ function triggerRandomEvent() {
         Math.random() * 3
     ) + 2;
 
+    document.body.classList.add(eventVisualClass(selectedEvent.id));
+
 
 
     // Ativa os efeitos específicos
@@ -120,11 +145,26 @@ function showEventNotification(event) {
 
     notification.id = "event-notification";
     notification.className = "event-notification";
+    if (event.id) {
+        notification.classList.add(`event-notification-${String(event.id).replace(/_/g, "-")}`);
+    }
 
-    notification.innerHTML = `
-        <strong>${event.title}</strong>
-        <p>${event.description}</p>
-    `;
+    const mark = document.createElement("span");
+    mark.className = "event-notification-mark";
+    mark.setAttribute("aria-hidden", "true");
+    mark.textContent = event.icon || "!";
+
+    const message = document.createElement("div");
+    message.className = "event-notification-copy";
+
+    const title = document.createElement("strong");
+    title.textContent = event.title;
+
+    const description = document.createElement("p");
+    description.textContent = event.description;
+
+    message.append(title, description);
+    notification.append(mark, message);
 
     const previous = document.getElementById(
         "event-notification"
@@ -162,7 +202,7 @@ function activateSystemFailure() {
     }
 
     showEventNotification({
-        title: "FALHA NO SISTEMA",
+        ...gameState.eventData,
         description: "Terminal temporariamente indisponível."
     });
 
@@ -172,7 +212,7 @@ function activateSecurityAlert() {
     document.body.classList.add("security-alert");
 
     showEventNotification({
-        title: "ALERTA DE SEGURANÇA",
+        ...gameState.eventData,
         description: "Protocolo de segurança elevado. Informações de suspeita temporariamente restritas."
     });
 
@@ -189,7 +229,7 @@ function activateSurpriseInspection() {
     updateSqlProgress();
 
     showEventNotification({
-        title: "INSPEÇÃO SURPRESA",
+        ...gameState.eventData,
         description: "O comando exige uma verificação adicional. Execute uma consulta SQL válida antes de tomar sua decisão."
     });
 }
@@ -199,7 +239,7 @@ function activateSurpriseInspection() {
 
 function activatePriorityVisitor() {
     showEventNotification({
-        title: "VISITANTE PRIORITÁRIO",
+        ...gameState.eventData,
         description: "Este visitante exige atendimento prioritário. Você tem 15 segundos para tomar uma decisão."
     });
 
@@ -222,6 +262,8 @@ function updateEventDuration() {
     if (finishedEvent === "priority_visitor") {
         stopPriorityTimer();
     }
+
+    document.body.classList.remove(eventVisualClass(finishedEvent));
 
     gameState.activeEvent = null;
     gameState.eventData = null;

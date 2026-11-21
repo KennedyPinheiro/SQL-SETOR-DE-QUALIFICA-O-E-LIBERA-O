@@ -142,6 +142,11 @@ function selectMode(mode) {
 function startGame() {
   const config = gameState.modeConfig[gameState.mode];
 
+  if (typeof clearEventEffects === "function") clearEventEffects();
+  gameState.activeEvent = null;
+  gameState.eventData = null;
+  gameState.eventTurnsRemaining = 0;
+
   /* Limpa temporizadores pendentes */
 
   clearPendingTimers();

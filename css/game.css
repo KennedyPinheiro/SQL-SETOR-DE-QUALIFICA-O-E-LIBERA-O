@@ -272,6 +272,95 @@
   line-height: 1.5
 }
 
+.interrogation-panel {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #354149
+}
+
+.interrogation-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font: 10px var(--mono);
+  letter-spacing: .7px;
+  color: #9aaa9f
+}
+
+.interrogation-heading small {
+  color: var(--amber);
+  white-space: nowrap
+}
+
+.interrogation-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px
+}
+
+.interrogation-buttons button {
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid #46574b;
+  background: #202a25;
+  color: #cbd7ce;
+  font: 10px var(--mono);
+  text-align: left;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, opacity .18s ease
+}
+
+.interrogation-buttons button:hover:not(:disabled) {
+  border-color: #8ba891;
+  background: #2a3a30
+}
+
+.interrogation-buttons button:disabled {
+  opacity: .48;
+  cursor: default
+}
+
+.interrogation-buttons button.is-asked::after {
+  content: " ✓";
+  color: #9fbd88
+}
+
+.missing-document {
+  min-height: 132px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-content: center;
+  align-items: center;
+  gap: 5px 12px;
+  border: 1px dashed #8b7745;
+  background: linear-gradient(135deg, #292b25, #202522);
+  color: #d8c58e
+}
+
+.missing-document[hidden] {
+  display: none
+}
+
+.missing-document span {
+  grid-row: span 2;
+  font-size: 34px;
+  text-align: center;
+  opacity: .75
+}
+
+.missing-document strong {
+  font: 600 12px var(--mono);
+  letter-spacing: .5px
+}
+
+.missing-document small {
+  color: #a9a18a;
+  font-size: 12px;
+  line-height: 1.4
+}
+
 .building-button {
   display: flex;
   align-items: center;
@@ -2873,6 +2962,10 @@ body.reduce-motion #gameover-modal.defeat .gameover-modal::before {
 
   z-index: 9999;
 
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.65);
 
   transition:
@@ -2889,7 +2982,7 @@ body.reduce-motion #gameover-modal.defeat .gameover-modal::before {
 
 .event-notification strong {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 
   color: #e5b45f;
   font-size: 15px;
@@ -2902,6 +2995,70 @@ body.reduce-motion #gameover-modal.defeat .gameover-modal::before {
   color: #d6cbb8;
   font-size: 13px;
   line-height: 1.5;
+}
+
+.event-notification-mark {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  color: #e5b45f;
+  font: 700 24px var(--mono);
+  box-shadow: 0 0 18px currentColor;
+  animation: eventMarkArrival .5s ease-out both;
+}
+
+.event-notification-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.event-notification-copy strong {
+  text-align: left;
+}
+
+.event-notification-copy p {
+  text-align: left;
+}
+
+.event-notification-security-alert,
+.event-notification-system-failure {
+  border-color: #a63c3c;
+  border-left-color: #ff5555;
+}
+
+.event-notification-security-alert .event-notification-mark,
+.event-notification-system-failure .event-notification-mark {
+  color: #ff6262;
+}
+
+.event-notification-surprise-inspection .event-notification-mark {
+  color: #f0ca65;
+}
+
+.event-notification-command-order {
+  border-color: #6887aa;
+  border-left-color: #8bb6e8;
+}
+
+.event-notification-command-order .event-notification-mark {
+  color: #9bc5f3;
+}
+
+.event-notification-priority-visitor {
+  border-color: #bd7230;
+  border-left-color: #ffab42;
+}
+
+.event-notification-priority-visitor .event-notification-mark {
+  color: #ffb044;
+}
+
+@keyframes eventMarkArrival {
+  from { opacity: 0; transform: scale(.65) rotate(-12deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
 }
 
 /* ========================================
@@ -3158,6 +3315,85 @@ body.security-alert #suspicion-panel::after {
   pointer-events: none;
 }
 
+body.event-security-alert::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 7900;
+  pointer-events: none;
+  opacity: .16;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 5px,
+    rgba(255, 55, 55, .25) 6px,
+    transparent 7px
+  );
+  animation: securityScan 2.8s linear infinite;
+}
+
+body.event-security-alert .topbar {
+  border-bottom-color: #b94747;
+  box-shadow: 0 4px 22px rgba(220, 45, 45, .2);
+}
+
+@keyframes securityScan {
+  from { background-position-y: 0; }
+  to { background-position-y: 28px; }
+}
+
+body.event-system-failure .terminal-card {
+  border-color: #b94e4e;
+  box-shadow: 0 0 0 1px rgba(255, 65, 65, .22), 0 0 26px rgba(225, 35, 35, .16);
+}
+
+body.event-system-failure .terminal-lamp {
+  background: #ff4b4b;
+  box-shadow: 0 0 12px #ff3333;
+  animation: systemAlarmBlink .7s steps(2, end) infinite;
+}
+
+@keyframes systemAlarmBlink {
+  50% { opacity: .25; }
+}
+
+body.event-surprise-inspection .terminal-card {
+  border-color: #c29d49;
+  box-shadow: 0 0 0 1px rgba(242, 202, 93, .18), 0 0 24px rgba(230, 177, 54, .14);
+  animation: inspectionGlow 1.8s ease-in-out infinite alternate;
+}
+
+body.event-surprise-inspection .sql-objective {
+  border-color: #a88945;
+  background: linear-gradient(90deg, #302d20, #222e27 55%);
+}
+
+@keyframes inspectionGlow {
+  to { box-shadow: 0 0 0 2px rgba(242, 202, 93, .28), 0 0 32px rgba(230, 177, 54, .24); }
+}
+
+body.event-command-order .topbar {
+  border-bottom-color: #7096c2;
+  box-shadow: 0 4px 20px rgba(80, 137, 205, .16);
+}
+
+body.event-command-order .decision-panel {
+  border-color: #6e91b7;
+  box-shadow: 0 0 0 1px rgba(129, 177, 226, .18), 0 0 22px rgba(71, 128, 190, .17);
+}
+
+body.event-command-order .decision-copy strong {
+  color: #a9c9ea;
+}
+
+body.event-priority-visitor .visitor-panel {
+  border-color: #b97837;
+  box-shadow: 0 0 0 1px rgba(255, 164, 63, .2), 0 0 25px rgba(255, 151, 40, .2);
+}
+
+body.event-priority-visitor .intercom-card {
+  border-color: #986b3c;
+}
+
 /* ========================================
    CRONÔMETRO — VISITANTE PRIORITÁRIO
 ======================================== */
@@ -3208,5 +3444,31 @@ body.security-alert #suspicion-panel::after {
   to {
     opacity: 0.65;
     transform: scale(1.04);
+  }
+}
+
+@media (max-width: 520px) {
+  .event-notification-priority-visitor {
+    top: 74px;
+  }
+}
+
+body.reduce-motion .event-notification-mark,
+body.reduce-motion.system-failure::after,
+body.reduce-motion .priority-timer.urgent,
+body.reduce-motion.event-system-failure .terminal-lamp,
+body.reduce-motion.event-surprise-inspection .terminal-card,
+body.reduce-motion.event-security-alert::before {
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:not(.reduce-motion) .event-notification-mark,
+  body:not(.reduce-motion).system-failure::after,
+  body:not(.reduce-motion) .priority-timer.urgent,
+  body:not(.reduce-motion).event-system-failure .terminal-lamp,
+  body:not(.reduce-motion).event-surprise-inspection .terminal-card,
+  body:not(.reduce-motion).event-security-alert::before {
+    animation: none !important;
   }
 }

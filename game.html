@@ -70,7 +70,7 @@
                     <div class="visitor-dialogue">
                         <div class="dialogue-icon">“</div>
                         <div><small>DECLARAÇÃO DO SOLICITANTE</small>
-                            <p id="visitor-speech">Aguardando solicitante...</p>
+                            <p id="visitor-speech" aria-live="polite">Aguardando solicitante...</p>
                         </div>
                     </div>
                 </div>
@@ -128,6 +128,18 @@
                             ALOJAMENTO</button>
                     </div>
                     <p id="intercom-result" class="intercom-result">Canal disponível. Nenhuma chamada realizada.</p>
+                    <div class="interrogation-panel">
+                        <div class="interrogation-heading">
+                            <span>QUESTIONAR SOLICITANTE</span>
+                            <small id="questions-remaining">4 PERGUNTAS</small>
+                        </div>
+                        <div class="interrogation-buttons">
+                            <button type="button" data-question="document" onclick="askVisitorQuestion('document')">Documento</button>
+                            <button type="button" data-question="apartment" onclick="askVisitorQuestion('apartment')">Alojamento</button>
+                            <button type="button" data-question="appearance" onclick="askVisitorQuestion('appearance')">Aparência</button>
+                            <button type="button" data-question="authorization" onclick="askVisitorQuestion('authorization')">Autorização</button>
+                        </div>
+                    </div>
                 </div>
                 <button class="building-button" onclick="openBuildingModal()">
                     <span class="folder-icon">▰</span>
@@ -140,7 +152,7 @@
             <section class="right-column">
                 <div class="section-heading"><span>02 | DOCUMENTOS E BANCO DE DADOS</span><span
                         class="section-state warning">ANÁLISE NECESSÁRIA</span></div>
-                <div class="identity-card">
+                <div id="identity-card" class="identity-card">
                     <div class="identity-top"><span>FORÇAS ARMADAS — IDENTIDADE MILITAR</span><span
                             class="stamp">DOCUMENTO</span></div>
                     <div class="identity-content">
@@ -148,6 +160,11 @@
                         <div id="presented-id" class="identity-fields"></div>
                     </div>
                     <div class="identity-footer"><span>VALIDAÇÃO OBRIGATÓRIA</span><span>SQL / ID-CHECK 2.4</span></div>
+                </div>
+                <div id="missing-document" class="missing-document" hidden>
+                    <span>▧</span>
+                    <strong>DOCUMENTO NÃO APRESENTADO</strong>
+                    <small>O solicitante declarou que está sem a identidade militar.</small>
                 </div>
 
                 <div class="terminal-card">
@@ -163,6 +180,8 @@
                                     pele</small></span>
                             <span><b>lista_hoje</b><small>id_doc · autorizado</small></span>
                             <span><b>logs_portao</b><small>id_doc · status_atual</small></span>
+                            <span><b>autorizacoes</b><small>id_doc · responsavel · horario · setor · motivo</small></span>
+                            <span><b>movimentacoes</b><small>id_doc · local · horario · atividade</small></span>
                         </div>
                     </div>
                     <div class="sql-objective">
@@ -326,27 +345,21 @@
                 <button class="modal-close" onclick="closeRulesModal()" aria-label="Fechar regras">×</button>
             </header>
             <div class="rules-body">
-                <p id="rules-intro" class="rules-intro">Você é o sentinela do portão do quartel. A cada solicitante,
-                    decida se é o <b>militar de verdade</b> ou um <b>infiltrado</b>.</p>
+                <p id="rules-intro" class="rules-intro">Você controla o acesso ao quartel. Em cada turno, investigue o solicitante e decida se deve <b>autorizar</b> ou <b>negar a entrada</b>.</p>
                 <div id="rules-mode" class="rules-mode"></div>
                 <ol class="rules-list">
-                    <li><strong>Observe o solicitante</strong><span>Veja o retrato, ouça o que ele diz e leia a
-                            identidade apresentada.</span></li>
-                    <li><strong>Investigue com SQL</strong><span>No terminal, use <code>SELECT</code> nas tabelas
-                            <code>militares</code>, <code>lista_hoje</code> e <code>logs_portao</code> e compare com a
-                            identidade. Só consultas que retornam registros e são diferentes entre si contam para o
-                            objetivo.</span></li>
-                    <li><strong>Procure divergências</strong><span>Identidade ou alojamento diferentes do cadastro, pele
-                            estranha, quepe ou óculos que o militar não usa, militar fora da lista de hoje ou que já
-                            está dentro do quartel.</span></li>
-                    <li><strong>Use o rádio e o mapa</strong><span>Chame o alojamento pelo rádio para confirmar a
-                            identidade e abra o arquivo do efetivo para consultar cada alojamento.</span></li>
-                    <li><strong>Decida</strong><span>Os botões só liberam depois das consultas válidas exigidas.
-                            Autorizar um militar legítimo vale <b>+100</b> pontos. Negar um infiltrado vale <b>+150</b>.
-                            Qualquer erro custa <b>1 vida</b>, e sem vidas você é dispensado do posto.</span></li>
+                    <li><strong>Observe e leia a declaração</strong><span>Compare o retrato e a fala com os dados da identidade. Se o solicitante disser que está sem documento, o cartão não será apresentado; os dados do cadastro ainda podem ser investigados.</span></li>
+                    <li><strong>Faça perguntas</strong><span>Você tem quatro perguntas por solicitante: documento, alojamento, aparência e autorização. Cada uma pode ser usada uma vez. A resposta aparece em <b>Declaração do solicitante</b> e pode revelar uma divergência.</span></li>
+                    <li><strong>Consulte o banco com SQL</strong><span>Use uma consulta <code>SELECT</code> por execução. As cinco tabelas disponíveis são <code>militares</code>, <code>lista_hoje</code>, <code>logs_portao</code>, <code>autorizacoes</code> e <code>movimentacoes</code>. Pressione <code>Ctrl + Enter</code> ou clique em <b>Executar consulta</b>.</span></li>
+                    <li><strong>Acompanhe o progresso</strong><span>Consultas com resultados contam quando são diferentes das que você já executou. Consultas repetidas ou sem resultados gastam uma tentativa, mas não avançam o objetivo. Consultas vazias, inválidas ou com erro não são executadas. A saída mostra apenas o resultado mais recente, então compare os dados antes da próxima consulta.</span></li>
+                    <li><strong>Compare as evidências</strong><span>Confira documento, alojamento, aparência, autorização, lista do dia, registros do portão e movimentações. O painel de suspeita reúne as evidências descobertas; cada evidência única aumenta o índice.</span></li>
+                    <li><strong>Use o rádio e o arquivo do efetivo</strong><span>O rádio tenta chamar o alojamento informado. No mapa do quartel, selecione um alojamento para ver quem está cadastrado e consultar seus registros.</span></li>
+                    <li><strong>Tome a decisão</strong><span>Autorize quem for legítimo e negue a entrada de infiltrados. A decisão fica disponível ao cumprir a meta de consultas ou quando as tentativas acabam. Uma decisão errada custa <b>1 vida</b>.</span></li>
+                    <li><strong>Ganhe pontos e preserve vidas</strong><span>Autorizar um militar legítimo vale <b>+100</b>; identificar um infiltrado vale <b>+150</b>. O índice de suspeita pode aumentar os bônus. Se decidir antes de cumprir a meta de consultas, perde <b>50 pontos</b>. Sem vidas, a partida termina.</span></li>
+                    <li><strong>Fique atento aos eventos</strong><span>Eventos podem exigir uma consulta extra, interromper temporariamente o terminal ou iniciar um prazo para decidir. Leia cada aviso: ele informa a regra especial daquele momento.</span></li>
                 </ol>
             </div>
-            <div class="modal-footer"><span>O TERMINAL ACEITA APENAS CONSULTAS SELECT</span><button id="btn-rules-close"
+            <div class="modal-footer"><span>CONSULTE • COMPARE • DECIDA</span><button id="btn-rules-close"
                     class="button button-green" onclick="closeRulesModal()">ENTENDI</button></div>
         </section>
     </div>

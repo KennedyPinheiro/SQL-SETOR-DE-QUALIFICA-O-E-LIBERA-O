@@ -63,6 +63,8 @@ const gameState = {
     visitorCase: null,
     impostorReason: "",
     visitorFlaws: [],
+    askedVisitorQuestions: new Set(),
+    visitorForgotDocument: false,
     neighborAlreadyInside: false,
 
     // Eventos aleatórios

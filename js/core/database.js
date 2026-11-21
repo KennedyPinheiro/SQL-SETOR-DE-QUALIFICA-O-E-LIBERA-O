@@ -12,7 +12,13 @@ const seedResidents = [
   { id_doc: "2280-JS", nome: "Jonas Silva", alojamento: "303", patente: "Soldado", quepe: "Nao", oculos: "Nao", pele: "Normal" },
   { id_doc: "4491-PT", nome: "Paula Torres", alojamento: "104", patente: "Cabo", quepe: "Sim", oculos: "Sim", pele: "Normal" },
   { id_doc: "7355-RK", nome: "Ravi Kumar", alojamento: "203", patente: "Subtenente", quepe: "Nao", oculos: "Sim", pele: "Normal" },
-  { id_doc: "1802-LM", nome: "Lia Martins", alojamento: "301", patente: "Tenente", quepe: "Nao", oculos: "Nao", pele: "Normal" }
+  { id_doc: "1802-LM", nome: "Lia Martins", alojamento: "301", patente: "Tenente", quepe: "Nao", oculos: "Sim", pele: "Normal" },
+  { id_doc: "5502-BN", nome: "Bruno Nakamura", alojamento: "102", patente: "Cabo", quepe: "Sim", oculos: "Nao", pele: "Normal" },
+  { id_doc: "3388-DS", nome: "Débora Sales", alojamento: "103", patente: "Capitão", quepe: "Nao", oculos: "Sim", pele: "Normal" },
+  { id_doc: "4771-OT", nome: "Otávio Tavares", alojamento: "201", patente: "Sargento", quepe: "Sim", oculos: "Nao", pele: "Normal" },
+  { id_doc: "6620-NF", nome: "Natália Freire", alojamento: "304", patente: "Tenente", quepe: "Nao", oculos: "Nao", pele: "Normal" },
+  { id_doc: "9125-IC", nome: "Igor Chernov", alojamento: "402", patente: "Major", quepe: "Sim", oculos: "Sim", pele: "Normal" },
+  { id_doc: "2874-LC", nome: "Lucy Chen", alojamento: "403", patente: "Subtenente", quepe: "Nao", oculos: "Nao", pele: "Normal" }
 ];
 /* ========================================
  SISTEMA DE CASOS INVESTIGATIVOS — S.Q.L.
@@ -90,7 +96,7 @@ function resetVisitorAuthorization(visitorId) {
   const authorization = {
     id_doc: visitorId,
     responsavel: responsible.id_doc,
-    horario: `${String(8 + residentIndex).padStart(2, "0")}:${String((residentIndex * 7) % 60).padStart(2, "0")}`,
+    horario: `${String(8 + (residentIndex % 12)).padStart(2, "0")}:${String((residentIndex * 7) % 60).padStart(2, "0")}`,
     setor: ["Portão Norte", "Portão Sul", "Portaria Central"][residentIndex % 3],
     motivo: [
       "Visita familiar",
@@ -111,7 +117,11 @@ function resetVisitorAuthorization(visitorId) {
     ]
   );
 }
-
+function resetAllVisitorAuthorizations() {
+  seedResidents.forEach(resident => {
+    resetVisitorAuthorization(resident.id_doc);
+  });
+}
 function resetMovements() {
   seedResidents.forEach((resident, i) => {
     alasql(
@@ -132,10 +142,7 @@ function resetMovements() {
 ======================================== */
 
 function applyInvestigationCase(visitorId) {
-  resetMovements();
-  resetVisitorAuthorization(visitorId);
   const investigation = drawInvestigationCase();
-
   const authorization = alasql(
     "SELECT * FROM autorizacoes WHERE id_doc = ?",
     [visitorId]
@@ -239,6 +246,98 @@ function applyInvestigationCase(visitorId) {
   }
 
   return investigation;
+}
+/* ========================================
+   AUDITORIA SQL — INVESTIGAÇÃO DE VISITANTES
+======================================== */
+
+function investigateVisitor(visitorId) {
+  const results = alasql(`
+        SELECT
+            a.id_doc AS visitante,
+            v.nome AS nome_visitante,
+            a.responsavel,
+            r.nome AS nome_responsavel,
+            a.setor,
+            a.horario,
+
+            CASE
+                WHEN r.id_doc IS NULL
+                THEN 1 ELSE 0
+            END AS responsavel_inexistente,
+
+            CASE
+                WHEN a.setor = 'Área Restrita'
+                THEN 1 ELSE 0
+            END AS setor_irregular,
+
+            CASE
+                WHEN a.horario < '06:00'
+                  OR a.horario > '22:00'
+                THEN 1 ELSE 0
+            END AS horario_irregular
+
+        FROM autorizacoes a
+
+        JOIN militares v
+            ON v.id_doc = a.id_doc
+
+        LEFT JOIN militares r
+            ON r.id_doc = a.responsavel
+
+        WHERE a.id_doc = ?
+    `, [visitorId]);
+
+  if (!results.length) {
+    return {
+      found: false,
+      suspicious: false,
+      evidences: []
+    };
+  }
+
+  const record = results[0];
+
+  const evidences = [];
+  const crossReference = alasql(`
+    SELECT
+        m.local,
+        m.atividade
+    FROM autorizacoes a
+
+    JOIN movimentacoes m
+        ON m.id_doc = a.responsavel
+       AND m.horario = a.horario
+
+    WHERE a.id_doc = ?
+      AND a.setor = 'Portaria Central'
+      AND m.local = 'Arsenal'
+      AND m.atividade = 'Inspeção'
+`, [visitorId]);
+
+  if (crossReference.length > 0) {
+    evidences.push(
+      "Movimentação do responsável incompatível com a autorização."
+    );
+  }
+  if (record.responsavel_inexistente) {
+    evidences.push("Responsável pela autorização inexistente.");
+  }
+
+  if (record.setor_irregular) {
+    evidences.push("Autorização emitida por setor divergente.");
+  }
+
+  if (record.horario_irregular) {
+    evidences.push("Horário da autorização inconsistente.");
+  }
+
+  return {
+    found: true,
+    suspicious: evidences.length > 0,
+    evidences,
+    record
+  };
 }
 /* ========================================
   INICIALIZAÇÃO DAS TABELAS

@@ -1,229 +1,230 @@
-/* ========================================
-   SISTEMA DE DECISÃO — S.Q.L.
-======================================== */
-
-
-/* ========================================
-   TOMADA DE DECISÃO
-======================================== */
-
-function makeDecision(approved) {
-  if (gameState.gameOver || gameState.decisionLocked) return;
-
-  gameState.decisionLocked = true;
-
-  stopDecisionTimer();
-  stopPriorityTimer();;
-
-  const toast = document.getElementById("toast-message");
-
   /* ========================================
-     MILITAR LEGÍTIMO AUTORIZADO
+    SISTEMA DE DECISÃO — S.Q.L.
   ======================================== */
 
-  if (approved && !gameState.isImpostor) {
-    const basePoints = 100;
-    let investigationBonus = 0;
-
-    if (gameState.suspicion === 0) {
-      investigationBonus = 50;
-    } else if (gameState.suspicion <= 20) {
-      investigationBonus = 25;
-    }
-    const totalPoints = basePoints + investigationBonus;
-
-    gameState.score += totalPoints;
-
-    toastMessage(
-      "MILITAR LEGÍTIMO AUTORIZADO. " +
-      `+${basePoints} PONTOS` +
-      (investigationBonus > 0
-        ? ` +${investigationBonus} BÔNUS DE VERIFICAÇÃO`
-        : ""),
-      true
-    );
-    alasql(
-      "UPDATE logs_portao SET status_atual = 'Dentro do quartel' WHERE id_doc = ?",
-      [gameState.realNeighbor.id_doc]
-    );
-  }
 
   /* ========================================
-    INFILTRADO IDENTIFICADO
+    TOMADA DE DECISÃO
   ======================================== */
 
-  else if (!approved && gameState.isImpostor) {
-    const basePoints = 150;
-    let investigationBonus = 0;
+  function makeDecision(approved) {
+    if (gameState.gameOver || gameState.decisionLocked) return;
 
-    if (gameState.suspicion >= 80) {
-      investigationBonus = 100;
-    } else if (gameState.suspicion >= 60) {
-      investigationBonus = 75;
-    } else if (gameState.suspicion >= 40) {
-      investigationBonus = 50;
-    } else if (gameState.suspicion >= 20) {
-      investigationBonus = 25;
+    gameState.decisionLocked = true;
+    if (typeof renderInterrogationUI === "function") renderInterrogationUI();
+
+    stopDecisionTimer();
+    stopPriorityTimer();;
+
+    const toast = document.getElementById("toast-message");
+
+    /* ========================================
+      MILITAR LEGÍTIMO AUTORIZADO
+    ======================================== */
+
+    if (approved && !gameState.isImpostor) {
+      const basePoints = 100;
+      let investigationBonus = 0;
+
+      if (gameState.suspicion === 0) {
+        investigationBonus = 50;
+      } else if (gameState.suspicion <= 20) {
+        investigationBonus = 25;
+      }
+      const totalPoints = basePoints + investigationBonus;
+
+      gameState.score += totalPoints;
+
+      toastMessage(
+        "MILITAR LEGÍTIMO AUTORIZADO. " +
+        `+${basePoints} PONTOS` +
+        (investigationBonus > 0
+          ? ` +${investigationBonus} BÔNUS DE VERIFICAÇÃO`
+          : ""),
+        true
+      );
+      alasql(
+        "UPDATE logs_portao SET status_atual = 'Dentro do quartel' WHERE id_doc = ?",
+        [gameState.realNeighbor.id_doc]
+      );
     }
 
-    const flaws = gameState.visitorFlaws?.length
-      ? gameState.visitorFlaws
-      : [gameState.visitorCase];
+    /* ========================================
+      INFILTRADO IDENTIFICADO
+    ======================================== */
 
-    const discoveredCount = flaws.filter(
-      flaw => gameState.discoveredEvidence.has(flaw)
-    ).length;
+    else if (!approved && gameState.isImpostor) {
+      const basePoints = 150;
+      let investigationBonus = 0;
 
-    const completeInvestigationBonus =
-      flaws.length > 0 && discoveredCount === flaws.length
-        ? 100
-        : 0;
+      if (gameState.suspicion >= 80) {
+        investigationBonus = 100;
+      } else if (gameState.suspicion >= 60) {
+        investigationBonus = 75;
+      } else if (gameState.suspicion >= 40) {
+        investigationBonus = 50;
+      } else if (gameState.suspicion >= 20) {
+        investigationBonus = 25;
+      }
 
-    const totalPoints =
-      basePoints +
-      investigationBonus +
-      completeInvestigationBonus;
+      const flaws = gameState.visitorFlaws?.length
+        ? gameState.visitorFlaws
+        : [gameState.visitorCase];
 
-    gameState.score += totalPoints;
+      const discoveredCount = flaws.filter(
+        flaw => gameState.discoveredEvidence.has(flaw)
+      ).length;
 
-    /* Feedback */
+      const completeInvestigationBonus =
+        flaws.length > 0 && discoveredCount === flaws.length
+          ? 100
+          : 0;
 
-    toastMessage(
-      "INFILTRADO IDENTIFICADO. " +
-      gameState.impostorReason +
-      ` +${basePoints} PONTOS` +
-      (investigationBonus > 0
-        ? ` +${investigationBonus} BÔNUS DE INVESTIGAÇÃO`
-        : "") +
-      (completeInvestigationBonus > 0
-        ? ` +${completeInvestigationBonus} BÔNUS POR INVESTIGAÇÃO COMPLETA`
-        : ""),
-      true
-    );
-  }
+      const totalPoints =
+        basePoints +
+        investigationBonus +
+        completeInvestigationBonus;
 
-  /* ========================================
-     DECISÃO INCORRETA
-  ======================================== */
+      gameState.score += totalPoints;
 
-  else {
-    gameState.lives--;
+      /* Feedback */
 
-    toastMessage(
-      approved
-        ? `FALHA: UM INFILTRADO ENTROU. ${gameState.impostorReason}`
-        : "ERRO: VOCÊ NEGOU A ENTRADA DE UM MILITAR LEGÍTIMO.",
-      false
-    );
-  }
+      toastMessage(
+        "INFILTRADO IDENTIFICADO. " +
+        gameState.impostorReason +
+        ` +${basePoints} PONTOS` +
+        (investigationBonus > 0
+          ? ` +${investigationBonus} BÔNUS DE INVESTIGAÇÃO`
+          : "") +
+        (completeInvestigationBonus > 0
+          ? ` +${completeInvestigationBonus} BÔNUS POR INVESTIGAÇÃO COMPLETA`
+          : ""),
+        true
+      );
+    }
 
-  /* ========================================
-     AVANÇO DO TURNO
-  ======================================== */
+    /* ========================================
+      DECISÃO INCORRETA
+    ======================================== */
 
-  gameState.turn++;
+    else {
+      gameState.lives--;
 
-  /* ========================================
-     INVESTIGAÇÃO INCOMPLETA
-  ======================================== */
+      toastMessage(
+        approved
+          ? `FALHA: UM INFILTRADO ENTROU. ${gameState.impostorReason}`
+          : "ERRO: VOCÊ NEGOU A ENTRADA DE UM MILITAR LEGÍTIMO.",
+        false
+      );
+    }
 
-  if (gameState.successfulQueries < gameState.requiredQueries) {
-    gameState.score = Math.max(0, gameState.score - 50);
+    /* ========================================
+      AVANÇO DO TURNO
+    ======================================== */
 
-    toast.textContent +=
-      " | INVESTIGAÇÃO INCOMPLETA: -50 PONTOS.";
-  }
+    gameState.turn++;
 
-  /* ========================================
-     ATUALIZA HUD
-  ======================================== */
+    /* ========================================
+      INVESTIGAÇÃO INCOMPLETA
+    ======================================== */
 
-  updateHUD();
+    if (gameState.successfulQueries < gameState.requiredQueries) {
+      gameState.score = Math.max(0, gameState.score - 50);
 
-  /* ========================================
-     ANIMAÇÕES
-  ======================================== */
+      toast.textContent +=
+        " | INVESTIGAÇÃO INCOMPLETA: -50 PONTOS.";
+    }
 
-  animateElement(
-    document.getElementById("hud-score"),
-    "is-updating",
-    450
-  );
+    /* ========================================
+      ATUALIZA HUD
+    ======================================== */
 
-  if (gameState.lives < gameState.maxLives) {
+    updateHUD();
+
+    /* ========================================
+      ANIMAÇÕES
+    ======================================== */
+
     animateElement(
-      document.getElementById("hud-lives"),
-      "is-damaged",
-      500
+      document.getElementById("hud-score"),
+      "is-updating",
+      450
     );
-  }
 
-  animateElement(
-    document.querySelector(".decision-panel"),
-    "is-feedback",
-    450
-  );
+    if (gameState.lives < gameState.maxLives) {
+      animateElement(
+        document.getElementById("hud-lives"),
+        "is-damaged",
+        500
+      );
+    }
 
-  /* ========================================
-     BLOQUEIO DOS BOTÕES
-  ======================================== */
+    animateElement(
+      document.querySelector(".decision-panel"),
+      "is-feedback",
+      450
+    );
 
-  const systemFailureActive =
-    gameState.activeEvent === "system_failure";
+    /* ========================================
+      BLOQUEIO DOS BOTÕES
+    ======================================== */
 
-  document.getElementById("btn-approve").disabled =
-    !systemFailureActive;
+    const systemFailureActive =
+      gameState.activeEvent === "system_failure";
 
-  document.getElementById("btn-deny").disabled =
-    !systemFailureActive;
+    document.getElementById("btn-approve").disabled =
+      !systemFailureActive;
 
-  /* ========================================
-     GAME OVER
-  ======================================== */
+    document.getElementById("btn-deny").disabled =
+      !systemFailureActive;
 
-  if (gameState.lives <= 0) {
-    gameState.gameOver = true;
+    /* ========================================
+      GAME OVER
+    ======================================== */
 
-    window.playSound?.("defeat");
+    if (gameState.lives <= 0) {
+      gameState.gameOver = true;
+
+      window.playSound?.("defeat");
+
+      later(() => {
+        showGameOver(
+          "Você perdeu todas as vidas. O setor de segurança foi comprometido."
+        );
+      }, 1400);
+
+      return;
+    }
+
+    /* ========================================
+      PRÓXIMO TURNO
+    ======================================== */
 
     later(() => {
-      showGameOver(
-        "Você perdeu todas as vidas. O setor de segurança foi comprometido."
-      );
-    }, 1400);
-
-    return;
+      toast.classList.remove("show");
+      nextTurn();
+    }, 2300);
   }
 
+
   /* ========================================
-     PRÓXIMO TURNO
+    SISTEMA DE NOTIFICAÇÕES
   ======================================== */
 
-  later(() => {
-    toast.classList.remove("show");
-    nextTurn();
-  }, 2300);
-}
+  function toastMessage(message, success) {
+    const toast = document.getElementById("toast-message");
 
+    if (!toast) return;
 
-/* ========================================
-   SISTEMA DE NOTIFICAÇÕES
-======================================== */
+    toast.textContent = message;
 
-function toastMessage(message, success) {
-  const toast = document.getElementById("toast-message");
+    toast.style.borderColor = success
+      ? "#4caf50"
+      : "#c7655e";
 
-  if (!toast) return;
+    toast.style.color = success
+      ? "#4caf50"
+      : "#c7655e";
 
-  toast.textContent = message;
-
-  toast.style.borderColor = success
-    ? "#4caf50"
-    : "#c7655e";
-
-  toast.style.color = success
-    ? "#4caf50"
-    : "#c7655e";
-
-  toast.classList.add("show");
-}
+    toast.classList.add("show");
+  }

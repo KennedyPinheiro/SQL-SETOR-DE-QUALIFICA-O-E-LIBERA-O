@@ -42,6 +42,26 @@ const suspicionEvidence = {
     unauthorized: {
         points: 30,
         label: "Ausência de autorização"
+    },
+
+    invalid_authorizer: {
+        points: 30,
+        label: "Responsável inexistente"
+    },
+
+    unauthorized_sector: {
+        points: 25,
+        label: "Setor divergente"
+    },
+
+    suspicious_time: {
+        points: 25,
+        label: "Horário inconsistente"
+    },
+
+    cross_reference: {
+        points: 35,
+        label: "Movimentação incompatível com a autorização"
     }
 };
 
@@ -190,6 +210,79 @@ function analyzeQueryEvidence(query, result) {
     const flaws = gameState.visitorFlaws?.length
         ? gameState.visitorFlaws
         : [gameState.visitorCase];
+
+    const investigationCase = gameState.investigationCase || gameState.visitorCase;
+    const sqlTables = new Set(
+        (query.toLowerCase().match(/\b(militares|lista_hoje|logs_portao|autorizacoes|movimentacoes)\b/g) || [])
+    );
+    const visitorId = String(visitor.id_doc).trim().toLowerCase();
+    const isVisitorRow = row => Object.entries(row).some(([column, value]) =>
+        ["id_doc", "visitante", "id_visitante", "responsavel", "id_responsavel"].includes(column.toLowerCase()) &&
+        String(value).trim().toLowerCase() === visitorId
+    );
+    const relevantRows = result.filter(isVisitorRow);
+    const rowsToCheck = relevantRows;
+    const hasFlag = (row, names) => names.some(name =>
+        Object.entries(row).some(([column, value]) =>
+            column.toLowerCase() === name &&
+            [1, true, "1", "true", "sim"].includes(
+                typeof value === "string" ? value.trim().toLowerCase() : value
+            )
+        )
+    );
+    const discoverSqlEvidence = (key, message) => {
+        if (discoverEvidence(key)) showSqlMessage(`EVIDÊNCIA DESCOBERTA: ${message}`, "notice");
+    };
+
+    // Casos SQL legítimos nunca produzem evidência investigativa.
+    if (investigationCase !== "legitimate") {
+        if (sqlTables.has("autorizacoes")) {
+            const authorizerRows = rowsToCheck.filter(row =>
+                "responsavel" in row || hasFlag(row, ["responsavel_inexistente"])
+            );
+            const invalidAuthorizer = authorizerRows.some(row => {
+                if (hasFlag(row, ["responsavel_inexistente"])) return true;
+                const responsible = row.responsavel;
+                if (!responsible) return false;
+                return !alasql("SELECT id_doc FROM militares WHERE id_doc = ?", [responsible]).length;
+            });
+            if (invalidAuthorizer) {
+                discoverSqlEvidence("invalid_authorizer", "A autorização aponta para um responsável inexistente.");
+            }
+
+            const wrongSector = rowsToCheck.some(row =>
+                hasFlag(row, ["setor_irregular"]) ||
+                ("setor" in row && String(row.setor).trim().toLowerCase() === "área restrita")
+            );
+            if (wrongSector) {
+                discoverSqlEvidence("unauthorized_sector", "A autorização foi emitida por um setor divergente.");
+            }
+
+            const wrongTime = rowsToCheck.some(row => {
+                if (hasFlag(row, ["horario_irregular"])) return true;
+                if (!("horario" in row)) return false;
+                const hour = Number(String(row.horario).slice(0, 2));
+                return Number.isFinite(hour) && (hour < 6 || hour > 22);
+            });
+            if (wrongTime) {
+                discoverSqlEvidence("suspicious_time", "O horário registrado para a autorização é inconsistente.");
+            }
+        }
+
+        if (sqlTables.has("autorizacoes") && sqlTables.has("movimentacoes")) {
+            const audit = typeof investigateVisitor === "function"
+                ? investigateVisitor(visitor.id_doc)
+                : null;
+            const queryShowsCrossReference = relevantRows.some(row =>
+                hasFlag(row, ["referencia_cruzada", "cross_reference", "movimentacao_incompativel"]) ||
+                ("local" in row && String(row.local).trim().toLowerCase() === "arsenal" &&
+                    "atividade" in row && String(row.atividade).trim().toLowerCase() === "inspeção")
+            );
+            if (audit?.evidences?.some(evidence => evidence.includes("Movimentação")) || queryShowsCrossReference) {
+                discoverSqlEvidence("cross_reference", "A movimentação do responsável é incompatível com a autorização.");
+            }
+        }
+    }
 
     // DOCUMENTO FALSIFICADO
     if (
