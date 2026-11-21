@@ -227,11 +227,9 @@ function runPlayerQuery() {
      ANÁLISE DE EVIDÊNCIAS
   ======================================== */
 
-  /* Somente consultas com resultados são analisadas */
-
-  if (hasResults) {
-    analyzeQueryEvidence(normalized, result);
-  }
+  /* Resultados vazios também podem revelar divergências, como um documento
+     apresentado que não existe no cadastro militar. */
+  analyzeQueryEvidence(normalized, result);
 
   /* ========================================
      ATUALIZA HUD E PROGRESSO
