@@ -30,7 +30,8 @@ button,textarea{font:inherit}
 .settings-volume input[type=range]{width:min(190px,38%);accent-color:#9fc7a9;cursor:pointer;}
 .settings-footer{gap:10px;flex-wrap:wrap;}
 .settings-footer .button{padding:10px 12px;}
-body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+body.reduce-motion,body.reduce-motion *,body.reduce-motion::before,body.reduce-motion::after,body.reduce-motion *::before,body.reduce-motion *::after{scroll-behavior:auto!important;animation:none!important;transition:none!important;}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important;}}
 @media(max-width:520px){.settings-body{padding-inline:15px}.settings-row{gap:10px}.settings-row strong{font-size:12px}.settings-row small{font-size:12px}.settings-footer{padding:12px 15px}.settings-footer .button{font-size:10px}}
 
 
@@ -42,16 +43,23 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{sc
     position: fixed;
     inset: 0;
     z-index: 1000;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
     background: rgba(0, 0, 0, 0.78);
     backdrop-filter: blur(5px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .2s ease, visibility 0s linear .2s;
 }
 
 .modal-backdrop.open {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity .2s ease, visibility 0s;
 }
 
 .modal {
@@ -62,6 +70,9 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{sc
     border: 1px solid #46534b;
     box-shadow: 0 20px 70px #000b;
     color: var(--text);
+}
+
+.modal-backdrop.open .modal {
     animation: settingsModalIn .2s ease-out;
 }
 
@@ -128,8 +139,11 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{sc
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .modal {
+    .modal-backdrop,
+    .modal,
+    .modal-backdrop.open .modal {
         animation: none;
+        transition: none;
     }
 }
 
