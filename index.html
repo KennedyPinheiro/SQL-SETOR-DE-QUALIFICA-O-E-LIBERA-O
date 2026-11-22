@@ -67,7 +67,10 @@
                     <small>Explore as cinco tabelas e treine consultas em um terminal livre, sem visitantes ou pressão.</small>
                 </button>
             </div>
-            <section id="difficulty-selector" class="difficulty-selector" aria-labelledby="difficulty-heading">
+            <button type="button" id="difficulty-trigger" class="difficulty-trigger" data-hover-sound="hover" aria-expanded="false" aria-controls="difficulty-selector" hidden>
+                <span id="difficulty-trigger-label">DIFICULDADE: NORMAL</span><span class="difficulty-trigger-chevron" aria-hidden="true">▾</span>
+            </button>
+            <section id="difficulty-selector" class="difficulty-selector" aria-labelledby="difficulty-heading" hidden>
                 <h3 id="difficulty-heading">DIFICULDADE CLÁSSICA</h3>
                 <div class="difficulty-options">
                     <button type="button" class="difficulty-card" data-difficulty="facil" aria-pressed="false"><strong>FÁCIL</strong><span>♥ ♥ ♥ ♥ ♥</span><small>5 vidas · 5 consultas · meta 1</small></button>

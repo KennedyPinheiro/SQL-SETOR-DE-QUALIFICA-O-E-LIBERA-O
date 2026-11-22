@@ -23,11 +23,14 @@ const difficultyDetails = {
 
 let selectedMode = "classico";
 let selectedDifficulty = "normal";
+let difficultyOpen = false;
 let startingGame = false;
 
 const startScreen = document.getElementById("start-screen");
 const startButton = document.getElementById("start-game");
 const difficultySelector = document.getElementById("difficulty-selector");
+const difficultyTrigger = document.getElementById("difficulty-trigger");
+const difficultyTriggerLabel = document.getElementById("difficulty-trigger-label");
 
 function getHomeSettings() {
     return window.getSqlSettings?.() ?? {
@@ -46,10 +49,26 @@ if (startScreen && animationsEnabled()) {
 }
 
 /* Seleção de dificuldade */
+function updateDifficultyVisibility() {
+    const needsDifficulty = selectedMode === "classico" || selectedMode === "falha";
+    if (difficultyTrigger) {
+        difficultyTrigger.hidden = !needsDifficulty;
+        difficultyTrigger.setAttribute("aria-expanded", String(needsDifficulty && difficultyOpen));
+    }
+    if (difficultyTriggerLabel) {
+        const difficultyName = selectedDifficulty === "facil"
+            ? "FÁCIL"
+            : selectedDifficulty === "dificil" ? "DIFÍCIL" : "NORMAL";
+        difficultyTriggerLabel.textContent = `DIFICULDADE: ${difficultyName}`;
+    }
+    if (difficultySelector) difficultySelector.hidden = !needsDifficulty || !difficultyOpen;
+}
+
 function selectMode(mode) {
     if (!modes[mode]) return;
 
     selectedMode = mode;
+    difficultyOpen = false;
 
     const headline = document.getElementById("home-headline");
     if (headline) {
@@ -68,7 +87,7 @@ function selectMode(mode) {
     });
 
     const needsDifficulty = mode === "classico" || mode === "falha";
-    if (difficultySelector) difficultySelector.hidden = !needsDifficulty;
+    updateDifficultyVisibility();
 
     const difficultyHeading = document.getElementById("difficulty-heading");
     if (difficultyHeading) {
@@ -113,6 +132,9 @@ function selectDifficulty(difficulty) {
         card.classList.toggle("selected", active);
         card.setAttribute("aria-pressed", String(active));
     });
+    difficultyOpen = false;
+    updateDifficultyVisibility();
+    difficultyTrigger?.focus();
 }
 
 /* Inicialização da partida */
@@ -152,6 +174,11 @@ document.querySelectorAll(".difficulty-card").forEach(card => {
     card.addEventListener("click", () => {
         selectDifficulty(card.dataset.difficulty);
     });
+});
+
+difficultyTrigger?.addEventListener("click", () => {
+    difficultyOpen = !difficultyOpen;
+    updateDifficultyVisibility();
 });
 
 /* Recupera dificuldade da URL */
