@@ -487,6 +487,55 @@ document.getElementById("practice-query")?.addEventListener("keydown", event => 
   }
 });
 
+const practiceMain = document.querySelector(".practice-main");
+const practiceResizeHandle = document.getElementById("practice-resize-handle");
+
+function setPracticeEditorHeight(height) {
+  if (!practiceMain || !practiceResizeHandle) return;
+  const minEditorHeight = practiceMain.clientWidth <= 760 ? 320 : 280;
+  const minResultsHeight = practiceMain.clientWidth <= 760 ? 300 : 260;
+  const maxEditorHeight = Math.max(minEditorHeight, practiceMain.clientHeight - 12 - minResultsHeight);
+  const editorHeight = Math.max(minEditorHeight, Math.min(height, maxEditorHeight));
+  practiceMain.style.setProperty("--practice-editor-height", `${editorHeight}px`);
+  practiceResizeHandle.setAttribute("aria-valuemin", String(minEditorHeight));
+  practiceResizeHandle.setAttribute("aria-valuemax", String(maxEditorHeight));
+  practiceResizeHandle.setAttribute("aria-valuenow", String(Math.round(editorHeight)));
+}
+
+setPracticeEditorHeight(360);
+
+practiceResizeHandle?.addEventListener("pointerdown", event => {
+  if (!practiceMain) return;
+  event.preventDefault();
+  practiceResizeHandle.setPointerCapture(event.pointerId);
+  document.body.classList.add("is-resizing");
+  setPracticeEditorHeight(event.clientY - practiceMain.getBoundingClientRect().top);
+});
+
+practiceResizeHandle?.addEventListener("pointermove", event => {
+  if (practiceResizeHandle.hasPointerCapture(event.pointerId) && practiceMain) {
+    setPracticeEditorHeight(event.clientY - practiceMain.getBoundingClientRect().top);
+  }
+});
+
+function stopPracticeResize(event) {
+  if (practiceResizeHandle?.hasPointerCapture(event.pointerId)) {
+    practiceResizeHandle.releasePointerCapture(event.pointerId);
+  }
+  document.body.classList.remove("is-resizing");
+}
+
+practiceResizeHandle?.addEventListener("pointerup", stopPracticeResize);
+practiceResizeHandle?.addEventListener("pointercancel", stopPracticeResize);
+practiceResizeHandle?.addEventListener("keydown", event => {
+  if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key) || !practiceMain) return;
+  event.preventDefault();
+  const currentHeight = Number.parseFloat(getComputedStyle(practiceMain).gridTemplateRows.split(" ")[0]) || 360;
+  if (event.key === "Home") setPracticeEditorHeight(280);
+  else if (event.key === "End") setPracticeEditorHeight(practiceMain.clientHeight);
+  else setPracticeEditorHeight(currentHeight + (event.key === "ArrowUp" ? -24 : 24));
+});
+
 document.querySelectorAll("[data-practice-template]").forEach(button => {
   button.addEventListener("click", () => {
     const type = button.dataset.practiceTemplate;
@@ -707,16 +756,16 @@ document.getElementById("practice-import-data-file")?.addEventListener("change",
     for (const file of files) imported.push(...await importPracticeDataFile(file));
     renderPracticeTables();
     const description = imported.map(table => `${table.tableName}: ${table.rows} registros`).join(" · ");
-    document.getElementById("practice-result-status").textContent = "DADOS IMPORTADOS";
+    document.getElementById("practice-result-status").textContent = "BANCO IMPORTADO";
     document.getElementById("practice-result-meta").textContent = description;
     document.getElementById("practice-results").replaceChildren();
     const message = document.createElement("p");
     message.className = "practice-empty";
-    message.textContent = `Importação concluída. Consulte ${imported.map(table => table.tableName).join(", ")} no editor SQL.`;
+    message.textContent = `Banco importado. Consulte as tabelas ${imported.map(table => table.tableName).join(", ")} no editor SQL.`;
     document.getElementById("practice-results").appendChild(message);
   } catch (error) {
     renderPracticeTables();
-    setPracticeMessage(`Falha ao importar dados: ${error.message}`, "ERRO NA IMPORTAÇÃO", true);
+    setPracticeMessage(`Falha ao importar o banco: ${error.message}`, "ERRO NA IMPORTAÇÃO", true);
   } finally {
     event.target.value = "";
   }
