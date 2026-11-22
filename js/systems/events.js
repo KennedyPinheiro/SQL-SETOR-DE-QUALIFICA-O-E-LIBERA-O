@@ -116,8 +116,6 @@ function triggerRandomEvent() {
 
     document.body.classList.add(eventVisualClass(selectedEvent.id));
 
-
-
     // Ativa os efeitos específicos
     if (selectedEvent.id === "system_failure") {
         activateSystemFailure();

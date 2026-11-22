@@ -430,6 +430,7 @@ function splitSqlStatements(script) {
 }
 
 function runPracticeQuery() {
+  showPracticeResults();
   const input = document.getElementById("practice-query");
   const status = document.getElementById("practice-result-status");
   const resultMeta = document.getElementById("practice-result-meta");
@@ -490,6 +491,61 @@ document.getElementById("practice-query")?.addEventListener("keydown", event => 
 const practiceMain = document.querySelector(".practice-main");
 const practiceResizeHandle = document.getElementById("practice-resize-handle");
 const practiceResultsToggle = document.getElementById("practice-results-toggle");
+const practiceMenuTrigger = document.getElementById("practice-menu-trigger");
+const practiceMenuModal = document.getElementById("practice-menu-modal");
+const practiceHelpModal = document.getElementById("practice-help-modal");
+
+function openPracticeMenu() {
+  if (!practiceMenuModal) return;
+  practiceMenuModal.classList.add("open");
+  practiceMenuModal.setAttribute("aria-hidden", "false");
+  practiceMenuModal.querySelector("[data-practice-menu-close]")?.focus();
+}
+
+function closePracticeMenu(restoreFocus = true) {
+  if (!practiceMenuModal) return;
+  practiceMenuModal.classList.remove("open");
+  practiceMenuModal.setAttribute("aria-hidden", "true");
+  if (restoreFocus) practiceMenuTrigger?.focus();
+}
+
+function openPracticeHelp() {
+  closePracticeMenu(false);
+  if (!practiceHelpModal) return;
+  practiceHelpModal.classList.add("open");
+  practiceHelpModal.setAttribute("aria-hidden", "false");
+  practiceHelpModal.querySelector("[data-practice-help-close]")?.focus();
+}
+
+function closePracticeHelp() {
+  if (!practiceHelpModal) return;
+  practiceHelpModal.classList.remove("open");
+  practiceHelpModal.setAttribute("aria-hidden", "true");
+  practiceMenuTrigger?.focus();
+}
+
+practiceMenuTrigger?.addEventListener("click", openPracticeMenu);
+practiceMenuModal?.addEventListener("click", event => {
+  if (event.target === practiceMenuModal || event.target.closest("[data-practice-menu-close]")) {
+    closePracticeMenu();
+  }
+});
+practiceHelpModal?.addEventListener("click", event => {
+  if (event.target === practiceHelpModal || event.target.closest("[data-practice-help-close]")) {
+    closePracticeHelp();
+  }
+});
+document.getElementById("practice-open-settings")?.addEventListener("click", () => {
+  closePracticeMenu(false);
+  practiceMenuTrigger?.focus();
+  window.openSettingsModal?.();
+});
+document.getElementById("practice-open-help")?.addEventListener("click", openPracticeHelp);
+document.addEventListener("keydown", event => {
+  if (event.key !== "Escape") return;
+  if (practiceHelpModal?.classList.contains("open")) closePracticeHelp();
+  else if (practiceMenuModal?.classList.contains("open")) closePracticeMenu();
+});
 
 practiceResultsToggle?.addEventListener("click", () => {
   const isCollapsed = practiceMain.classList.toggle("results-collapsed");
@@ -499,6 +555,16 @@ practiceResultsToggle?.addEventListener("click", () => {
     ? "Reabrir o painel de resultados"
     : "Ocultar o painel de resultados";
 });
+
+function showPracticeResults() {
+  if (!practiceMain?.classList.contains("results-collapsed")) return;
+  practiceMain.classList.remove("results-collapsed");
+  practiceResultsToggle?.setAttribute("aria-expanded", "true");
+  if (practiceResultsToggle) {
+    practiceResultsToggle.textContent = "OCULTAR RESULTADOS";
+    practiceResultsToggle.title = "Ocultar o painel de resultados";
+  }
+}
 
 function setPracticeEditorHeight(height) {
   if (!practiceMain || !practiceResizeHandle) return;

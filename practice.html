@@ -27,7 +27,9 @@
             <span class="top-divider"></span>
             <span id="practice-live-table-count">5 TABELAS</span>
         </div>
-        <a class="practice-exit" href="index.html">VOLTAR AOS MODOS</a>
+        <button type="button" id="practice-menu-trigger" class="practice-menu-trigger" aria-haspopup="dialog" aria-controls="practice-menu-modal" aria-label="Abrir menu da prática SQL">
+            <span class="practice-menu-icon" aria-hidden="true"><i></i><i></i><i></i></span><span>MENU</span>
+        </button>
     </header>
 
     <main class="practice-workspace">
@@ -108,6 +110,62 @@ LIMIT 10;</textarea>
         </aside>
     </main>
 
+    <div id="practice-menu-modal" class="modal-backdrop" aria-hidden="true">
+        <section class="modal practice-menu-modal" role="dialog" aria-modal="true" aria-labelledby="practice-menu-title">
+            <header class="modal-header">
+                <div><small>AMBIENTE DE TREINAMENTO</small><h2 id="practice-menu-title">MENU DA PRÁTICA</h2></div>
+                <button type="button" class="modal-close" data-practice-menu-close aria-label="Fechar menu">×</button>
+            </header>
+            <div class="practice-menu-actions">
+                <a class="practice-menu-action" href="index.html"><span class="practice-menu-action-icon">↩</span><span><strong>Voltar aos modos</strong><small>Retornar à tela inicial do S.Q.L.</small></span></a>
+                <button type="button" class="practice-menu-action" id="practice-open-settings"><span class="practice-menu-action-icon">⚙</span><span><strong>Configurações</strong><small>Ajustar preferências da interface e áudio.</small></span></button>
+                <button type="button" class="practice-menu-action" id="practice-open-help"><span class="practice-menu-action-icon">?</span><span><strong>Ajuda</strong><small>Consultar as instruções da tela de prática.</small></span></button>
+            </div>
+        </section>
+    </div>
+
+    <div id="practice-help-modal" class="modal-backdrop" aria-hidden="true">
+        <section class="modal practice-help-modal" role="dialog" aria-modal="true" aria-labelledby="practice-help-title">
+            <header class="modal-header">
+                <div><small>MANUAL DO OPERADOR · TERMINAL SQL</small><h2 id="practice-help-title">AJUDA DA PRÁTICA</h2></div>
+                <button type="button" class="modal-close" data-practice-help-close aria-label="Fechar ajuda">×</button>
+            </header>
+            <div class="practice-help-body">
+                <p>Use este ambiente para explorar dados e praticar SQL sem turnos, visitantes ou pontuação.</p>
+                <section><h3>CARREGAR UM BANCO</h3><p>Importe arquivos CSV ou TSV com cabeçalho, ou JSON com registros. Cada arquivo vira um agrupamento no explorador; arquivos JSON podem conter várias tabelas. Os dados importados existem nesta sessão e são descartados ao recarregar ou restaurar o banco.</p></section>
+                <section><h3>EXPLORAR E CONSULTAR</h3><p>Abra os acordeões em ordem: banco, tabela e coluna. “Consultar tabela” prepara um <code>SELECT *</code>; clicar em uma coluna prepara um <code>SELECT</code> daquela coluna. Edite o SQL e execute com o botão ou <kbd>Ctrl</kbd> + <kbd>Enter</kbd>.</p></section>
+                <section><h3>EDITOR E RESULTADOS</h3><p>O terminal usa o dialeto AlaSQL no navegador. Scripts <code>.sql</code> são carregados no editor para você revisar antes de executar. Arraste a divisória entre editor e resultados para ajustar o espaço. Oculte ou reabra os resultados pelo botão no cabeçalho do editor; ao executar uma consulta, os resultados voltam ao tamanho anterior.</p></section>
+                <section><h3>HISTÓRICO</h3><p>As instruções SQL executadas ficam no histórico local do navegador. Clique em uma entrada para carregá-la no editor. Use “Limpar” para apagar o histórico.</p></section>
+            </div>
+            <footer class="modal-footer practice-help-footer"><span>PRÁTICA SQL · S.Q.L. TERMINAL</span><button type="button" class="button button-green" data-practice-help-close>ENTENDI</button></footer>
+        </section>
+    </div>
+
+    <div id="settings-modal" class="modal-backdrop" aria-hidden="true">
+        <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+            <header class="modal-header">
+                <div><small>AMBIENTE DE TREINAMENTO</small><h2 id="settings-title">CONFIGURAÇÕES</h2></div>
+                <button type="button" class="modal-close" data-settings-close aria-label="Fechar configurações">×</button>
+            </header>
+            <div class="settings-body">
+                <section class="settings-group" aria-labelledby="settings-audio-title">
+                    <h3 id="settings-audio-title">ÁUDIO</h3>
+                    <label class="settings-row"><span><strong>Efeitos sonoros</strong><small>Ativar sons de interação e eventos.</small></span><input id="setting-sound" type="checkbox" class="settings-switch"></label>
+                    <label class="settings-row settings-volume"><span><strong>Volume dos efeitos</strong><small><output id="setting-volume-value" for="setting-volume">50%</output></small></span><input id="setting-volume" type="range" min="0" max="100" step="5" value="50"></label>
+                    <label class="settings-row"><span><strong>Música ambiente</strong><small>Preferência para quando a trilha estiver disponível.</small></span><input id="setting-music" type="checkbox" class="settings-switch"></label>
+                    <label class="settings-row settings-volume"><span><strong>Volume da música</strong><small><output id="setting-music-volume-value" for="setting-music-volume">25%</output></small></span><input id="setting-music-volume" type="range" min="0" max="100" step="5" value="25"></label>
+                </section>
+                <section class="settings-group" aria-labelledby="settings-interface-title">
+                    <h3 id="settings-interface-title">INTERFACE</h3>
+                    <label class="settings-row"><span><strong>Animações</strong><small>Transições e movimentos visuais.</small></span><input id="setting-animations" type="checkbox" class="settings-switch"></label>
+                    <label class="settings-row"><span><strong>Folhas na tela inicial</strong><small>Efeito visual da Home, quando disponível.</small></span><input id="setting-leaves" type="checkbox" class="settings-switch"></label>
+                </section>
+            </div>
+            <footer class="modal-footer settings-footer"><button type="button" id="settings-reset" class="button button-quiet">RESTAURAR PADRÕES</button><button type="button" class="button button-green" data-settings-close>CONCLUÍDO</button></footer>
+        </section>
+    </div>
+
+    <script src="js/settings.js"></script>
     <script src="js/practice.js"></script>
 </body>
 </html>
