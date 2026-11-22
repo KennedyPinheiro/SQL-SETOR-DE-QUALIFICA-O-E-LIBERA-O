@@ -79,6 +79,15 @@ function selectMode(mode) {
                 : "ESSE NÃO É<br><em>DOS NOSSOS.</em>";
     }
 
+    const description = document.getElementById("start-description");
+    if (description) {
+        description.textContent = mode === "practice"
+            ? "Explore tabelas, importe seus dados e pratique consultas SQL sem pressão."
+            : mode === "falha"
+                ? "O terminal está indisponível. Use a inspeção e os recursos do quartel para decidir."
+                : "Investigue visitantes, cruze documentos com registros e decida quem pode entrar.";
+    }
+
     document.querySelectorAll(".mode-card").forEach(card => {
         const active = card.dataset.mode === mode;
 
