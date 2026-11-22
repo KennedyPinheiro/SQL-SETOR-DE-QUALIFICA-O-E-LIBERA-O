@@ -1,58 +1,88 @@
 # S.Q.L. — Setor de Qualificação e Liberação
 
-Jogo de investigação e controle de acesso com temática militar. Você assume o posto de sentinela de um quartel: observa o solicitante, confere sua declaração e seus documentos, investiga os registros com SQL e decide se autoriza ou nega a entrada.
+## Antes de começar: a proposta
 
-## Como executar
+S.Q.L. é um jogo educativo de investigação. A sigla significa **Setor de Qualificação e Liberação**, e a história coloca o jogador no posto de controle de um quartel fictício. A tarefa é decidir se cada solicitante pode entrar, deve ser recusado ou precisa ser encaminhado para uma verificação do comando.
 
-O jogo roda no navegador e não precisa de etapa de build. Na pasta do projeto, inicie um servidor local:
+A ideia central é praticar leitura crítica de dados: uma consulta SQL pode confirmar uma informação, revelar uma divergência ou não encontrar nada. Nenhum desses resultados, sozinho, substitui a análise do caso. O jogador compara registros com documentos, aparência, declarações e respostas do visitante. Assim, o jogo busca ensinar SQL junto com uma distinção importante: erro cadastral é motivo para investigar ou encaminhar; não é prova automática de fraude.
+
+O quartel, os cadastros e as decisões são ficcionais. O projeto é um jogo de navegador, não um sistema real de controle de acesso.
+
+## Como a experiência funciona
+
+Nos modos de partida, cada turno apresenta um solicitante. O jogador observa seu retrato, lê a declaração inicial, confere a identidade quando ela é apresentada e consulta as informações disponíveis. No modo Clássico, também pode investigar com SQL; nos dois modos de partida, pode fazer perguntas, consultar o rádio e abrir o arquivo do efetivo. Ao final, escolhe uma entre três ações: autorizar, negar a entrada ou encaminhar o caso.
+
+Os casos são gerados a partir de militares cadastrados e podem trazer combinações diferentes de sinais. Um militar legítimo pode ter uma irregularidade nos registros e precisar de revisão. Um impostor pode ter dados que parecem corretos, mas apresentar documento, alojamento ou aparência incompatível. O objetivo é cruzar indícios e tomar uma decisão proporcional ao que foi encontrado.
+
+## Modos de jogo
+
+### Clássico — investigação completa
+
+O modo Clássico é a experiência principal de controle de acesso. O jogador recebe um solicitante por turno e usa o terminal SQL como ferramenta de investigação, junto da observação visual, da identidade, da declaração, das perguntas, do rádio e do arquivo do efetivo. As consultas ajudam a verificar documentos, autorização para o dia, registros de entrada, responsáveis, horários, setores e movimentações.
+
+O jogador não precisa provar que alguém é impostor para perceber que há algo a revisar. Quando o visitante é legítimo, mas seus dados apresentam uma inconsistência, a resposta adequada é encaminhar ao comando. Quando as evidências apontam para uma tentativa de fraude, a decisão é negar a entrada. Um militar sem irregularidades pode ser autorizado. Uma decisão errada custa uma vida, e investigações incompletas podem reduzir a pontuação.
+
+O modo tem eventos temporários que alteram as condições de alguns turnos. Por exemplo, uma falha temporária pode bloquear o SQL, uma inspeção surpresa pode exigir outra consulta direcionada e um visitante prioritário pode impor um prazo menor. Os eventos não substituem as decisões do jogador; eles mudam a pressão ou a informação disponível.
+
+### Falha do Sistema — decisão sem SQL
+
+O modo Falha do Sistema é uma partida de contingência: o evento de pane começa ativo no primeiro turno e permanece ativo durante toda a partida. O terminal fica bloqueado, então o jogador precisa tomar decisões sem consultar o banco. Não há sorteio de outros eventos nesse modo.
+
+A investigação passa a depender do retrato, da identidade apresentada, da declaração e das quatro perguntas disponíveis para cada visitante. O jogador também pode consultar o rádio e o arquivo do efetivo. As respostas às perguntas variam conforme o caso e devem ser comparadas com as informações já visíveis; perguntar não registra uma evidência automaticamente.
+
+As três dificuldades continuam disponíveis, mas aqui elas alteram somente a quantidade de vidas: Fácil oferece cinco, Normal oferece três e Difícil oferece uma. A chance-base de impostor é fixa neste modo. Como o SQL está indisponível, não há objetivo de consultas a cumprir nem penalidade por investigação SQL incompleta.
+
+### Prática SQL — laboratório livre
+
+Prática SQL é um ambiente separado da partida. Não há visitantes, eventos, vidas, pontuação ou decisões de acesso. A finalidade é explorar tabelas e escrever consultas sem a pressão de um turno.
+
+O banco começa com cinco tabelas didáticas de logística. O explorador organiza as informações em acordeões — banco, tabela e coluna — e permite preparar consultas iniciais a partir de uma tabela ou coluna. O editor aceita scripts em lote no dialeto AlaSQL, e os resultados podem ser redimensionados ou ocultados. O histórico mantém as últimas 50 instruções executadas no `localStorage` deste navegador; ele é específico para o endereço e navegador em uso.
+
+É possível importar arquivos CSV ou TSV com cabeçalho e arquivos JSON como tabelas consultáveis. Os nomes dos arquivos são usados como agrupamentos visuais no explorador; as tabelas importadas ficam disponíveis no mesmo ambiente AlaSQL da sessão. Também é possível carregar um script `.sql` no editor para revisar e executar manualmente, ou exportar o texto atual do editor. Os dados e tabelas da sessão são reiniciados ao recarregar a tela ou restaurar o banco. Este modo não é um servidor SQLite e não importa diretamente arquivos binários `.db` ou `.sqlite`.
+
+## Como iniciar
+
+O projeto roda no navegador e não precisa de etapa de build. Na pasta do projeto, inicie um servidor local:
 
 ```bash
-python3 -m http.server 5501
+python3 -m http.server 55000
 ```
 
-Abra `http://localhost:5501` e escolha uma modalidade:
+Abra `http://localhost:5500` e selecione um dos três modos na Home. Clássico e Falha do Sistema oferecem as dificuldades Fácil, Normal e Difícil. Prática SQL não usa dificuldade.
 
-- **Prática SQL:** abre `practice.html`, com banco didático próprio, editor em tela ampla, explorador hierárquico em acordeão (banco → tabela → coluna), resultados e histórico local das instruções SQL executadas. O histórico fica no `localStorage` do navegador. Importa dados CSV, TSV e JSON como tabelas consultáveis, aceita carregar scripts `.sql` no editor e exportá-los. Editor e resultados compartilham um painel; a divisória ajusta o espaço de cada área e os resultados podem ser ocultados e reabertos. Não usa as tabelas da partida nem tem visitantes, eventos, vidas ou pontuação.
-- **Falha do Sistema:** abre a partida com o evento de falha ativo em todos os turnos. O terminal SQL fica bloqueado; o jogador decide usando identidade, retrato, declaração, perguntas, rádio e arquivo do efetivo.
-- **Clássico:** mantém o ciclo atual de inspeção, investigação SQL e decisão.
+O navegador precisa de acesso à internet para carregar AlaSQL e as fontes do Google Fonts via CDN. O banco da partida é criado em memória quando uma nova partida começa. Configurações e histórico da Prática SQL são armazenados localmente no navegador.
 
-Clássico e Falha do Sistema oferecem Fácil, Normal e Difícil. No modo Falha, a dificuldade muda apenas as vidas: 5, 3 ou 1.
+## Um turno de investigação
 
-O navegador precisa de acesso à internet para carregar AlaSQL e as fontes do Google Fonts via CDN. Os dados do jogo são criados em memória e reiniciados ao iniciar uma nova partida.
+1. **Observe e leia:** compare o retrato, a declaração inicial e a identidade militar. Quando o visitante diz que está sem documento, a identidade não é apresentada e o jogador pode usar as informações fornecidas para investigar.
+2. **Pergunte:** há quatro perguntas por solicitante: documento, alojamento, aparência e autorização. Cada pergunta pode ser usada uma vez. A resposta aparece no campo **Declaração do solicitante** como uma fala, que deve ser comparada com os outros dados.
+3. **Consulte os recursos:** no Clássico, use SQL para investigar as cinco tabelas disponíveis. Nos dois modos de partida, o rádio e o arquivo do efetivo ajudam a confirmar informações. No modo Falha, o terminal SQL fica bloqueado.
+4. **Cruze os indícios:** aparência diferente, documento divergente, falta de autorização ou inconsistência de responsável, setor, horário e movimentação podem apontar para situações distintas. As perguntas oferecem declarações; as consultas SQL confirmam ou contradizem cadastros.
+5. **Decida:** autorize um militar sem irregularidades, negue a entrada quando houver evidências de fraude ou encaminhe divergências cadastrais ao comando. Uma inconsistência cadastral, por si só, não prova que a pessoa é impostora.
 
-## Ciclo clássico
+## SQL no modo Clássico
 
-1. **Inspecione o solicitante:** compare o retrato, a declaração e a identidade militar. Se ele disser que está sem documento, a identidade não é apresentada.
-2. **Faça perguntas:** há quatro perguntas predefinidas por solicitante — documento, alojamento, aparência e autorização. Cada uma só pode ser feita uma vez. As respostas variam e aparecem em **Declaração do solicitante**; são afirmações a comparar com os dados, não evidências automáticas.
-3. **Investigue com SQL:** consulte os registros do efetivo, autorizações, lista do dia, portão e movimentações. O terminal aceita uma consulta `SELECT` por execução.
-4. **Compare os dados:** use também o rádio para chamar o alojamento e o arquivo do efetivo para consultar os alojamentos cadastrados.
-5. **Decida:** autorize militares sem irregularidades, negue visitantes com sinais de identidade falsa ou encaminhe divergências nos registros ao comando para confirmação. Uma inconsistência cadastral, sozinha, não prova fraude. Uma decisão incorreta custa uma vida.
+O terminal da partida aceita uma consulta `SELECT` por execução e somente as cinco tabelas do jogo. Uma consulta válida consome uma tentativa; texto vazio, SQL inválido ou erro de execução não consome. Para executar, use o botão ou `Ctrl + Enter`.
 
-O painel de suspeita registra evidências únicas confirmadas por consultas SQL. As perguntas fornecem declarações do visitante para comparar com o cadastro. Entre as irregularidades investigáveis estão documento ou alojamento divergente, anomalias visuais, duplicidade no portão, falta de autorização, responsável inexistente, setor divergente, horário inconsistente e incompatibilidade entre autorização e movimentação.
+A barra de progresso conta **pesquisas direcionadas**, não evidências. Para avançar, a consulta precisa filtrar por uma informação do solicitante — como documento, nome ou alojamento — e usar uma combinação de tabelas ainda não investigada. Consultas amplas ou repetidas podem consumir uma tentativa sem avançar a barra. Mudar colunas, espaços ou capitalização não transforma a mesma combinação de fontes em uma nova pesquisa.
 
-## Consultas e progresso
+O painel de suspeita acompanha separadamente as evidências únicas encontradas e a suspeita acumulada. Uma pesquisa direcionada pode avançar o progresso sem encontrar uma evidência; uma saída vazia também pode ser relevante, dependendo da consulta. O bônus de investigação completa considera todas as evidências esperadas para o caso, inclusive cada irregularidade de um caso com múltiplas inconsistências.
 
-O terminal permite consultar as cinco tabelas descritas abaixo. Cada execução SQL válida consome uma tentativa; consultas vazias, inválidas ou com erro não são executadas. A saída mostra o resultado mais recente.
-
-O progresso SQL conta pesquisas direcionadas por combinações de tabelas ainda não investigadas. A consulta precisa filtrar por um dado apresentado pelo solicitante, como documento, nome ou alojamento; uma busca direcionada sem resultados também pode avançar. Consultas sem filtro e novas consultas às mesmas fontes consomem uma tentativa, mas não avançam, mesmo que mudem as colunas, espaços ou capitalização do SQL. Essa barra mede pesquisas realizadas, não evidências encontradas.
-
-O painel de suspeita mostra separadamente a quantidade de evidências únicas confirmadas por SQL e os pontos de suspeita acumulados. Uma pesquisa pode avançar a barra de progresso sem revelar uma evidência.
-
-A decisão fica disponível ao atingir a quantidade de consultas exigida pela dificuldade ou ao esgotar as tentativas. Quando as tentativas acabam, começa um prazo de **10 segundos** para decidir; se o tempo terminar, ocorre a sequência de derrota.
+Você pode decidir quando alcançar o número de pesquisas exigido pela dificuldade ou quando esgotar as tentativas. Se as tentativas acabarem antes de atingir o objetivo, há dez segundos para tomar a decisão; deixar o prazo terminar encerra a partida por falha.
 
 ## Dificuldades
 
-| Nível | Vidas | Consultas por solicitante | Consultas relacionadas exigidas | Chance-base de impostor aleatório |
+| Nível | Vidas | Tentativas SQL por solicitante | Pesquisas direcionadas exigidas | Chance-base de impostor no Clássico |
 | --- | ---: | ---: | ---: | ---: |
 | Fácil | 5 | 5 | 1 | 28% |
 | Normal | 3 | 4 | 2 | 45% |
 | Difícil | 1 | 4 | 3 | 62% |
 
-No modo **Falha do Sistema**, as dificuldades oferecem respectivamente **5, 3 e 1 vida**. As consultas permanecem bloqueadas em todos os turnos, sem penalidade por investigação incompleta.
+No modo Falha do Sistema, as dificuldades oferecem respectivamente cinco, três e uma vida. A chance-base de impostor fica em 45% nos três níveis desse modo.
 
-## Banco de dados
+## Banco do modo Clássico
 
-O banco usa AlaSQL no navegador e é recriado a cada partida. Ele começa com 16 militares cadastrados.
+O banco do jogo usa AlaSQL no navegador e começa com 16 militares cadastrados. Suas tabelas são:
 
 | Tabela | Colunas |
 | --- | --- |
@@ -62,9 +92,7 @@ O banco usa AlaSQL no navegador e é recriado a cada partida. Ele começa com 16
 | `autorizacoes` | `id_doc`, `responsavel`, `horario`, `setor`, `motivo` |
 | `movimentacoes` | `id_doc`, `local`, `horario`, `atividade` |
 
-O modo **Prática SQL** usa um banco separado, com dados didáticos de logística. As tabelas são `pessoal` (matrícula, nome, patente, setor e alojamento), `equipamentos` (equipamento, tipo, setor e condição), `ordens_servico` (responsável, equipamento, prioridade e status), `suprimentos` (categoria, quantidade e estoque mínimo) e `movimentacoes_suprimentos` (item, responsável, tipo e quantidade). Os exemplos de `JOIN` e `GROUP BY` usam esse esquema de treino. O editor executa scripts em lote no navegador com AlaSQL, permite importar e exportar `.sql` e lista tabelas criadas durante a sessão. A compatibilidade depende do dialeto suportado por AlaSQL; não é um servidor SQLite nem um banco remoto. Use **RESTAURAR BANCO** para voltar às cinco tabelas iniciais.
-
-Exemplo:
+Exemplo de consulta:
 
 ```sql
 SELECT nome, alojamento, patente
@@ -72,30 +100,32 @@ FROM militares
 WHERE id_doc = '8841-FM';
 ```
 
+O banco didático de Prática SQL é independente e usa outro esquema: `pessoal`, `equipamentos`, `ordens_servico`, `suprimentos` e `movimentacoes_suprimentos`.
+
 ## Pontuação e fim de partida
 
-- Autorizar um militar legítimo corretamente rende **100 pontos-base**. Com índice de suspeita zero, há **50 pontos adicionais**; com índice até 20, há **25 pontos adicionais**.
-- Identificar um infiltrado corretamente rende **150 pontos-base**. Evidências acumuladas podem render bônus de até **100 pontos**; descobrir todas as evidências esperadas do caso concede mais **100 pontos**.
-- Encaminhar corretamente um militar real com registros inconsistentes rende **100 pontos-base**. O índice de suspeita e a identificação de todas as evidências do caso também podem conceder bônus.
-- Decidir antes de cumprir o objetivo de consultas desconta **50 pontos**.
-- Uma decisão incorreta desconta **uma vida**. Ao perder todas as vidas, a partida termina.
-- Deixar o prazo de decisão de 10 segundos acabar aciona a sequência de derrota.
+- Autorizar corretamente um militar legítimo rende 100 pontos-base. Há até 50 pontos de bônus de verificação, conforme a suspeita acumulada.
+- Negar corretamente a entrada de um impostor rende 150 pontos-base. A suspeita pode dar até 100 pontos adicionais; encontrar todas as evidências esperadas do caso concede mais 100.
+- Encaminhar corretamente uma irregularidade cadastral rende 100 pontos-base, com os mesmos bônus de suspeita e investigação completa.
+- Decidir sem atingir o objetivo de pesquisas SQL desconta 50 pontos no modo Clássico.
+- Uma decisão incorreta custa uma vida. Perder todas as vidas encerra a partida.
+- Quando as tentativas SQL acabam, deixar o prazo de decisão de dez segundos terminar também encerra a partida.
 
-## Eventos
+## Eventos do modo Clássico
 
-Há **35% de chance** de surgir um evento quando não há outro ativo. O primeiro turno de uma partida nova começa sem evento; os sorteios começam nos turnos seguintes. Os eventos duram de dois a quatro turnos, conforme o evento.
+Quando não há evento ativo, há 35% de chance de iniciar um evento por turno. Uma partida começa sem evento; os sorteios podem ocorrer nos turnos seguintes. Eventos temporários duram de dois a quatro turnos.
 
-- **Alerta de segurança:** restringe temporariamente a leitura do painel de suspeita.
-- **Falha no sistema:** bloqueia consultas SQL durante o evento; autorizar, negar e encaminhar continuam disponíveis.
-- **Inspeção surpresa:** exige uma consulta direcionada adicional, usando uma combinação de tabelas ainda não investigada.
-- **Visitante prioritário:** inicia um prazo de 15 segundos para decidir. Esse prazo substitui o cronômetro comum de 10 segundos; o tempo esgotado custa uma vida.
-- **Ordem do comando:** destaca temporariamente o painel de decisão e mostra uma notificação; não altera as regras de autorização.
+- **Alerta de segurança:** restringe temporariamente as informações do painel de suspeita.
+- **Falha no sistema:** bloqueia temporariamente as consultas SQL; as opções de decisão permanecem disponíveis.
+- **Inspeção surpresa:** acrescenta uma consulta direcionada ao objetivo do turno.
+- **Visitante prioritário:** dá 15 segundos para decidir.
+- **Ordem do comando:** destaca a área de decisão e mostra uma notificação, sem mudar as regras de autorização.
 
 ## Interface e configurações
 
-A home e a partida usam uma interface de terminal militar, com efeitos de radar, câmera, rádio e alertas. As configurações permitem ajustar efeitos sonoros, música ambiente e seus volumes, animações da interface e folhas decorativas da home. A preferência de movimento reduzido do sistema também desativa animações e transições.
+A Home e a partida usam uma interface de terminal militar com efeitos visuais e sonoros. A Home permite escolher modo e dificuldade; na partida, o menu oferece retorno ao jogo, reinício, configurações, ajuda e saída. A ajuda apresenta regras ajustadas ao modo selecionado.
 
-A ajuda abre automaticamente no começo da partida. O menu oferece retorno ao jogo, reinício, configurações, ajuda e saída para a home. Os modais podem ser fechados pelo botão, por `Esc` ou clicando fora, quando aplicável.
+As configurações controlam efeitos sonoros, música ambiente, volumes, animações e o efeito de folhas da Home. O sistema também respeita a preferência de movimento reduzido do navegador ou sistema operacional.
 
 ## Estrutura do projeto
 
@@ -138,4 +168,4 @@ sql-game/
         └── building.js
 ```
 
-`index.html` e `game.html` carregam os módulos ativos diretamente. `js/script.js` é um backup legado e não é carregado por essas páginas; as regras atuais estão nos módulos listados acima.
+`index.html`, `game.html` e `practice.html` carregam as páginas ativas. `js/script.js` é um backup legado e não é carregado por essas páginas; as regras atuais da partida ficam nos módulos listados acima.
