@@ -127,7 +127,6 @@
             Math.min(1, settings.volume / 100)
         );
 
-        /* Configuração dos alertas */
 
         const patterns = {
             high: [
@@ -180,7 +179,6 @@
     window.playSuspicionAlert = playSuspicionAlert;
     window.stopPrioritySound = stopPrioritySound;
 
-    // Clique e seleção de elementos
     document.addEventListener('click', (event) => {
         const element = event.target.closest(
             'button, [data-sound]'
