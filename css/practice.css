@@ -180,6 +180,18 @@
   font: 700 16px var(--mono);
 }
 
+.practice-menu-action-exit:hover,
+.practice-menu-action-exit:focus-visible {
+  border-color: var(--red);
+  background: #33262a;
+}
+
+.practice-menu-action-exit .practice-menu-action-icon {
+  border-color: #7d4543;
+  background: #43282a;
+  color: #f0b0a8;
+}
+
 .practice-help-modal {
   width: min(680px, 100%);
 }
