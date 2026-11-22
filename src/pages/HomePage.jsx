@@ -166,8 +166,8 @@ export default function HomePage() {
           <div className="start-org"><strong>SETOR DE QUALIFICAÇÃO E LIBERAÇÃO</strong><small>SEGURANÇA DE QUARTEL | CONTROLE DE ACESSO</small></div>
           <div className="start-header-actions">
             <div className="start-online"><span className="live-dot" />SISTEMA ONLINE</div>
-            <IconButton className="settings-trigger help-trigger" onClick={() => setHelpOpen(true)} aria-label="Abrir ajuda" title="Ajuda">?</IconButton>
-            <IconButton className="settings-trigger" onClick={() => setSettingsOpen(true)} aria-label="Abrir configurações" title="Configurações">⚙</IconButton>
+            <IconButton className="settings-trigger help-trigger" onClick={() => setHelpOpen(true)} aria-label="Abrir ajuda" title="Ajuda" data-tooltip="AJUDA">?</IconButton>
+            <IconButton className="settings-trigger" onClick={() => setSettingsOpen(true)} aria-label="Abrir configurações" title="Configurações" data-tooltip="CONFIGURAÇÕES">⚙</IconButton>
           </div>
         </Box>
 

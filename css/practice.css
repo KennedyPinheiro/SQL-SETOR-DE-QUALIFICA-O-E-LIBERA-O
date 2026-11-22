@@ -87,6 +87,7 @@
 }
 
 .practice-menu-trigger {
+  position: relative;
   flex: none;
   min-width: 76px;
   height: 38px;
@@ -101,6 +102,31 @@
   font: 10px var(--mono);
   letter-spacing: .4px;
   cursor: pointer;
+}
+
+.practice-menu-trigger::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  z-index: 20;
+  padding: 6px 10px;
+  border: 1px solid #d7a85c;
+  background: #0c1210;
+  color: #f1e3c4;
+  font: 600 11px var(--mono);
+  letter-spacing: 1px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity .15s ease, transform .15s ease;
+}
+
+.practice-menu-trigger:hover::after,
+.practice-menu-trigger:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .practice-menu-trigger:hover,

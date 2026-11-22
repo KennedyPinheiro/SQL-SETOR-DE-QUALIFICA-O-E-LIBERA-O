@@ -209,6 +209,11 @@
 }
 
 .mode-card {
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  align-content: start;
+  justify-items: start;
   background: #1b2a22;
   border: 1px solid #4a5e52;
   color: #e8eee9;
@@ -492,6 +497,10 @@ body.reduce-motion .live-dot {
   height: 39px;
   display: grid;
   place-items: center;
+  min-width: 0;
+  padding: 0;
+  border-radius: 0;
+  line-height: 1;
   border: 1px solid #526359;
   background: #1b2921;
   color: #d2dfd4;

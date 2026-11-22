@@ -56,6 +56,11 @@ const frameClassNames = new Set([
   'workspace'
 ]);
 
+const voidTags = new Set([
+  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta',
+  'param', 'source', 'track', 'wbr'
+]);
+
 const booleanAttributes = new Set([
   'allowfullscreen', 'async', 'autofocus', 'autoplay', 'controls',
   'default', 'defer', 'disabled', 'formnovalidate', 'hidden', 'inert', 'loop',
@@ -167,6 +172,9 @@ function renderMarkupNode(node, key) {
     .map((child, index) => renderMarkupNode(child, `${key}.${index}`))
     .filter(child => child !== null);
 
+  if (voidTags.has(tag)) {
+    return createElement(tag, props);
+  }
   if (tag === 'button') {
     return createElement(Button, props, children);
   }
