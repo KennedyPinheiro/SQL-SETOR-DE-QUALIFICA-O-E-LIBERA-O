@@ -17,10 +17,8 @@
     let audioUnlocked = false;
     let priorityAudio = null;
 
-    // Libera o áudio após a primeira interação do usuário.
     function unlockAudio() {
         if (audioUnlocked) return;
-
         audioUnlocked = true;
 
         Object.values(sounds).forEach(audio => {
@@ -30,7 +28,6 @@
 
     document.addEventListener('pointerdown', unlockAudio, { once: true });
     document.addEventListener('keydown', unlockAudio, { once: true });
-    // Carrega os efeitos
     Object.entries(SOUND_PATHS).forEach(([name, path]) => {
         const audio = new Audio(path);
 
@@ -39,7 +36,6 @@
         sounds[name] = audio;
     });
 
-    // Consulta as configurações de áudio
     function getAudioSettings() {
         const settings = window.getSqlSettings?.();
 
