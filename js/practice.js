@@ -97,6 +97,11 @@ let practiceHistoryStorageAvailable = true;
 let practiceHistory = loadPracticeHistory();
 const practiceTableGroups = new Map();
 
+function applyPracticeHoverSound(element) {
+  if (element) element.dataset.hoverSound ||= "hover";
+  return element;
+}
+
 function loadPracticeHistory() {
   try {
     const currentValue = localStorage.getItem(practiceHistoryStorageKey);
@@ -147,6 +152,7 @@ function renderPracticeHistory() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "practice-history-item";
+    applyPracticeHoverSound(button);
     button.setAttribute("aria-label", `Carregar instrução SQL executada em ${new Date(item.timestamp).toLocaleString("pt-BR")}`);
     const time = document.createElement("time");
     time.dateTime = new Date(item.timestamp).toISOString();
@@ -211,6 +217,8 @@ function renderPracticeTables() {
     database.className = "practice-database-accordion";
     database.open = true;
     const databaseSummary = document.createElement("summary");
+    databaseSummary.dataset.sound = "select";
+    applyPracticeHoverSound(databaseSummary);
     const databaseTitle = document.createElement("strong");
     databaseTitle.textContent = databaseName;
     const databaseCount = document.createElement("span");
@@ -224,6 +232,8 @@ function renderPracticeTables() {
       const tableDetails = document.createElement("details");
       tableDetails.className = "practice-table-accordion";
       const tableSummary = document.createElement("summary");
+      tableSummary.dataset.sound = "select";
+      applyPracticeHoverSound(tableSummary);
       const tableTitle = document.createElement("strong");
       tableTitle.textContent = name;
       const tableCount = document.createElement("span");
@@ -241,6 +251,7 @@ function renderPracticeTables() {
       const queryButton = document.createElement("button");
       queryButton.type = "button";
       queryButton.className = "practice-table-query-button";
+      applyPracticeHoverSound(queryButton);
       queryButton.textContent = "CONSULTAR TABELA";
       queryButton.addEventListener("click", () => {
         const input = document.getElementById("practice-query");
@@ -255,6 +266,7 @@ function renderPracticeTables() {
         const item = document.createElement("li");
         const columnButton = document.createElement("button");
         columnButton.type = "button";
+        applyPracticeHoverSound(columnButton);
         columnButton.textContent = column;
         columnButton.title = `Consultar a coluna ${column}`;
         columnButton.addEventListener("click", () => {
@@ -530,6 +542,7 @@ practiceMenuModal?.addEventListener("click", event => {
     closePracticeMenu();
   }
 });
+document.getElementById("practice-menu-return")?.addEventListener("click", () => closePracticeMenu());
 practiceHelpModal?.addEventListener("click", event => {
   if (event.target === practiceHelpModal || event.target.closest("[data-practice-help-close]")) {
     closePracticeHelp();
@@ -868,3 +881,5 @@ document.getElementById("practice-export-button")?.addEventListener("click", () 
   document.getElementById("practice-result-status").textContent = "SCRIPT EXPORTADO";
   document.getElementById("practice-result-meta").textContent = "Editor salvo como pratica-logistica.sql";
 });
+
+document.querySelectorAll("button:not([data-hover-sound])").forEach(applyPracticeHoverSound);

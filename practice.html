@@ -27,7 +27,7 @@
             <span class="top-divider"></span>
             <span id="practice-live-table-count">5 TABELAS</span>
         </div>
-        <button type="button" id="practice-menu-trigger" class="practice-menu-trigger" aria-haspopup="dialog" aria-controls="practice-menu-modal" aria-label="Abrir menu da prática SQL">
+        <button type="button" id="practice-menu-trigger" class="practice-menu-trigger" data-hover-sound="hover" aria-haspopup="dialog" aria-controls="practice-menu-modal" aria-label="Abrir menu da prática SQL">
             <span class="practice-menu-icon" aria-hidden="true"><i></i><i></i><i></i></span><span>MENU</span>
         </button>
     </header>
@@ -44,7 +44,7 @@
                     <strong>CARREGAR BANCO DE DADOS</strong>
                     <small>CSV, TSV ou JSON viram tabelas consultáveis. Selecione vários arquivos para importar juntos.</small>
                 </div>
-                <button type="button" id="practice-import-data-button">＋ IMPORTAR BANCO DE DADOS</button>
+                <button type="button" id="practice-import-data-button" data-hover-sound="hover">＋ IMPORTAR BANCO DE DADOS</button>
                 <input id="practice-import-data-file" type="file" accept=".csv,.tsv,.json,text/csv,application/json,text/tab-separated-values" multiple hidden>
             </div>
             <p class="practice-hint practice-hint-compact">Scripts .SQL podem ser carregados no terminal. O banco de treino usa AlaSQL no navegador.</p>
@@ -61,7 +61,7 @@
                     <div><small>CONSULTA</small><h2>EDITOR SQL</h2></div>
                     <div class="practice-panel-actions">
                         <span>SQL · ALASQL</span>
-                        <button type="button" id="practice-results-toggle" class="practice-results-toggle" aria-expanded="true" aria-controls="practice-results-panel">OCULTAR RESULTADOS</button>
+                        <button type="button" id="practice-results-toggle" class="practice-results-toggle" data-hover-sound="hover" aria-expanded="true" aria-controls="practice-results-panel">OCULTAR RESULTADOS</button>
                     </div>
                 </div>
                 <div class="practice-toolbar">
@@ -80,7 +80,7 @@ ORDER BY alojamento
 LIMIT 10;</textarea>
                 <div class="practice-editor-footer">
                     <small id="practice-editor-help">SQL em lote · Ctrl + Enter para executar · scripts importados não executam automaticamente</small>
-                    <button id="practice-run" class="button button-green" type="button">▶ EXECUTAR</button>
+                    <button id="practice-run" class="button button-green" type="button" data-hover-sound="hover">▶ EXECUTAR</button>
                 </div>
             </section>
 
@@ -114,12 +114,13 @@ LIMIT 10;</textarea>
         <section class="modal practice-menu-modal" role="dialog" aria-modal="true" aria-labelledby="practice-menu-title">
             <header class="modal-header">
                 <div><small>AMBIENTE DE TREINAMENTO</small><h2 id="practice-menu-title">MENU DA PRÁTICA</h2></div>
-                <button type="button" class="modal-close" data-practice-menu-close aria-label="Fechar menu">×</button>
+                <button type="button" class="modal-close" data-hover-sound="hover" data-practice-menu-close aria-label="Fechar menu">×</button>
             </header>
             <div class="practice-menu-actions">
-                <a class="practice-menu-action" href="index.html"><span class="practice-menu-action-icon">↩</span><span><strong>Voltar aos modos</strong><small>Retornar à tela inicial do S.Q.L.</small></span></a>
-                <button type="button" class="practice-menu-action" id="practice-open-settings"><span class="practice-menu-action-icon">⚙</span><span><strong>Configurações</strong><small>Ajustar preferências da interface e áudio.</small></span></button>
-                <button type="button" class="practice-menu-action" id="practice-open-help"><span class="practice-menu-action-icon">?</span><span><strong>Ajuda</strong><small>Consultar as instruções da tela de prática.</small></span></button>
+                <button type="button" class="practice-menu-action" data-hover-sound="hover" id="practice-menu-return"><span class="practice-menu-action-icon">▶</span><span><strong>Retornar</strong><small>Voltar ao terminal de prática SQL.</small></span></button>
+                <button type="button" class="practice-menu-action" data-hover-sound="hover" id="practice-open-settings"><span class="practice-menu-action-icon">⚙</span><span><strong>Configurações</strong><small>Ajustar preferências da interface e áudio.</small></span></button>
+                <button type="button" class="practice-menu-action" data-hover-sound="hover" id="practice-open-help"><span class="practice-menu-action-icon">?</span><span><strong>Ajuda</strong><small>Consultar as instruções da tela de prática.</small></span></button>
+                <a class="practice-menu-action practice-menu-action-exit" data-hover-sound="hover" data-sound="click" href="index.html"><span class="practice-menu-action-icon">⏻</span><span><strong>Sair</strong><small>Voltar à tela inicial e escolher outro modo.</small></span></a>
             </div>
         </section>
     </div>
@@ -128,7 +129,7 @@ LIMIT 10;</textarea>
         <section class="modal practice-help-modal" role="dialog" aria-modal="true" aria-labelledby="practice-help-title">
             <header class="modal-header">
                 <div><small>MANUAL DO OPERADOR · TERMINAL SQL</small><h2 id="practice-help-title">AJUDA DA PRÁTICA</h2></div>
-                <button type="button" class="modal-close" data-practice-help-close aria-label="Fechar ajuda">×</button>
+                <button type="button" class="modal-close" data-hover-sound="hover" data-practice-help-close aria-label="Fechar ajuda">×</button>
             </header>
             <div class="practice-help-body">
                 <p>Use este ambiente para explorar dados e praticar SQL sem turnos, visitantes ou pontuação.</p>
@@ -137,7 +138,7 @@ LIMIT 10;</textarea>
                 <section><h3>EDITOR E RESULTADOS</h3><p>O terminal usa o dialeto AlaSQL no navegador. Scripts <code>.sql</code> são carregados no editor para você revisar antes de executar. Arraste a divisória entre editor e resultados para ajustar o espaço. Oculte ou reabra os resultados pelo botão no cabeçalho do editor; ao executar uma consulta, os resultados voltam ao tamanho anterior.</p></section>
                 <section><h3>HISTÓRICO</h3><p>As instruções SQL executadas ficam no histórico local do navegador. Clique em uma entrada para carregá-la no editor. Use “Limpar” para apagar o histórico.</p></section>
             </div>
-            <footer class="modal-footer practice-help-footer"><span>PRÁTICA SQL · S.Q.L. TERMINAL</span><button type="button" class="button button-green" data-practice-help-close>ENTENDI</button></footer>
+            <footer class="modal-footer practice-help-footer"><span>PRÁTICA SQL · S.Q.L. TERMINAL</span><button type="button" class="button button-green" data-hover-sound="hover" data-practice-help-close>ENTENDI</button></footer>
         </section>
     </div>
 
@@ -145,7 +146,7 @@ LIMIT 10;</textarea>
         <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
             <header class="modal-header">
                 <div><small>AMBIENTE DE TREINAMENTO</small><h2 id="settings-title">CONFIGURAÇÕES</h2></div>
-                <button type="button" class="modal-close" data-settings-close aria-label="Fechar configurações">×</button>
+                <button type="button" class="modal-close" data-hover-sound="hover" data-settings-close aria-label="Fechar configurações">×</button>
             </header>
             <div class="settings-body">
                 <section class="settings-group" aria-labelledby="settings-audio-title">
@@ -161,11 +162,12 @@ LIMIT 10;</textarea>
                     <label class="settings-row"><span><strong>Folhas na tela inicial</strong><small>Efeito visual da Home, quando disponível.</small></span><input id="setting-leaves" type="checkbox" class="settings-switch"></label>
                 </section>
             </div>
-            <footer class="modal-footer settings-footer"><button type="button" id="settings-reset" class="button button-quiet">RESTAURAR PADRÕES</button><button type="button" class="button button-green" data-settings-close>CONCLUÍDO</button></footer>
+            <footer class="modal-footer settings-footer"><button type="button" id="settings-reset" class="button button-quiet" data-hover-sound="hover">RESTAURAR PADRÕES</button><button type="button" class="button button-green" data-hover-sound="hover" data-settings-close>CONCLUÍDO</button></footer>
         </section>
     </div>
 
     <script src="js/settings.js"></script>
+    <script src="js/sounds.js"></script>
     <script src="js/practice.js"></script>
 </body>
 </html>
