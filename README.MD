@@ -42,15 +42,20 @@ O banco começa com cinco tabelas didáticas de logística. O explorador organiz
 
 ## Como iniciar
 
-O projeto roda no navegador e não precisa de etapa de build. Na pasta do projeto, inicie um servidor local:
+A interface usa React, Material UI e Vite. É necessário ter Node.js 20.19 ou superior. Na pasta do projeto, instale as dependências e inicie o servidor de desenvolvimento:
 
 ```bash
-python3 -m http.server 55000
+npm install
+npm run dev
 ```
 
-Abra `http://localhost:5500` e selecione um dos três modos na Home. Clássico e Falha do Sistema oferecem as dificuldades Fácil, Normal e Difícil. Prática SQL não usa dificuldade.
+O Vite informa o endereço local no terminal. Abra-o no navegador e selecione um modo na Home. Para gerar a versão estática de publicação:
 
-O navegador precisa de acesso à internet para carregar AlaSQL e as fontes do Google Fonts via CDN. O banco da partida é criado em memória quando uma nova partida começa. Configurações e histórico da Prática SQL são armazenados localmente no navegador.
+```bash
+npm run build
+```
+
+Os arquivos publicáveis ficam em `dist/`. O processo inclui os módulos ativos do jogo, os áudios e o emblema, mas não inclui `js/script.js`, que permanece como backup legado. AlaSQL e as fontes do Google Fonts continuam carregados por CDN. O banco da partida é criado em memória quando uma nova partida começa; configurações e histórico da Prática SQL ficam no armazenamento local do navegador.
 
 ## Um turno de investigação
 
@@ -134,7 +139,30 @@ sql-game/
 ├── index.html
 ├── game.html
 ├── practice.html
+├── package.json
+├── package-lock.json
+├── vite.config.js
 ├── README.MD
+├── src/
+│   ├── App.jsx
+│   ├── main.jsx
+│   ├── theme.js
+│   ├── components/
+│   │   ├── HomeHelpDialog.jsx
+│   │   ├── LegacyButton.jsx
+│   │   ├── ScreenFrame.jsx
+│   │   ├── SettingsDialog.jsx
+│   │   └── TacticalPanel.jsx
+│   ├── pages/
+│   │   ├── HomePage.jsx
+│   │   ├── GamePage.jsx
+│   │   └── PracticePage.jsx
+│   └── legacy/
+│       ├── LegacyScreen.jsx
+│       ├── loadScript.js
+│       └── templates/
+│           ├── game.html
+│           └── practice.html
 ├── css/
 │   ├── global.css
 │   ├── home.css
@@ -168,4 +196,4 @@ sql-game/
         └── building.js
 ```
 
-`index.html`, `game.html` e `practice.html` carregam as páginas ativas. `js/script.js` é um backup legado e não é carregado por essas páginas; as regras atuais da partida ficam nos módulos listados acima.
+`index.html`, `game.html` e `practice.html` são entradas Vite separadas. A Home foi convertida para componentes React e Material UI. As telas de jogo e de prática são montadas em React a partir de templates que preservam os elementos esperados pelas funções atuais; os módulos de regras continuam carregados em uma camada temporária de compatibilidade e podem ser migrados para hooks e serviços independentes nas próximas etapas. `js/script.js` é um backup legado: não é carregado no navegador nem copiado para `dist/`.

@@ -1,173 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#11151a">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#11151a" />
     <title>S.Q.L. — Prática SQL</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/practice.css">
-    <script src="https://cdn.jsdelivr.net/npm/alasql@4/dist/alasql.min.js"></script>
-</head>
-<body class="practice-page">
-    <header class="topbar practice-topbar">
-        <div class="brand">
-            <div class="brand-mark"><img src="Emblema SQL_ Setor de Liberação.png" alt="S.Q.L."></div>
-            <div class="brand-info">
-                <strong>SETOR DE QUALIFICAÇÃO E LIBERAÇÃO</strong>
-                <small>AMBIENTE DE TREINAMENTO SQL</small>
-            </div>
-        </div>
-        <div class="shift-status">
-            <span class="live-dot"></span>
-            <span>BANCO DE LOGÍSTICA</span>
-            <span class="top-divider"></span>
-            <span id="practice-live-table-count">5 TABELAS</span>
-        </div>
-        <button type="button" id="practice-menu-trigger" class="practice-menu-trigger" data-hover-sound="hover" aria-haspopup="dialog" aria-controls="practice-menu-modal" aria-label="Abrir menu da prática SQL">
-            <span class="practice-menu-icon" aria-hidden="true"><i></i><i></i><i></i></span><span>MENU</span>
-        </button>
-    </header>
-
-    <main class="practice-workspace">
-        <aside class="practice-sidebar" aria-labelledby="database-title">
-            <div class="practice-panel-heading">
-                <div><small>EXPLORADOR DE DADOS DIDÁTICOS</small><h1 id="database-title">BANCOS DE DADOS</h1></div>
-                <span id="practice-table-count">5 TABELAS</span>
-            </div>
-            <p class="practice-hint">Explore cada banco, tabela e coluna. Use uma ação da tabela para montar uma consulta inicial.</p>
-            <div class="practice-database-import">
-                <div>
-                    <strong>CARREGAR BANCO DE DADOS</strong>
-                    <small>CSV, TSV ou JSON viram tabelas consultáveis. Selecione vários arquivos para importar juntos.</small>
-                </div>
-                <button type="button" id="practice-import-data-button" data-hover-sound="hover">＋ IMPORTAR BANCO DE DADOS</button>
-                <input id="practice-import-data-file" type="file" accept=".csv,.tsv,.json,text/csv,application/json,text/tab-separated-values" multiple hidden>
-            </div>
-            <p class="practice-hint practice-hint-compact">Scripts .SQL podem ser carregados no terminal. O banco de treino usa AlaSQL no navegador.</p>
-            <div id="practice-tables" class="practice-tables"></div>
-            <div class="practice-sidebar-note">
-                <strong>AMBIENTE LIVRE</strong>
-                <span>Sem limite de consultas, visitantes, eventos ou pontuação. As tabelas são próprias deste treino; os dados reiniciam ao recarregar.</span>
-            </div>
-        </aside>
-
-        <section class="practice-main" aria-label="Editor e resultado SQL">
-            <section class="practice-editor-panel">
-                <div class="practice-panel-heading">
-                    <div><small>CONSULTA</small><h2>EDITOR SQL</h2></div>
-                    <div class="practice-panel-actions">
-                        <span>SQL · ALASQL</span>
-                        <button type="button" id="practice-results-toggle" class="practice-results-toggle" data-hover-sound="hover" aria-expanded="true" aria-controls="practice-results-panel">OCULTAR RESULTADOS</button>
-                    </div>
-                </div>
-                <div class="practice-toolbar">
-                    <button type="button" id="practice-import-button">CARREGAR .SQL</button>
-                    <input id="practice-import-file" type="file" accept=".sql,text/plain,application/sql" hidden>
-                    <button type="button" id="practice-export-button">EXPORTAR .SQL</button>
-                    <button type="button" data-practice-template="join">EXEMPLO JOIN</button>
-                    <button type="button" data-practice-template="group">EXEMPLO GROUP BY</button>
-                    <button type="button" data-practice-template="reset-db">RESTAURAR BANCO</button>
-                    <button type="button" data-practice-template="clear">LIMPAR</button>
-                </div>
-                <label class="sr-only" for="practice-query">Digite uma consulta SQL</label>
-                <textarea id="practice-query" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="practice-editor-help">SELECT nome, patente, alojamento
-FROM pessoal
-ORDER BY alojamento
-LIMIT 10;</textarea>
-                <div class="practice-editor-footer">
-                    <small id="practice-editor-help">SQL em lote · Ctrl + Enter para executar · scripts importados não executam automaticamente</small>
-                    <button id="practice-run" class="button button-green" type="button" data-hover-sound="hover">▶ EXECUTAR</button>
-                </div>
-            </section>
-
-            <div id="practice-resize-handle" class="practice-resize-handle" role="separator" aria-orientation="horizontal" aria-label="Redimensionar editor e resultados" aria-valuemin="280" aria-valuenow="360" aria-valuemax="720" tabindex="0"></div>
-
-            <section id="practice-results-panel" class="practice-results-panel" aria-live="polite">
-                <div class="practice-panel-heading">
-                    <div><small>SAÍDA</small><h2>RESULTADOS</h2></div>
-                    <span id="practice-result-status">AGUARDANDO CONSULTA</span>
-                </div>
-                <div id="practice-result-meta" class="practice-result-meta">O resultado da consulta aparecerá aqui.</div>
-                <div id="practice-results" class="practice-results">
-                    <p class="practice-empty">Execute uma consulta para explorar os dados.</p>
-                </div>
-            </section>
-        </section>
-
-        <aside class="practice-history-panel" aria-labelledby="practice-history-title">
-            <div class="practice-panel-heading">
-                <div><small>ARMAZENADO NESTE NAVEGADOR</small><h2 id="practice-history-title">HISTÓRICO SQL</h2></div>
-                <button type="button" id="practice-history-clear" class="practice-history-clear">LIMPAR</button>
-            </div>
-            <p id="practice-history-hint" class="practice-history-hint">Instruções SQL executadas no editor ficam salvas neste navegador. Selecione uma para trazê-la de volta.</p>
-            <div id="practice-history-list" class="practice-history-list" aria-live="polite">
-                <p class="practice-empty">Nenhuma instrução salva ainda.</p>
-            </div>
-        </aside>
-    </main>
-
-    <div id="practice-menu-modal" class="modal-backdrop" aria-hidden="true">
-        <section class="modal practice-menu-modal" role="dialog" aria-modal="true" aria-labelledby="practice-menu-title">
-            <header class="modal-header">
-                <div><small>AMBIENTE DE TREINAMENTO</small><h2 id="practice-menu-title">MENU DA PRÁTICA</h2></div>
-                <button type="button" class="modal-close" data-hover-sound="hover" data-practice-menu-close aria-label="Fechar menu">×</button>
-            </header>
-            <div class="practice-menu-actions">
-                <button type="button" class="practice-menu-action" data-hover-sound="hover" id="practice-menu-return"><span class="practice-menu-action-icon">▶</span><span><strong>Retornar</strong><small>Voltar ao terminal de prática SQL.</small></span></button>
-                <button type="button" class="practice-menu-action" data-hover-sound="hover" id="practice-open-settings"><span class="practice-menu-action-icon">⚙</span><span><strong>Configurações</strong><small>Ajustar preferências da interface e áudio.</small></span></button>
-                <button type="button" class="practice-menu-action" data-hover-sound="hover" id="practice-open-help"><span class="practice-menu-action-icon">?</span><span><strong>Ajuda</strong><small>Consultar as instruções da tela de prática.</small></span></button>
-                <a class="practice-menu-action practice-menu-action-exit" data-hover-sound="hover" data-sound="click" href="index.html"><span class="practice-menu-action-icon">⏻</span><span><strong>Sair</strong><small>Voltar à tela inicial e escolher outro modo.</small></span></a>
-            </div>
-        </section>
-    </div>
-
-    <div id="practice-help-modal" class="modal-backdrop" aria-hidden="true">
-        <section class="modal practice-help-modal" role="dialog" aria-modal="true" aria-labelledby="practice-help-title">
-            <header class="modal-header">
-                <div><small>MANUAL DO OPERADOR · TERMINAL SQL</small><h2 id="practice-help-title">AJUDA DA PRÁTICA</h2></div>
-                <button type="button" class="modal-close" data-hover-sound="hover" data-practice-help-close aria-label="Fechar ajuda">×</button>
-            </header>
-            <div class="practice-help-body">
-                <p>Use este ambiente para explorar dados e praticar SQL sem turnos, visitantes ou pontuação.</p>
-                <section><h3>CARREGAR UM BANCO</h3><p>Importe arquivos CSV ou TSV com cabeçalho, ou JSON com registros. Cada arquivo vira um agrupamento no explorador; arquivos JSON podem conter várias tabelas. Os dados importados existem nesta sessão e são descartados ao recarregar ou restaurar o banco.</p></section>
-                <section><h3>EXPLORAR E CONSULTAR</h3><p>Abra os acordeões em ordem: banco, tabela e coluna. “Consultar tabela” prepara um <code>SELECT *</code>; clicar em uma coluna prepara um <code>SELECT</code> daquela coluna. Edite o SQL e execute com o botão ou <kbd>Ctrl</kbd> + <kbd>Enter</kbd>.</p></section>
-                <section><h3>EDITOR E RESULTADOS</h3><p>O terminal usa o dialeto AlaSQL no navegador. Scripts <code>.sql</code> são carregados no editor para você revisar antes de executar. Arraste a divisória entre editor e resultados para ajustar o espaço. Oculte ou reabra os resultados pelo botão no cabeçalho do editor; ao executar uma consulta, os resultados voltam ao tamanho anterior.</p></section>
-                <section><h3>HISTÓRICO</h3><p>As instruções SQL executadas ficam no histórico local do navegador. Clique em uma entrada para carregá-la no editor. Use “Limpar” para apagar o histórico.</p></section>
-            </div>
-            <footer class="modal-footer practice-help-footer"><span>PRÁTICA SQL · S.Q.L. TERMINAL</span><button type="button" class="button button-green" data-hover-sound="hover" data-practice-help-close>ENTENDI</button></footer>
-        </section>
-    </div>
-
-    <div id="settings-modal" class="modal-backdrop" aria-hidden="true">
-        <section class="modal settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-            <header class="modal-header">
-                <div><small>AMBIENTE DE TREINAMENTO</small><h2 id="settings-title">CONFIGURAÇÕES</h2></div>
-                <button type="button" class="modal-close" data-hover-sound="hover" data-settings-close aria-label="Fechar configurações">×</button>
-            </header>
-            <div class="settings-body">
-                <section class="settings-group" aria-labelledby="settings-audio-title">
-                    <h3 id="settings-audio-title">ÁUDIO</h3>
-                    <label class="settings-row"><span><strong>Efeitos sonoros</strong><small>Ativar sons de interação e eventos.</small></span><input id="setting-sound" type="checkbox" class="settings-switch"></label>
-                    <label class="settings-row settings-volume"><span><strong>Volume dos efeitos</strong><small><output id="setting-volume-value" for="setting-volume">50%</output></small></span><input id="setting-volume" type="range" min="0" max="100" step="5" value="50"></label>
-                    <label class="settings-row"><span><strong>Música ambiente</strong><small>Preferência para quando a trilha estiver disponível.</small></span><input id="setting-music" type="checkbox" class="settings-switch"></label>
-                    <label class="settings-row settings-volume"><span><strong>Volume da música</strong><small><output id="setting-music-volume-value" for="setting-music-volume">25%</output></small></span><input id="setting-music-volume" type="range" min="0" max="100" step="5" value="25"></label>
-                </section>
-                <section class="settings-group" aria-labelledby="settings-interface-title">
-                    <h3 id="settings-interface-title">INTERFACE</h3>
-                    <label class="settings-row"><span><strong>Animações</strong><small>Transições e movimentos visuais.</small></span><input id="setting-animations" type="checkbox" class="settings-switch"></label>
-                    <label class="settings-row"><span><strong>Folhas na tela inicial</strong><small>Efeito visual da Home, quando disponível.</small></span><input id="setting-leaves" type="checkbox" class="settings-switch"></label>
-                </section>
-            </div>
-            <footer class="modal-footer settings-footer"><button type="button" id="settings-reset" class="button button-quiet" data-hover-sound="hover">RESTAURAR PADRÕES</button><button type="button" class="button button-green" data-hover-sound="hover" data-settings-close>CONCLUÍDO</button></footer>
-        </section>
-    </div>
-
-    <script src="js/settings.js"></script>
-    <script src="js/sounds.js"></script>
-    <script src="js/practice.js"></script>
-</body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta name="emotion-insertion-point" content="" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/practice.css" />
+    <link rel="icon" href="./favicon.ico?v=2" type="image/x-icon" />
+  </head>
+  <body data-screen="practice" class="practice-page">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

@@ -91,25 +91,32 @@
     openSettingsModal();
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    applySettings();
+  function initializeSettingsInterface() {
     const modal = document.getElementById("settings-modal");
-    if (!modal) return;
+    if (!modal || modal.dataset.settingsInitialized === "true") return;
+    modal.dataset.settingsInitialized = "true";
+    applySettings();
     modal.addEventListener("click", event => {
       if (event.target === modal || event.target.closest("[data-settings-close]")) closeSettingsModal();
     });
-    document.getElementById("setting-sound").addEventListener("change", event => { settings.sound = event.target.checked; persist(); });
-    document.getElementById("setting-volume").addEventListener("input", event => { settings.volume = Number(event.target.value); persist(); });
-    document.getElementById("setting-music").addEventListener("change", event => { settings.music = event.target.checked; persist(); });
-    document.getElementById("setting-music-volume").addEventListener("input", event => {
+    document.getElementById("setting-sound")?.addEventListener("change", event => { settings.sound = event.target.checked; persist(); });
+    document.getElementById("setting-volume")?.addEventListener("input", event => { settings.volume = Number(event.target.value); persist(); });
+    document.getElementById("setting-music")?.addEventListener("change", event => { settings.music = event.target.checked; persist(); });
+    document.getElementById("setting-music-volume")?.addEventListener("input", event => {
       settings.musicVolume = Number(event.target.value);
       persist();
     });
-    document.getElementById("setting-animations").addEventListener("change", event => { settings.animations = event.target.checked; persist(); });
-    document.getElementById("setting-leaves").addEventListener("change", event => { settings.leaves = event.target.checked; persist(); });
-    document.getElementById("settings-reset").addEventListener("click", () => { settings = { ...DEFAULTS }; persist(); });
+    document.getElementById("setting-animations")?.addEventListener("change", event => { settings.animations = event.target.checked; persist(); });
+    document.getElementById("setting-leaves")?.addEventListener("change", event => { settings.leaves = event.target.checked; persist(); });
+    document.getElementById("settings-reset")?.addEventListener("click", () => { settings = { ...DEFAULTS }; persist(); });
     document.addEventListener("keydown", event => { if (event.key === "Escape" && modal.classList.contains("open")) closeSettingsModal(); });
-  });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeSettingsInterface, { once: true });
+  } else {
+    initializeSettingsInterface();
+  }
 
   window.openSettingsModal = openSettingsModal;
   window.closeSettingsModal = closeSettingsModal;

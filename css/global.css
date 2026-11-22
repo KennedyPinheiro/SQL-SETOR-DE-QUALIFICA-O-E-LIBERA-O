@@ -28,6 +28,13 @@ button,textarea{font:inherit}
 .settings-switch:focus-visible,.settings-volume input:focus-visible{outline:2px solid var(--amber);outline-offset:3px;}
 .settings-volume output{color:var(--amber);font:12px var(--mono);}
 .settings-volume input[type=range]{width:min(190px,38%);accent-color:#9fc7a9;cursor:pointer;}
+.settings-row .MuiSwitch-root{width:42px;height:28px;padding:3px;flex:none;}
+.settings-row .MuiSwitch-switchBase{padding:6px;color:#aab5af;}
+.settings-row .MuiSwitch-switchBase.Mui-checked{color:#f0f7ed;transform:translateX(14px);}
+.settings-row .MuiSwitch-track{border:1px solid #59655e;border-radius:20px;background:#303a3d;opacity:1;}
+.settings-row .MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track{border-color:#83a98b;background:#426f4d;opacity:1;}
+.settings-volume .MuiSlider-root{width:min(190px,38%);color:#9fc7a9;}
+.settings-volume .MuiSlider-root input[type=range]{width:100%;accent-color:inherit;}
 .settings-footer{gap:10px;flex-wrap:wrap;}
 .settings-footer .button{padding:10px 12px;}
 body.reduce-motion,body.reduce-motion *,body.reduce-motion::before,body.reduce-motion::after,body.reduce-motion *::before,body.reduce-motion *::after{scroll-behavior:auto!important;animation:none!important;transition:none!important;}
