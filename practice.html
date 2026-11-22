@@ -57,7 +57,10 @@
             <section class="practice-editor-panel">
                 <div class="practice-panel-heading">
                     <div><small>CONSULTA</small><h2>EDITOR SQL</h2></div>
-                    <span>SQL · ALASQL</span>
+                    <div class="practice-panel-actions">
+                        <span>SQL · ALASQL</span>
+                        <button type="button" id="practice-results-toggle" class="practice-results-toggle" aria-expanded="true" aria-controls="practice-results-panel">OCULTAR RESULTADOS</button>
+                    </div>
                 </div>
                 <div class="practice-toolbar">
                     <button type="button" id="practice-import-button">CARREGAR .SQL</button>
@@ -81,7 +84,7 @@ LIMIT 10;</textarea>
 
             <div id="practice-resize-handle" class="practice-resize-handle" role="separator" aria-orientation="horizontal" aria-label="Redimensionar editor e resultados" aria-valuemin="280" aria-valuenow="360" aria-valuemax="720" tabindex="0"></div>
 
-            <section class="practice-results-panel" aria-live="polite">
+            <section id="practice-results-panel" class="practice-results-panel" aria-live="polite">
                 <div class="practice-panel-heading">
                     <div><small>SAÍDA</small><h2>RESULTADOS</h2></div>
                     <span id="practice-result-status">AGUARDANDO CONSULTA</span>

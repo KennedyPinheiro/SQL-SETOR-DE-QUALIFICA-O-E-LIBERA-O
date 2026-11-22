@@ -489,12 +489,25 @@ document.getElementById("practice-query")?.addEventListener("keydown", event => 
 
 const practiceMain = document.querySelector(".practice-main");
 const practiceResizeHandle = document.getElementById("practice-resize-handle");
+const practiceResultsToggle = document.getElementById("practice-results-toggle");
+
+practiceResultsToggle?.addEventListener("click", () => {
+  const isCollapsed = practiceMain.classList.toggle("results-collapsed");
+  practiceResultsToggle.setAttribute("aria-expanded", String(!isCollapsed));
+  practiceResultsToggle.textContent = isCollapsed ? "MOSTRAR RESULTADOS" : "OCULTAR RESULTADOS";
+  practiceResultsToggle.title = isCollapsed
+    ? "Reabrir o painel de resultados"
+    : "Ocultar o painel de resultados";
+});
 
 function setPracticeEditorHeight(height) {
   if (!practiceMain || !practiceResizeHandle) return;
   const minEditorHeight = practiceMain.clientWidth <= 760 ? 320 : 280;
   const minResultsHeight = practiceMain.clientWidth <= 760 ? 300 : 260;
-  const maxEditorHeight = Math.max(minEditorHeight, practiceMain.clientHeight - 12 - minResultsHeight);
+  const mainStyles = getComputedStyle(practiceMain);
+  const verticalPadding = Number.parseFloat(mainStyles.paddingTop) + Number.parseFloat(mainStyles.paddingBottom);
+  const availableHeight = practiceMain.clientHeight - verticalPadding;
+  const maxEditorHeight = Math.max(minEditorHeight, availableHeight - 12 - minResultsHeight);
   const editorHeight = Math.max(minEditorHeight, Math.min(height, maxEditorHeight));
   practiceMain.style.setProperty("--practice-editor-height", `${editorHeight}px`);
   practiceResizeHandle.setAttribute("aria-valuemin", String(minEditorHeight));

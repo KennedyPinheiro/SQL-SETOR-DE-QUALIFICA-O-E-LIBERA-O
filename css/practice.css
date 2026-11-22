@@ -203,20 +203,19 @@
 
 .practice-database-import button {
   width: 100%;
-  padding: 8px 9px;
-  border: 1px solid #738461;
-  background: #394936;
-  color: #e0e8d3;
-  font: 600 9px var(--mono);
-  letter-spacing: .45px;
+  padding: 7px 8px;
+  border: 1px solid #3b484e;
+  background: #20282e;
+  color: #b7c4bc;
+  font: 9px var(--mono);
   text-align: left;
   cursor: pointer;
 }
 
 .practice-database-import button:hover,
 .practice-database-import button:focus-visible {
-  border-color: #d7c18e;
-  background: #465943;
+  border-color: #89a58e;
+  color: #d6e7d9;
   outline: none;
 }
 
@@ -413,25 +412,57 @@
   display: grid;
   grid-template-rows: minmax(280px, var(--practice-editor-height, 360px)) 12px minmax(260px, 1fr);
   gap: 0;
+  padding: 15px;
+  border: 1px solid #465447;
+  background: linear-gradient(155deg, #1b231f, #151b1c 58%);
 }
 
 .practice-editor-panel,
 .practice-results-panel {
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 15px;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
-.practice-editor-panel {
-  margin-bottom: 8px;
-  border-color: #465447;
-  background: linear-gradient(155deg, #1b231f, #171d21 55%);
+.practice-panel-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-.practice-results-panel {
-  margin-top: 8px;
-  border-color: #465447;
-  background: linear-gradient(155deg, #1a211d, #171d21 55%);
+.practice-panel-actions>span {
+  color: #98a69d;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.practice-results-toggle {
+  padding: 6px 8px;
+  border: 1px solid #3b484e;
+  background: #20282e;
+  color: #b7c4bc;
+  font: 9px var(--mono);
+  cursor: pointer;
+}
+
+.practice-results-toggle:hover,
+.practice-results-toggle:focus-visible {
+  border-color: #89a58e;
+  color: #d6e7d9;
+  outline: none;
+}
+
+.practice-main.results-collapsed {
+  grid-template-rows: minmax(420px, 1fr);
+}
+
+.practice-main.results-collapsed .practice-resize-handle,
+.practice-main.results-collapsed .practice-results-panel {
+  display: none;
 }
 
 .practice-resize-handle {
@@ -461,7 +492,7 @@
   left: 50%;
   padding: 0 8px;
   transform: translateX(-50%);
-  background: #171d21;
+  background: #19211c;
   color: #8fa185;
   font: 12px/12px var(--mono);
   letter-spacing: 2px;
@@ -691,6 +722,10 @@
 
   .practice-main {
     grid-template-rows: minmax(320px, var(--practice-editor-height, 360px)) 12px minmax(300px, 45vh);
+  }
+
+  .practice-main.results-collapsed {
+    grid-template-rows: minmax(420px, 1fr);
   }
 }
 
